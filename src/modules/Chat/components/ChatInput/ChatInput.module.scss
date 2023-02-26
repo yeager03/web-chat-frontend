@@ -1,0 +1,43 @@
+.chat-input {
+	&__emoji {
+		position: absolute;
+		bottom: 70px;
+		z-index: 10;
+	}
+
+	.input {
+		.icon {
+			cursor: pointer;
+			font-size: 20px;
+
+			opacity: 0.5;
+			transition: opacity 0.25s ease-out;
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+
+		&__actions {
+			display: flex;
+			align-items: center;
+
+			.icon {
+				&:not(:last-child) {
+					margin-right: 20px;
+				}
+			}
+
+			// :global {
+			// 	.ant-upload-list {
+			// 		display: none;
+			// 	}
+			// }
+		}
+	}
+}
+
+.file__list {
+	position: absolute;
+	top: 0;
+}

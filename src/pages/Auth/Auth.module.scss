@@ -1,0 +1,13 @@
+.auth {
+	height: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
+	&__wrapper {
+		max-width: 430px;
+		width: 100%;
+	}
+}

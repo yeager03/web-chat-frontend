@@ -1,0 +1,40 @@
+.dialogues {
+	&__search {
+		padding: 20px;
+
+		.input {
+			height: 40px;
+
+			border: none;
+			background: #f7f8f9;
+
+			input {
+				background: inherit;
+
+				&::placeholder {
+					font-size: 14px;
+				}
+			}
+
+			.icon {
+				font-size: 16px;
+				opacity: 0.5;
+			}
+		}
+	}
+
+	&__items {
+		height: calc(100% - 160px);
+		overflow: auto;
+
+		&_empty {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			.icon {
+				font-size: 22px;
+			}
+		}
+	}
+}

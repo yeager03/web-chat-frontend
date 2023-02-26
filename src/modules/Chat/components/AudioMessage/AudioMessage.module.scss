@@ -1,0 +1,54 @@
+@import "../../../../assets/scss/components/variables";
+
+.message__audio {
+	width: 100%;
+
+	&-progress {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		height: 100%;
+
+		background: #418fff;
+
+		transition: width 0.75s ease-out;
+	}
+	&-info {
+		position: relative;
+		z-index: 2;
+
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		.button {
+			cursor: pointer;
+
+			width: 28px;
+			height: 28px;
+			background: #0f3997;
+			border: none;
+			border-radius: 50%;
+
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			img {
+				height: 13px;
+			}
+		}
+
+		.duration {
+			color: $white;
+			font-weight: 400;
+			opacity: 0.5;
+			font-size: 12px;
+		}
+
+		.audio {
+			display: none;
+		}
+	}
+}
