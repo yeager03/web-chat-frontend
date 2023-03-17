@@ -2,11 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 
 // slices
-import dialogues from "./slices/dialoguesSlice";
-import messages from "./slices/messagesSlice";
+import dialogue from "./slices/dialogue/dialogueSlice";
+import message from "./slices/message/messageSlice";
+import user from "./slices/user/userSlice";
 
 export const store = configureStore({
-	reducer: { dialogues, messages },
+	reducer: { dialogue, message, user },
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 	devTools: process.env.NODE_ENV !== "production",
 });

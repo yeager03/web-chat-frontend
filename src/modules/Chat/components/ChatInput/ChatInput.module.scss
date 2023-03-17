@@ -1,3 +1,14 @@
+@keyframes animation {
+	from {
+		opacity: 0;
+		scale: 0;
+	}
+	to {
+		opacity: 0.5;
+		scale: 1;
+	}
+}
+
 .chat-input {
 	&__emoji {
 		position: absolute;
@@ -16,6 +27,8 @@
 			&:hover {
 				opacity: 1;
 			}
+
+			animation: animation 0.25s ease-out;
 		}
 
 		&__actions {

@@ -1,5 +1,12 @@
 @import "../../../../assets/scss/components/variables";
 
+:global {
+	.ant-popover-inner {
+		box-shadow: 0 5px 5px rgba(0, 0, 0, 0.07) !important;
+		// background-color: $blue !important;
+	}
+}
+
 .message {
 	display: flex;
 	align-items: center;
@@ -67,6 +74,22 @@
 		}
 	}
 
+	&__popover {
+		width: 50px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		.popover__icon {
+			cursor: pointer;
+			font-size: 18px;
+
+			&:not(:last-child) {
+				margin-right: 15px;
+			}
+		}
+	}
+
 	&__avatar {
 		flex-shrink: 0;
 		align-self: flex-end;
@@ -89,6 +112,8 @@
 
 		display: flex;
 		flex-direction: column;
+
+		cursor: pointer;
 	}
 
 	&__bubble {

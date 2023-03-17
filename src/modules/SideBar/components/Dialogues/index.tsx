@@ -19,20 +19,20 @@ import { SearchOutlined, LoadingOutlined } from "@ant-design/icons";
 import styles from "./Dialogues.module.scss";
 
 // types
-import { Dialogue as DialogueItem, Status } from "../../../../store/slices/dialoguesSlice";
+import { Status } from "../../../../models/Status";
+import IDialogue from "../../../../models/IDialogue";
 
 type DialoguesProps = {
 	status: Status;
-	dialogues: DialogueItem[];
+	dialogues: IDialogue[];
 	searchValue: string;
 	handleChangeValue: (e: ChangeEvent<HTMLInputElement>) => void;
 	// dialogue
-	currentDialogueID: string;
-	handleClickDialogue: (id: string) => void;
+	currentDialogueId: string;
 };
 
 const Dialogues: FC<DialoguesProps> = (props): ReactElement => {
-	const { status, dialogues, searchValue, handleChangeValue, currentDialogueID, handleClickDialogue } = props;
+	const { status, dialogues, searchValue, handleChangeValue, currentDialogueId } = props;
 
 	const loading = status === "loading" ? <LoadingOutlined className={styles["icon"]} /> : null;
 	const empty =
@@ -41,13 +41,8 @@ const Dialogues: FC<DialoguesProps> = (props): ReactElement => {
 		) : null;
 	const sortedDialogues =
 		status === "success" && dialogues.length
-			? orderBy(dialogues, ["created_at"], ["desc"]).map((dialogue) => (
-					<Dialogue
-						key={dialogue["_id"]}
-						{...dialogue}
-						currentDialogueID={currentDialogueID}
-						handleClickDialogue={handleClickDialogue}
-					/>
+			? orderBy(dialogues, ["createdAt"], ["desc"]).map((dialogue) => (
+					<Dialogue key={dialogue["_id"]} {...dialogue} currentDialogueId={currentDialogueId} />
 			  ))
 			: null;
 
@@ -64,7 +59,7 @@ const Dialogues: FC<DialoguesProps> = (props): ReactElement => {
 				/>
 			</div>
 
-			<div
+			<ul
 				className={cn(styles["dialogues__items"], {
 					[styles["dialogues__items_empty"]]: !dialogues.length,
 				})}
@@ -72,7 +67,7 @@ const Dialogues: FC<DialoguesProps> = (props): ReactElement => {
 				{loading}
 				{empty}
 				{sortedDialogues}
-			</div>
+			</ul>
 		</Fragment>
 	);
 };

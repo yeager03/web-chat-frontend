@@ -1,4 +1,5 @@
 import { FC, ReactElement } from "react";
+import { useNavigate } from "react-router-dom";
 
 // components
 import IconRead from "../../../../components/IconRead";
@@ -11,52 +12,59 @@ import cn from "classnames";
 import styles from "./Dialogue.module.scss";
 
 // date
-import getDialogueDate from "../../../../utils/helpers/getDialogueDate";
+import getDialogueDate from "../../../../utils/dialogueDate";
+
+// hooks
+import useAuth from "../../../../hooks/useAuth";
 
 // types
-import { Dialogue as DialogueItem } from "../../../../store/slices/dialoguesSlice";
+import IDialogue from "../../../../models/IDialogue";
 
-type DialogueProps = DialogueItem & {
-	currentDialogueID: string;
-	handleClickDialogue: (id: string) => void;
-	user: any; // del any
+type DialogueProps = IDialogue & {
+	currentDialogueId: string | null;
 };
 
 const Dialogue: FC<DialogueProps> = (props): ReactElement => {
-	const { _id, lastMessage, user, created_at, currentDialogueID, handleClickDialogue } = props;
+	const { _id, lastMessage, interlocutor, updatedAt, currentDialogueId } = props;
+	const { user } = useAuth();
+	const navigate = useNavigate();
 
-	const userID = "test123"; // test
 	const isRead = false; // test
-
-	const isMyMessage = user["_id"] === userID;
+	const isMyMessage = user?._id === lastMessage.author._id;
 
 	return (
-		<div
+		<li
 			className={cn(styles["dialogue__item"], {
-				[styles["dialogue__item_online"]]: user["isOnline"],
-				[styles["dialogue__item_current"]]: _id === currentDialogueID,
+				[styles["dialogue__item_online"]]: interlocutor.isOnline,
+				[styles["dialogue__item_current"]]: _id === currentDialogueId,
 			})}
-			onClick={() => handleClickDialogue(_id)}
+			onClick={() =>
+				navigate(`/dialogue/${_id}`, {
+					replace: true,
+				})
+			}
 		>
 			<div className={styles["dialogue__item-avatar"]}>
-				<Avatar user={user} />
+				<Avatar user={lastMessage.author} />
 			</div>
 			<div className={styles["dialogue__item-info"]}>
 				<div className={styles["dialogue__item-title"]}>
-					<b className={styles["title"]}>{user["fullName"]}</b>
-					<span className={styles["date"]}>{getDialogueDate(created_at)}</span>
+					<b className={styles["title"]}>{interlocutor["fullName"]}</b>
+					<span className={styles["date"]}>{getDialogueDate(updatedAt)}</span>
 				</div>
 				<div className={styles["dialogue__item-subtitle"]}>
-					<p className={styles["text"]}>{lastMessage}</p>
+					<p className={styles["text"]}>{lastMessage["message"]}</p>
 
-					{user["unRead"] && user["unRead"] > 0 ? (
-						<span className={styles["count"]}>{user["unRead"] > 10 ? "10+" : user["unRead"]}</span>
+					{/* {lastMessage["unRead"] && lastMessage["unRead"] > 0 ? (
+						<span className={styles["count"]}>{lastMessage["unRead"] > 10 ? "10+" : lastMessage["unRead"]}</span>
 					) : (
 						<IconRead className={styles["icon"]} isMyMessage={isMyMessage} isRead={isRead} />
-					)}
+					)} */}
+
+					<IconRead className={styles["icon"]} isMyMessage={isMyMessage} isRead={isRead} />
 				</div>
 			</div>
-		</div>
+		</li>
 	);
 };
 

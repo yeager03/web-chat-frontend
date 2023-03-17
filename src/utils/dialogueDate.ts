@@ -3,7 +3,8 @@ import format from "date-fns/format";
 import ru from "date-fns/locale/ru";
 import isToday from "date-fns/isToday";
 
-const getDialogueDate = (created_at: string) => {
+// eslint-disable-next-line import/no-anonymous-default-export
+export default (created_at: string) => {
 	const date = new Date(created_at);
 
 	if (isToday(date)) {
@@ -14,5 +15,3 @@ const getDialogueDate = (created_at: string) => {
 		locale: ru,
 	});
 };
-
-export default getDialogueDate;

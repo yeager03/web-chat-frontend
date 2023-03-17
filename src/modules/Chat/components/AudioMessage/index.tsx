@@ -9,7 +9,7 @@ import AudioPlay from "../../../../assets/images/audio-play.svg";
 import AudioPause from "../../../../assets/images/audio-pause.svg";
 
 // convert time
-import getConvertedTime from "../../../../utils/helpers/getConvertedTime";
+import getConvertedTime from "../../../../utils/convertTime";
 
 type AudioMessageProps = {
 	audio: string;

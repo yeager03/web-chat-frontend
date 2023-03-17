@@ -1,6 +1,9 @@
 import { FC, ReactElement, useState, useEffect, ChangeEvent } from "react";
 import { useSelector } from "react-redux";
 
+// socket
+import socket from "../../../core/socket";
+
 // dispatch
 import { useAppDispatch } from "../../../store";
 
@@ -8,33 +11,47 @@ import { useAppDispatch } from "../../../store";
 import BaseDialogues from "../components/Dialogues";
 
 // selectors
-import { dialoguesSelector } from "../../../store/slices/dialoguesSlice";
+import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 // actions
-import { getDialogues, setCurrentDialogue } from "../../../store/slices/dialoguesSlice";
+import { setCurrentDialogueId } from "../../../store/slices/dialogue/dialogueSlice";
+import { getDialogues } from "../../../store/slices/dialogue/dialogueActions";
+import { useParams } from "react-router-dom";
 
 const Dialogues: FC = (): ReactElement => {
 	const [searchValue, setSearchValue] = useState<string>("");
+	const { dialogues, status, currentDialogueId } = useSelector(dialogueSelector);
 
-	const { dialogues, status, currentDialogueID } = useSelector(dialoguesSelector);
 	const dispatch = useAppDispatch();
+
+	const { dialogueId } = useParams();
 
 	useEffect(() => {
 		dispatch(getDialogues());
 	}, []);
 
-	// function handles
+	useEffect(() => {
+		function socketDialogueListener() {
+			dispatch(getDialogues());
+		}
+
+		if (dialogueId) {
+			dispatch(setCurrentDialogueId(dialogueId));
+		}
+
+		socket.on("SERVER:DIALOGUE_CREATED", socketDialogueListener);
+
+		return () => {
+			socket.removeListener("SERVER:DIALOGUE_CREATED", socketDialogueListener);
+		};
+	}, [dialogueId]);
+
 	const handleChangeValue = (e: ChangeEvent<HTMLInputElement>) => {
-		setSearchValue(e.target.value);
+		setSearchValue(e.target.value.toLowerCase());
 	};
 
-	const handleClickDialogue = (id: string) => {
-		dispatch(setCurrentDialogue(id));
-	};
-
-	// filtered dialogues
 	const filteredDialogues = dialogues.filter(
-		(dialogue) => dialogue.user.fullName.toLowerCase().indexOf(searchValue) > -1
+		(dialogue) => dialogue.interlocutor.fullName.toLowerCase().indexOf(searchValue) > -1
 	);
 
 	return (
@@ -44,8 +61,7 @@ const Dialogues: FC = (): ReactElement => {
 			handleChangeValue={handleChangeValue}
 			status={status}
 			// dialogue
-			currentDialogueID={currentDialogueID}
-			handleClickDialogue={handleClickDialogue}
+			currentDialogueId={currentDialogueId}
 		/>
 	);
 };

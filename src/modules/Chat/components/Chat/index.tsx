@@ -1,4 +1,4 @@
-import { FC, ReactElement, RefObject } from "react";
+import { FC, Fragment, ReactElement, RefObject } from "react";
 
 // containers
 import Messages from "../../containers/Messages";
@@ -14,32 +14,39 @@ import styles from "./Chat.module.scss";
 import { EllipsisOutlined } from "@ant-design/icons";
 
 // types
-import { Status } from "../../../../store/slices/messagesSlice";
+import { Status } from "../../../../models/Status";
+
+// models
+import IUser from "../../../../models/IUser";
 
 type ChatProps = {
-	online?: boolean;
+	interlocutor: IUser | null;
 	status: Status;
 	messagesRef: RefObject<HTMLDivElement>;
 };
 
 const Chat: FC<ChatProps> = (props): ReactElement => {
-	const { online, status, messagesRef } = props;
+	const { interlocutor, status, messagesRef } = props;
 
 	return (
 		<div className={styles["chat"]}>
 			<div className={styles["chat__header"]}>
-				<div className={styles["chat__header-empty"]}></div>
-				<div className={styles["chat__header-info"]}>
-					<b className={styles["chat__header-title"]}>Непобедимый Майки</b>
-					<div
-						className={cn(styles["chat__header-status"], {
-							[styles["chat__header-status_online"]]: online,
-						})}
-					>
-						<span className={styles["status"]}>{online ? "онлайн" : "офлайн"}</span>
-					</div>
-				</div>
-				<EllipsisOutlined className={styles["icon"]} />
+				{interlocutor ? (
+					<Fragment>
+						<div className={styles["chat__header-empty"]}></div>
+						<div className={styles["chat__header-info"]}>
+							<b className={styles["chat__header-title"]}>{interlocutor.fullName}</b>
+							<div
+								className={cn(styles["chat__header-status"], {
+									[styles["chat__header-status_online"]]: interlocutor.isOnline,
+								})}
+							>
+								<span className={styles["status"]}>{interlocutor.isOnline ? "онлайн" : "офлайн"}</span>
+							</div>
+						</div>
+						<EllipsisOutlined className={styles["icon"]} />
+					</Fragment>
+				) : null}
 			</div>
 
 			<div className={styles["chat__messages"]} ref={messagesRef}>

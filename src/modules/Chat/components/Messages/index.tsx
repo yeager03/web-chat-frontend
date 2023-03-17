@@ -13,13 +13,14 @@ import { Empty, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 // components
-import Message from "../Message";
+import Message from "../../containers/Message";
 
 // types
-import { Message as MessageItem, Status } from "../../../../store/slices/messagesSlice";
+import { Status } from "../../../../models/Status";
+import IMessage from "../../../../models/IMessage";
 
 type MessagesProps = {
-	messages: MessageItem[];
+	messages: IMessage[];
 	status: Status;
 };
 

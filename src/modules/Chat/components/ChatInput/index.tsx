@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, ReactElement, useState } from "react";
+import { ChangeEvent, FC, ReactElement, useState, KeyboardEvent, Ref, LegacyRef } from "react";
 
 // antd components
 import { Input, Upload, message } from "antd";
@@ -12,15 +12,14 @@ import cn from "classnames";
 // icons
 import { SmileOutlined, AudioOutlined, CameraOutlined, SendOutlined } from "@ant-design/icons";
 
-// types
-import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-
 // emoji
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
 // types
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { Emoji } from "../../containers/ChatInput";
+import type { InputRef } from "antd";
 
 type ChatInputProps = {
 	messageValue: string;
@@ -28,6 +27,10 @@ type ChatInputProps = {
 	handleChangeSearchValue: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleClickShowEmojis: () => void;
 	handleClickEmoji: (emoji: Emoji) => void;
+	handleKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+	sendMessage: () => void;
+	inputRef: Ref<InputRef>;
+	smileRef: LegacyRef<HTMLDivElement>;
 };
 
 type FileListComponentProps = {
@@ -41,7 +44,17 @@ const FileListComponent: FC<FileListComponentProps> = (props): ReactElement => {
 };
 
 const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
-	const { messageValue, showEmojis, handleChangeSearchValue, handleClickShowEmojis, handleClickEmoji } = props;
+	const {
+		messageValue,
+		showEmojis,
+		handleChangeSearchValue,
+		handleClickShowEmojis,
+		handleClickEmoji,
+		handleKeyDown,
+		sendMessage,
+		inputRef,
+		smileRef,
+	} = props;
 
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [uploading, setUploading] = useState(false);
@@ -89,7 +102,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 	};
 
 	return (
-		<div className={styles["chat-input"]}>
+		<div className={styles["chat-input"]} ref={smileRef}>
 			<div className={styles["chat-input__emoji"]}>
 				{showEmojis && <Picker data={data} onEmojiSelect={handleClickEmoji} theme="light" locale="ru" />}
 			</div>
@@ -99,17 +112,22 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 				}
 				addonAfter={
 					<div className={styles["input__actions"]}>
-						<AudioOutlined className={cn(styles["icon"], styles["smile-audio"])} />
 						<Upload {...uploadProps} className={cn(styles["icon"], styles["smile-camera"])}>
 							<CameraOutlined />
 						</Upload>
-						<SendOutlined className={cn(styles["icon"], styles["smile-send"])} />
+						{messageValue.trim() ? (
+							<SendOutlined className={cn(styles["icon"], styles["smile-send"])} onClick={sendMessage} />
+						) : (
+							<AudioOutlined className={cn(styles["icon"], styles["smile-audio"])} />
+						)}
 					</div>
 				}
 				size="large"
 				value={messageValue}
 				onChange={handleChangeSearchValue}
+				onKeyDown={handleKeyDown}
 				className={styles["input"]}
+				ref={inputRef}
 			/>
 		</div>
 	);

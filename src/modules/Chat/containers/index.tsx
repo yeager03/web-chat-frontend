@@ -4,12 +4,25 @@ import { useSelector } from "react-redux";
 // components
 import BaseChat from "../components/Chat";
 
-// selector
-import { messagesSelector } from "../../../store/slices/messagesSlice";
+// hook
+import useAuth from "../../../hooks/useAuth";
+
+// selectors
+import { messageSelector } from "../../../store/slices/message/messageSlice";
+import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 const Chat: FC = (): ReactElement => {
-	const { status, messages } = useSelector(messagesSelector);
-	const online = false;
+	const { status, messages } = useSelector(messageSelector);
+	const { currentDialogue } = useSelector(dialogueSelector);
+	const { user } = useAuth();
+
+	let interlocutor = null;
+
+	if (currentDialogue?.author._id === user?._id) {
+		interlocutor = currentDialogue?.interlocutor;
+	} else {
+		interlocutor = currentDialogue?.author;
+	}
 
 	const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +34,7 @@ const Chat: FC = (): ReactElement => {
 		}
 	}, [messages]);
 
-	return <BaseChat online={online} status={status} messagesRef={messagesRef} />;
+	return <BaseChat interlocutor={interlocutor ? interlocutor : null} status={status} messagesRef={messagesRef} />;
 };
 
 export default Chat;
