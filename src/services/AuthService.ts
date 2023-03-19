@@ -4,6 +4,12 @@ import $api from "../core/axios";
 // types
 import AuthResponse from "../models/response/AuthResponse";
 
+interface ActivateResponse {
+	status: string;
+	message: string;
+	email?: string;
+}
+
 export default class AuthService {
 	public static async signIn(email: string, password: string): Promise<AxiosResponse<AuthResponse>> {
 		return $api.post<AuthResponse>("/user/signin", { email, password });
@@ -14,6 +20,18 @@ export default class AuthService {
 	}
 
 	public static async logout(): Promise<AxiosResponse<void>> {
-		return $api.post("/logout");
+		return $api.post("/user/logout");
+	}
+
+	public static async activateAccount(activationId: string): Promise<AxiosResponse<ActivateResponse>> {
+		return $api.get(`/user/activate/${activationId}`);
+	}
+
+	public static async resetPassword(email: string): Promise<AxiosResponse<AuthResponse>> {
+		return $api.get(`/user/password/reset/${email}`);
+	}
+
+	public static async againSendActivateMail(email: string): Promise<AxiosResponse<AuthResponse>> {
+		return $api.get(`/user/mail/again/${email}`);
 	}
 }

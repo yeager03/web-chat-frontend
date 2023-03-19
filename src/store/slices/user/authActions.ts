@@ -40,14 +40,14 @@ export const signUp = createAsyncThunk<void, SignUpData, { rejectValue: string }
 			const { status, message }: AuthResponse = response.data;
 
 			if (status === "success") {
-				getNotification("Успех", message, status);
+				getNotification(message, "success");
 			}
 		} catch (error: any) {
 			if (error.response && error.response.data) {
 				const { status, message } = error.response.data;
 
 				if (status === "error") {
-					getNotification("Ошибка при регистрации", message, status);
+					getNotification(message, "error");
 				}
 
 				return thunkApi.rejectWithValue(message);
@@ -68,7 +68,7 @@ export const signIn = createAsyncThunk<AuthReturnData, SignInData, { rejectValue
 			localStorage.setItem("token", accessToken);
 
 			if (status === "success") {
-				getNotification("Успех", message, status);
+				getNotification(message, "success");
 			}
 
 			return { accessToken, user };
@@ -77,7 +77,7 @@ export const signIn = createAsyncThunk<AuthReturnData, SignInData, { rejectValue
 				const { status, message } = error.response.data;
 
 				if (status === "error") {
-					getNotification("Ошибка при авторизации", message, status);
+					getNotification(message, "error");
 				}
 
 				return thunkApi.rejectWithValue(message);
@@ -99,7 +99,7 @@ export const logOut = createAsyncThunk<void, undefined, { rejectValue: string }>
 				const { status, message } = error.response.data;
 
 				if (status === "error") {
-					getNotification("Ошибка при выходе из аккаунта", message, status);
+					getNotification(message, "error");
 				}
 
 				return thunkApi.rejectWithValue(message);

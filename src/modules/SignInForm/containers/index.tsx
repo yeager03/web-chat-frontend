@@ -1,4 +1,4 @@
-import { FC, ReactElement } from "react";
+import { FC, ReactElement, useState } from "react";
 import { useAppDispatch } from "../../../store";
 
 // components
@@ -25,6 +25,8 @@ export type SignInValues = {
 };
 
 const SignInForm: FC = (): ReactElement => {
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+
 	const { status } = useAuth();
 	const dispatch = useAppDispatch();
 
@@ -53,8 +55,14 @@ const SignInForm: FC = (): ReactElement => {
 		onSubmit: (values) => {
 			const data = getTrimmedFields(values) as SignInValues;
 			dispatch(signIn(data));
+
+			values.password = "";
 		},
 	});
+
+	const handleClickShowPassword = () => {
+		setShowPassword(!showPassword);
+	};
 
 	return (
 		<BaseSignInForm
@@ -62,9 +70,11 @@ const SignInForm: FC = (): ReactElement => {
 			touched={formik.touched}
 			errors={formik.errors}
 			isSubmitting={status === "loading" ? true : false}
+			showPassword={showPassword}
 			handleChange={formik.handleChange}
 			handleBlur={formik.handleBlur}
 			handleSubmit={formik.handleSubmit}
+			handleClickShowPassword={handleClickShowPassword}
 		/>
 	);
 };

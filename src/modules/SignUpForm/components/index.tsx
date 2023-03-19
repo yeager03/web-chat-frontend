@@ -1,16 +1,16 @@
 import { FC, ReactElement, Fragment, ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 
-// classnames
-import cn from "classnames";
+// mui components
+import { TextField, Typography, IconButton, InputAdornment, Box } from "@mui/material";
+
+// mui icons
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import MarkEmailUnreadRoundedIcon from "@mui/icons-material/MarkEmailUnreadRounded";
 
 // components
-import { Form, Input } from "antd";
 import Button from "../../../components/Button";
-import ShadowWrap from "../../../components/ShadowWrap";
-
-// icons
-import { MailOutlined, UserOutlined, LockOutlined, InfoCircleTwoTone } from "@ant-design/icons";
 
 // styles
 import styles from "./SignUpForm.module.scss";
@@ -25,122 +25,197 @@ type SignUpFormProps = {
 	errors: FormikErrors<SignUpValues>;
 	isSubmitting: boolean;
 	success: boolean;
+	showPassword: boolean;
 	handleChange: (e: ChangeEvent<any>) => void;
 	handleBlur: (e: any) => void;
 	handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+	handleClickShowPassword: () => void;
 };
 
 const SignUpForm: FC<SignUpFormProps> = (props): ReactElement => {
-	const { values, touched, errors, isSubmitting, success, handleChange, handleBlur, handleSubmit } = props;
+	const {
+		values,
+		touched,
+		errors,
+		isSubmitting,
+		success,
+		showPassword,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		handleClickShowPassword,
+	} = props;
+
+	if (success) {
+		return (
+			<Box className={styles["auth__activation"]}>
+				<MarkEmailUnreadRoundedIcon sx={{ fontSize: 80 }} />
+				<Typography variant="h2">Подтвердите свой аккаунт</Typography>
+				<Typography>На вашу почту было отправлено письмо с ссылкой на подтверждение аккаунта.</Typography>
+			</Box>
+		);
+	}
 
 	return (
 		<Fragment>
-			<div className={styles["auth__top"]}>
-				<h2>Регистрация</h2>
-				<p>Для входа в чат, вам нужно зарегистрироваться</p>
-			</div>
+			<Box className={styles["auth__top"]}>
+				<Typography variant="h2">Регистрация аккаунта</Typography>
+				<Box className={styles["auth__top-link"]}>
+					<Typography>У вас уже есть аккаунт?</Typography>
+					<Link to="/auth/signin">Войти в аккаунт</Link>
+				</Box>
+			</Box>
+			<form className={styles["auth__form"]} onSubmit={handleSubmit}>
+				<Box className={styles["auth__form-fullName"]}>
+					<TextField
+						fullWidth
+						id={`${!touched["name"] ? "outlined-name" : errors["name"] ? "outlined-error" : "outlined-name"}`}
+						type="text"
+						label="Имя"
+						name="name"
+						error={!touched["name"] ? false : errors["name"] ? true : false}
+						helperText={!touched["name"] ? " " : errors["name"] ? errors["name"] : " "}
+						value={values["name"]}
+						onChange={handleChange}
+						onBlur={handleBlur}
+						sx={{
+							"& fieldset": {
+								borderRadius: "8px",
+							},
+						}}
+						FormHelperTextProps={{
+							sx: {
+								margin: 0,
+								marginLeft: "5px",
+								fontWeight: 600,
+								height: "15px",
+								opacity: !touched["name"] ? 0 : errors["name"] ? 1 : 0,
+								transition: "opacity .25s ease-out",
+							},
+						}}
+					/>
 
-			<ShadowWrap
-				className={success ? cn(styles["auth__form"], styles["auth__form_success"]) : styles["auth__form"]}
-			>
-				{!success ? (
-					<Form className={styles["form"]} onFinish={handleSubmit} initialValues={values}>
-						<Form.Item
-							name="email"
-							validateStatus={!touched["email"] ? "" : errors["email"] ? "error" : "success"}
-							help={!touched["email"] ? "" : errors["email"]}
-							hasFeedback
-							style={{ marginBottom: 30 }}
-						>
-							<Input
-								type="email"
-								prefix={<MailOutlined className="site-form-item-icon" style={{ opacity: 0.4 }} />}
-								placeholder="Email"
-								size="large"
-								className={styles["form__input"]}
-								value={values["email"]}
-								onChange={handleChange}
-								onBlur={handleBlur}
-								autoComplete="false"
-							/>
-						</Form.Item>
+					<TextField
+						fullWidth
+						id={`${
+							!touched["surname"]
+								? "outlined-surname"
+								: errors["surname"]
+								? "outlined-error"
+								: "outlined-surname"
+						}`}
+						type="text"
+						label="Фамилия"
+						name="surname"
+						error={!touched["surname"] ? false : errors["surname"] ? true : false}
+						helperText={!touched["surname"] ? " " : errors["surname"] ? errors["surname"] : " "}
+						value={values["surname"]}
+						onChange={handleChange}
+						onBlur={handleBlur}
+						sx={{
+							"& fieldset": {
+								borderRadius: "8px",
+							},
+						}}
+						FormHelperTextProps={{
+							sx: {
+								margin: 0,
+								marginLeft: "5px",
+								fontWeight: 600,
+								height: "15px",
+								opacity: !touched["surname"] ? 0 : errors["surname"] ? 1 : 0,
+								transition: "opacity .25s ease-out",
+							},
+						}}
+					/>
+				</Box>
 
-						<Form.Item
-							name="fullName"
-							validateStatus={!touched["fullName"] ? "" : errors["fullName"] ? "error" : "success"}
-							help={!touched["fullName"] ? "" : errors["fullName"]}
-							hasFeedback
-							style={{ marginBottom: 30 }}
-						>
-							<Input
-								type="text"
-								prefix={<UserOutlined className="site-form-item-icon" style={{ opacity: 0.4 }} />}
-								placeholder="Полное имя"
-								size="large"
-								className={styles["form__input"]}
-								value={values["fullName"]}
-								onChange={handleChange}
-								onBlur={handleBlur}
-								autoComplete="false"
-							/>
-						</Form.Item>
+				<TextField
+					fullWidth
+					id={`${!touched["email"] ? "outlined-email" : errors["email"] ? "outlined-error" : "outlined-email"}`}
+					type="email"
+					label="Email"
+					name="email"
+					error={!touched["email"] ? false : errors["email"] ? true : false}
+					helperText={!touched["email"] ? " " : errors["email"] ? errors["email"] : " "}
+					value={values["email"]}
+					onChange={handleChange}
+					onBlur={handleBlur}
+					sx={{
+						"& fieldset": {
+							borderRadius: "8px",
+						},
 
-						<Form.Item
-							name="password"
-							validateStatus={!touched["password"] ? "" : errors["password"] ? "error" : "success"}
-							help={!touched["password"] ? "" : errors["password"]}
-							hasFeedback
-							style={{ marginBottom: 30 }}
-						>
-							<Input
-								type="password"
-								prefix={<LockOutlined className="site-form-item-icon" style={{ opacity: 0.4 }} />}
-								placeholder="Пароль"
-								size="large"
-								className={styles["form__input"]}
-								value={values["password"]}
-								onChange={handleChange}
-								onBlur={handleBlur}
-								autoComplete="false"
-							/>
-						</Form.Item>
+						marginBottom: "10px",
+					}}
+					FormHelperTextProps={{
+						sx: {
+							margin: 0,
+							marginLeft: "5px",
+							fontWeight: 600,
+							height: "15px",
+							opacity: !touched["email"] ? 0 : errors["email"] ? 1 : 0,
+							transition: "opacity .25s ease-out",
+						},
+					}}
+				/>
 
-						<Form.Item
-							name="confirmPassword"
-							validateStatus={!touched["confirmPassword"] ? "" : errors["confirmPassword"] ? "error" : "success"}
-							help={!touched["confirmPassword"] ? "" : errors["confirmPassword"]}
-							hasFeedback
-							style={{ marginBottom: 30 }}
-						>
-							<Input
-								type="password"
-								prefix={<LockOutlined className="site-form-item-icon" style={{ opacity: 0.4 }} />}
-								placeholder="Повторите пароль"
-								size="large"
-								className={styles["form__input"]}
-								value={values["confirmPassword"]}
-								onChange={handleChange}
-								onBlur={handleBlur}
-								autoComplete="false"
-							/>
-						</Form.Item>
+				<TextField
+					fullWidth
+					id={`${
+						!touched["password"]
+							? "outlined-password"
+							: errors["password"]
+							? "outlined-error"
+							: "outlined-password"
+					}`}
+					type={showPassword ? "text" : "password"}
+					label="Пароль"
+					name="password"
+					error={!touched["password"] ? false : errors["password"] ? true : false}
+					helperText={!touched["password"] ? " " : errors["password"] ? errors["password"] : " "}
+					value={values["password"]}
+					onChange={handleChange}
+					onBlur={handleBlur}
+					sx={{
+						"& fieldset": {
+							borderRadius: "8px",
+						},
+						marginBottom: "10px",
+					}}
+					FormHelperTextProps={{
+						sx: {
+							margin: 0,
+							marginLeft: "5px",
+							fontWeight: 600,
+							height: "15px",
+							opacity: !touched["password"] ? 0 : errors["password"] ? 1 : 0,
+							transition: "opacity .25s ease-out",
+						},
+					}}
+					InputProps={{
+						endAdornment: values["password"] && (
+							<InputAdornment position="end">
+								<IconButton onClick={handleClickShowPassword} edge="end">
+									{showPassword ? <VisibilityOff /> : <Visibility />}
+								</IconButton>
+							</InputAdornment>
+						),
+					}}
+				/>
 
-						<Button disabled={isSubmitting} type="primary" htmlType="submit" className={styles["form__button"]}>
-							Зарегистрироваться
-						</Button>
-
-						<Link to="/auth/signin" className={styles["form__link"]}>
-							Войти в аккаунт
-						</Link>
-					</Form>
-				) : (
-					<Fragment>
-						<InfoCircleTwoTone style={{ fontSize: "50px" }} />
-						<h2>Подтвердите свой аккаунт</h2>
-						<p>На вашу почту было отправлено письмо с ссылкой на подтверждение аккаунта.</p>
-					</Fragment>
-				)}
-			</ShadowWrap>
+				<Button
+					loading={isSubmitting}
+					type="submit"
+					styles={{
+						padding: "10px 12px",
+						fontSize: 16,
+						letterSpacing: 0.5,
+					}}
+				>
+					Зарегистрироваться
+				</Button>
+			</form>
 		</Fragment>
 	);
 };

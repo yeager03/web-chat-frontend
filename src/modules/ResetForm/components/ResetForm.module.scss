@@ -6,31 +6,30 @@
 			font-size: 28px;
 		}
 
-		&-link {
-			display: flex;
-			align-items: center;
+		p {
 			margin-top: 20px;
+			font-size: 16px;
+			letter-spacing: 0.1px;
+			font-weight: 600;
 
-			p {
-				font-size: 16px;
-				letter-spacing: 0.1px;
-				font-weight: 600;
-
-				margin-right: 5px;
-
-				line-height: 1;
-			}
-
-			a {
-				color: #0162c4;
-
-				font-size: 16px;
-				letter-spacing: 0.1px;
-				font-weight: 600;
-
-				line-height: 1;
-			}
+			line-height: 1;
 		}
+
+		// &-link {
+		// 	display: flex;
+		// 	align-items: center;
+		// 	margin-top: 20px;
+
+		// 	a {
+		// 		color: #0162c4;
+
+		// 		font-size: 16px;
+		// 		letter-spacing: 0.1px;
+		// 		font-weight: 600;
+
+		// 		line-height: 1;
+		// 	}
+		// }
 	}
 
 	&__form {

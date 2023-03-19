@@ -1,10 +1,16 @@
 @import "libs/normalize";
 @import "components/all";
+
 * {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 	outline: none;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
 }
 
 h1,
@@ -29,13 +35,13 @@ body,
 #root,
 .wrapper {
 	height: 100%;
-	color: $black;
 }
 
 body {
-	background-color: #f4f7fd;
-	font-family: "Roboto", sans-serif;
+	font-family: "Manrope", sans-serif;
+	font-weight: 400;
 	font-size: 14px;
+	color: $black;
 
 	overflow: hidden;
 }

@@ -1,0 +1,28 @@
+.auth {
+	&__activation {
+		text-align: center;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+
+		p {
+			margin-top: 5px;
+			letter-spacing: 0.1px;
+			font-size: 20px;
+			font-weight: 600;
+		}
+
+		&-link {
+			color: #0162c4;
+			margin-top: 10px;
+
+			font-size: 16px;
+			letter-spacing: 0.1px;
+			font-weight: 600;
+
+			line-height: 1;
+		}
+	}
+}

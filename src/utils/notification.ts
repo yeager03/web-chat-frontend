@@ -1,11 +1,10 @@
-// antds components
-import { notification } from "antd";
+import { VariantType, enqueueSnackbar } from "notistack";
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default (title: string, description: string, type: string = "info", duration: number = 3) => {
-	if (type === "success" || type === "error") {
-		return notification[type]({ message: title, description, duration });
-	}
-
-	return notification["info"]({ message: title, description, duration });
-};
+export default (message: string, variant: VariantType) =>
+	enqueueSnackbar(message, {
+		variant,
+		autoHideDuration: 5000,
+		disableWindowBlurListener: true,
+		anchorOrigin: { horizontal: "right", vertical: "top" },
+	});

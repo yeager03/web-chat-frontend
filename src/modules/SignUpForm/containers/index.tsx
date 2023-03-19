@@ -1,4 +1,4 @@
-import { FC, ReactElement } from "react";
+import { FC, ReactElement, useState } from "react";
 import { useAppDispatch } from "../../../store";
 
 // components
@@ -20,22 +20,24 @@ import useAuth from "../../../hooks/useAuth";
 import { signUp } from "../../../store/slices/user/authActions";
 
 export type SignUpValues = {
+	name: string;
+	surname: string;
 	email: string;
-	fullName: string;
 	password: string;
-	confirmPassword: string;
 };
 
 const SignInForm: FC = (): ReactElement => {
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+
 	const { status } = useAuth();
 	const dispatch = useAppDispatch();
 
 	const formik = useFormik({
 		initialValues: {
+			name: "",
+			surname: "",
 			email: "",
-			fullName: "",
 			password: "",
-			confirmPassword: "",
 		} as SignUpValues,
 		validate: (values: SignUpValues) => {
 			const errors: Record<string, string> = {};
@@ -48,10 +50,16 @@ const SignInForm: FC = (): ReactElement => {
 				errors["email"] = "Введите корректный email адрес";
 			}
 
-			if (data["fullName"] === "") {
-				errors["fullName"] = "Введите полное имя";
-			} else if (!fullName.test(data["fullName"])) {
-				errors["fullName"] = "Введите корректное полное имя";
+			if (data["name"] === "") {
+				errors["name"] = "Введите ваше имя";
+			} else if (!fullName.test(data["name"])) {
+				errors["name"] = "Введите корректное имя";
+			}
+
+			if (data["surname"] === "") {
+				errors["surname"] = "Введите вашу фамилию";
+			} else if (!fullName.test(data["surname"])) {
+				errors["surname"] = "Введите корректную фамилию";
 			}
 
 			if (data["password"] === "") {
@@ -60,30 +68,36 @@ const SignInForm: FC = (): ReactElement => {
 				errors["password"] = "Слишком легкий пароль";
 			}
 
-			if (data["confirmPassword"] === "") {
-				errors["confirmPassword"] = "Введите повторно пароль";
-			} else if (data["password"] !== data["confirmPassword"]) {
-				errors["confirmPassword"] = "Пароли не совпадают";
-			}
-
 			return errors;
 		},
 		onSubmit: (values) => {
 			const data = getTrimmedFields(values) as SignUpValues;
-			dispatch(signUp(data));
+			dispatch(
+				signUp({
+					email: data["email"],
+					fullName: `${data["name"]} ${data["surname"]}`,
+					password: data["password"],
+				})
+			);
 		},
 	});
+
+	const handleClickShowPassword = () => {
+		setShowPassword(!showPassword);
+	};
 
 	return (
 		<BaseSignUpForm
 			values={formik.values}
 			touched={formik.touched}
 			errors={formik.errors}
+			showPassword={showPassword}
 			isSubmitting={status === "loading" ? true : false}
 			success={status === "success" ? true : false}
 			handleChange={formik.handleChange}
 			handleBlur={formik.handleBlur}
 			handleSubmit={formik.handleSubmit}
+			handleClickShowPassword={handleClickShowPassword}
 		/>
 	);
 };

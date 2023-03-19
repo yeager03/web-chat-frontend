@@ -1,73 +1,73 @@
 .auth {
 	&__top {
-		text-align: center;
+		text-align: left;
 		h2 {
-			font-weight: 500;
+			font-weight: 700;
 			font-size: 28px;
 		}
-		p {
-			font-weight: 300;
-			margin-top: 10px;
-			font-size: 18px;
-			line-height: 20px;
-			letter-spacing: 0.1px;
-			opacity: 0.5;
+
+		&-link {
+			display: flex;
+			align-items: center;
+			margin-top: 20px;
+
+			p {
+				font-size: 16px;
+				letter-spacing: 0.1px;
+				font-weight: 600;
+
+				margin-right: 5px;
+
+				line-height: 1;
+			}
+
+			a {
+				color: #0162c4;
+
+				font-size: 16px;
+				letter-spacing: 0.1px;
+				font-weight: 600;
+
+				line-height: 1;
+			}
 		}
 	}
 
 	&__form {
-		margin-top: 50px;
+		margin-top: 30px;
 
-		&_success {
-			text-align: center;
-			height: 450px;
+		display: flex;
+		flex-direction: column;
 
+		&-fullName {
 			display: flex;
-			justify-content: center;
 			align-items: center;
-			flex-direction: column;
 
-			h2 {
-				font-weight: 500;
-				font-size: 20px;
-				margin-top: 20px;
+			& > div:first-child {
+				margin-right: 20px;
 			}
-			p {
-				margin-top: 10px;
-				font-weight: 300;
-				font-size: 14px;
-				line-height: 20px;
-				letter-spacing: 0.1px;
-				opacity: 0.7;
-			}
+
+			margin-bottom: 10px;
 		}
 	}
-}
 
-.form {
-	&__item {
-		margin-bottom: 20px !important;
-	}
-
-	&__input {
-		padding: 12px 10px;
-	}
-
-	&__button {
-		text-transform: uppercase;
-		width: 100%;
-		font-size: 14px;
-		font-weight: 500;
-		letter-spacing: 0.1px;
-	}
-
-	&__link {
-		display: block;
-		margin-top: 20px;
+	&__activation {
 		text-align: center;
-		color: #adadad;
-		font-size: 16px;
-		letter-spacing: 0.1px;
-		text-transform: uppercase;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+
+		h2 {
+			font-weight: 700;
+			font-size: 26px;
+			margin-top: 20px;
+		}
+		p {
+			margin-top: 10px;
+			letter-spacing: 0.1px;
+			font-weight: 600;
+		}
 	}
 }

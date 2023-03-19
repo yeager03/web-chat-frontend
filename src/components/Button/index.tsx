@@ -1,23 +1,42 @@
-import { FC, ReactElement } from "react";
-
-// classnames
-import cn from "classnames";
-
-// style
-import styles from "./Button.module.scss";
+import { FC, ReactElement, ReactNode, DetailedHTMLProps, ButtonHTMLAttributes } from "react";
 
 // component
-import { Button as BaseButton, ButtonProps } from "antd";
+import LoadingButton, { LoadingButtonProps } from "@mui/lab/LoadingButton";
 
-const Button: FC<
-	ButtonProps & {
-		className?: string;
-		disabled?: boolean;
-	}
-> = (props): ReactElement => {
-	const { className } = props;
+type ButtonProps = {
+	children: ReactNode;
+	disabled?: boolean;
+	loading?: boolean;
+	styles?: object;
+	size?: "large" | "small" | "medium";
+	type?: "button" | "submit" | "reset";
+} & LoadingButtonProps;
 
-	return <BaseButton {...props} className={cn(styles["button"], className)} />;
+const baseSxStyles = {
+	backgroundColor: "#212b36",
+	color: "#fff",
+	"&:hover": {
+		backgroundColor: "#212b36",
+		color: "#fff",
+	},
+};
+
+const Button: FC<ButtonProps> = (props): ReactElement => {
+	const { disabled, loading, children, size, type, styles } = props;
+
+	return (
+		<LoadingButton
+			disabled={disabled}
+			loading={loading}
+			type={type ? type : "button"}
+			variant="contained"
+			size={size ? size : "large"}
+			sx={{ ...baseSxStyles, ...styles }}
+			{...props}
+		>
+			{children}
+		</LoadingButton>
+	);
 };
 
 export default Button;

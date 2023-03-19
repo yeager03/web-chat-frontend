@@ -1,11 +1,12 @@
 import { FC, ReactElement, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAppDispatch } from "./store";
 
 // layout
 import Layout from "./layout";
 import PrivateLayout from "./layout/PrivateLayout";
 import PublicLayout from "./layout/PublicLayout";
+import ActivationLayout from "./layout/ActivationLayout";
 
 // pages
 import Home from "./pages/Home";
@@ -14,6 +15,7 @@ import Auth from "./pages/Auth";
 // modules
 import SignInForm from "./modules/SignInForm";
 import SignUpForm from "./modules/SignUpForm";
+import ActivationForm from "./modules/ActivationForm";
 
 // hooks
 import useAuth from "./hooks/useAuth";
@@ -34,17 +36,23 @@ const App: FC = (): ReactElement => {
 	return (
 		<Routes>
 			<Route path="/" element={<Layout />}>
-				<Route element={<PrivateLayout />}>
+				{/* <Route element={<PrivateLayout />}>
 					<Route index element={<Home />} />
 					<Route path="dialogue/:dialogueId" element={<Home />} />
-				</Route>
+				</Route> */}
 
 				<Route element={<PublicLayout />}>
 					<Route path="auth/*" element={<Auth />}>
 						<Route path="signin" element={<SignInForm />} />
 						<Route path="signup" element={<SignUpForm />} />
+						<Route path="activate/*" element={<ActivationLayout />}>
+							<Route path=":activationId" element={<ActivationForm />} />
+						</Route>
+						<Route path="reset/:resetId" element={<ActivationLayout />} />
 					</Route>
 				</Route>
+
+				<Route path="*" element={<h1>Not found</h1>} />
 			</Route>
 		</Routes>
 	);
