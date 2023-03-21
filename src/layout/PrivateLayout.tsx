@@ -8,7 +8,7 @@ const PrivateLayout: FC = (): ReactElement => {
 	const { isAuth } = useAuth();
 
 	if (!isAuth) {
-		return <Navigate to={"auth/signin"} replace />;
+		return <Navigate to={"/auth/signin"} replace />;
 	}
 
 	return <Outlet />;

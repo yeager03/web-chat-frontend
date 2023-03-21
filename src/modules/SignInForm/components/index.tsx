@@ -128,7 +128,7 @@ const SignInForm: FC<SignInFormProps> = (props): ReactElement => {
 					}}
 				/>
 
-				<Link to="/auth/reset" className={styles["auth__form-link"]}>
+				<Link to="/auth/password/reset" className={styles["auth__form-link"]}>
 					Забыли пароль?
 				</Link>
 

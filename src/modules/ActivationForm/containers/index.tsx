@@ -22,11 +22,11 @@ const ActivationForm: FC = (): ReactElement => {
 		message: "",
 		email: null,
 	});
-	const { activationId } = useParams();
+	const { id } = useParams();
 
 	useEffect(() => {
-		if (activationId) {
-			AuthService.activateAccount(activationId)
+		if (id) {
+			AuthService.activateAccount(id)
 				.then((response) => {
 					const { data } = response;
 					setActivationState({
@@ -42,21 +42,19 @@ const ActivationForm: FC = (): ReactElement => {
 	}, []);
 
 	const handleMailAgainClick = () => {
-		console.log(1);
-
 		if (activationState.email) {
 			AuthService.againSendActivateMail(activationState.email)
 				.then((response) => {
 					const { status, message } = response.data;
 
 					if (status === "success") {
-						getNotification(message, "success");
+						getNotification(message, status);
 					}
 				})
 				.catch(({ response }) => {
 					const { status, message } = response.data;
 					if (status === "error") {
-						getNotification(message, "error");
+						getNotification(message, status);
 					}
 				});
 		}

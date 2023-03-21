@@ -37,7 +37,7 @@ export const removeMessage = createAsyncThunk<string, string, { rejectValue: str
 			const { status, message }: IMessageResponse = response.data;
 
 			if (status === "success") {
-				getNotification(message, "success");
+				getNotification(message, status);
 			}
 
 			return messageId;
@@ -46,7 +46,7 @@ export const removeMessage = createAsyncThunk<string, string, { rejectValue: str
 				const { status, message } = error.response.data;
 
 				if (status === "error") {
-					getNotification(message, "error");
+					getNotification(message, status);
 				}
 
 				return thunkApi.rejectWithValue(message);

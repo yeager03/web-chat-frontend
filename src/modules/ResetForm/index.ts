@@ -1,3 +1,3 @@
-import SignInForm from "./containers";
+import ResetForm from "./containers";
 
-export default SignInForm;
+export default ResetForm;

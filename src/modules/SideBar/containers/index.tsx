@@ -43,7 +43,7 @@ const SideBar: FC = (): ReactElement => {
 				const { status }: DialogueResponse = data;
 
 				if (status === "success") {
-					getNotification("Сообщение было успешно доставлено", "success");
+					getNotification("Сообщение было успешно доставлено", status);
 				}
 
 				setIsModalOpen(false);

@@ -6,7 +6,7 @@ import { useAppDispatch } from "./store";
 import Layout from "./layout";
 import PrivateLayout from "./layout/PrivateLayout";
 import PublicLayout from "./layout/PublicLayout";
-import ActivationLayout from "./layout/ActivationLayout";
+import ActivationLayout from "./layout/ProtectedLayout";
 
 // pages
 import Home from "./pages/Home";
@@ -16,12 +16,15 @@ import Auth from "./pages/Auth";
 import SignInForm from "./modules/SignInForm";
 import SignUpForm from "./modules/SignUpForm";
 import ActivationForm from "./modules/ActivationForm";
+import ResetForm from "./modules/ResetForm";
 
 // hooks
 import useAuth from "./hooks/useAuth";
 
 // actions
 import { checkAuth } from "./store/slices/user/authActions";
+import NewPasswordForm from "./modules/NewPasswordForm";
+import ProtectedLayout from "./layout/ProtectedLayout";
 
 const App: FC = (): ReactElement => {
 	const { token } = useAuth();
@@ -45,10 +48,15 @@ const App: FC = (): ReactElement => {
 					<Route path="auth/*" element={<Auth />}>
 						<Route path="signin" element={<SignInForm />} />
 						<Route path="signup" element={<SignUpForm />} />
-						<Route path="activate/*" element={<ActivationLayout />}>
-							<Route path=":activationId" element={<ActivationForm />} />
+						<Route path="activate/*" element={<ProtectedLayout />}>
+							<Route path=":id" element={<ActivationForm />} />
 						</Route>
-						<Route path="reset/:resetId" element={<ActivationLayout />} />
+						<Route path="password/*">
+							<Route path="reset" element={<ResetForm />} />
+							<Route path="new/*" element={<ProtectedLayout />}>
+								<Route path=":id" element={<NewPasswordForm />} />
+							</Route>
+						</Route>
 					</Route>
 				</Route>
 

@@ -8,28 +8,12 @@
 
 		p {
 			margin-top: 20px;
-			font-size: 16px;
+			font-size: 15px;
 			letter-spacing: 0.1px;
 			font-weight: 600;
 
-			line-height: 1;
+			color: #637381;
 		}
-
-		// &-link {
-		// 	display: flex;
-		// 	align-items: center;
-		// 	margin-top: 20px;
-
-		// 	a {
-		// 		color: #0162c4;
-
-		// 		font-size: 16px;
-		// 		letter-spacing: 0.1px;
-		// 		font-weight: 600;
-
-		// 		line-height: 1;
-		// 	}
-		// }
 	}
 
 	&__form {
@@ -39,13 +23,11 @@
 		flex-direction: column;
 
 		&-link {
-			text-align: right;
-			margin-bottom: 20px;
-
 			font-size: 16px;
 			letter-spacing: 0.1px;
 			font-weight: 600;
 
+			line-height: 1;
 			text-decoration: underline;
 		}
 	}

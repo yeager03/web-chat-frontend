@@ -27,11 +27,22 @@ export default class AuthService {
 		return $api.get(`/user/activate/${activationId}`);
 	}
 
+	public static async againSendActivateMail(email: string): Promise<AxiosResponse<AuthResponse>> {
+		return $api.get(`/user/mail/again/${email}`);
+	}
+
 	public static async resetPassword(email: string): Promise<AxiosResponse<AuthResponse>> {
 		return $api.get(`/user/password/reset/${email}`);
 	}
 
-	public static async againSendActivateMail(email: string): Promise<AxiosResponse<AuthResponse>> {
-		return $api.get(`/user/mail/again/${email}`);
+	public static async newPassword(
+		passwordResetId: string,
+		password: string = ""
+	): Promise<AxiosResponse<AuthResponse>> {
+		if (password) {
+			return $api.post(`/user/password/new/${passwordResetId}`, { password });
+		}
+
+		return $api.get(`/user/password/new/${passwordResetId}`);
 	}
 }

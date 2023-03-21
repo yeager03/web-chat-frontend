@@ -45,7 +45,6 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 				<Typography>{message}</Typography>
 				<Button
 					onClick={() => {
-						console.log(1);
 						handleMailAgainClick();
 					}}
 					styles={{ marginTop: "10px" }}
@@ -60,9 +59,11 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 			<Fragment>
 				<CheckCircleRoundedIcon sx={{ fontSize: 90, color: "#52C41A" }} />
 				<Typography>{message}</Typography>
-				<Link to="/auth/signin" className={styles["auth__activation-link"]}>
-					Войти в аккаунт
-				</Link>
+				<Button styles={{ marginTop: "10px" }}>
+					<Link to="/auth/signin" className={styles["auth__activation-link"]}>
+						Войти в аккаунт
+					</Link>
+				</Button>
 			</Fragment>
 		) : null;
 

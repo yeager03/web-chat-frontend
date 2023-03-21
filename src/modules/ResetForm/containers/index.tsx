@@ -9,6 +9,9 @@ import { useFormik } from "formik";
 // patterns
 import getPatterns from "../../../utils/validationPatterns";
 
+// notification
+import getNotification from "../../../utils/notification";
+
 // service
 import AuthService from "../../../services/AuthService";
 
@@ -37,6 +40,25 @@ const ResetForm: FC = (): ReactElement => {
 		onSubmit: (values, { setSubmitting }) => {
 			const email = values["email"].trim();
 			setSubmitting(true);
+
+			AuthService.resetPassword(email)
+				.then(({ data }) => {
+					const { message, status } = data;
+
+					if (status === "success") {
+						getNotification(message, status);
+					}
+				})
+				.catch(({ response }) => {
+					const { status, message } = response.data;
+
+					if (status === "error") {
+						getNotification(message, status);
+					}
+				})
+				.finally(() => {
+					setSubmitting(false);
+				});
 		},
 	});
 
