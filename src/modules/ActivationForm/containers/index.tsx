@@ -1,5 +1,5 @@
 import { FC, ReactElement, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 // components
 import BaseActivationForm from "../components";
@@ -17,6 +17,7 @@ interface IActivationState {
 }
 
 const ActivationForm: FC = (): ReactElement => {
+	const [isValidUrl, setValidUrl] = useState<boolean>(true);
 	const [activationState, setActivationState] = useState<IActivationState>({
 		status: "loading",
 		message: "",
@@ -26,20 +27,30 @@ const ActivationForm: FC = (): ReactElement => {
 
 	useEffect(() => {
 		if (id) {
-			AuthService.activateAccount(id)
-				.then((response) => {
-					const { data } = response;
-					setActivationState({
-						...activationState,
-						...(data as IActivationState),
+			if (!/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(id)) {
+				setValidUrl(false);
+			} else {
+				AuthService.activateAccount(id)
+					.then((response) => {
+						const { data } = response;
+						setActivationState({
+							...activationState,
+							...(data as IActivationState),
+						});
+					})
+					.catch((error) => {
+						const { response } = error;
+						setActivationState(response.data);
 					});
-				})
-				.catch((error) => {
-					const { response } = error;
-					setActivationState(response.data);
-				});
+			}
+		} else {
+			setValidUrl(false);
 		}
 	}, []);
+
+	if (!isValidUrl) {
+		return <Navigate to={"/auth/signin"} replace />;
+	}
 
 	const handleMailAgainClick = () => {
 		if (activationState.email) {

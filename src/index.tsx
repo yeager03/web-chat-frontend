@@ -5,6 +5,7 @@ import { ThemeProvider } from "@mui/material";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
+import { StyledEngineProvider } from "@mui/material/styles";
 
 // styles
 import "./assets/scss/index.scss";
@@ -25,7 +26,9 @@ root.render(
 		<Provider store={store}>
 			<BrowserRouter>
 				<SnackbarProvider maxSnack={1}>
-					<App />
+					<StyledEngineProvider injectFirst>
+						<App />
+					</StyledEngineProvider>
 				</SnackbarProvider>
 			</BrowserRouter>
 		</Provider>

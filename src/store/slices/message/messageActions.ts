@@ -8,7 +8,7 @@ import getNotification from "../../../utils/notification";
 
 // types
 import IMessage from "../../../models/IMessage";
-import IMessagesResponse, { IMessageResponse } from "../../../models/response/MessageResponse";
+import MessagesResponse, { MessageResponse } from "../../../models/response/MessageResponse";
 
 type CreateMessage = {
 	message: string;
@@ -17,7 +17,7 @@ type CreateMessage = {
 
 export const getMessages = createAsyncThunk<IMessage[], string>("message/getMessages", async (currentDialogueId) => {
 	const response = await MessageService.getMessages(currentDialogueId);
-	const { messages }: IMessagesResponse = response.data;
+	const { messages }: MessagesResponse = response.data;
 
 	return messages;
 });
@@ -34,7 +34,7 @@ export const removeMessage = createAsyncThunk<string, string, { rejectValue: str
 	async (messageId, thunkApi) => {
 		try {
 			const response = await MessageService.removeMessage(messageId);
-			const { status, message }: IMessageResponse = response.data;
+			const { status, message }: MessageResponse = response.data;
 
 			if (status === "success") {
 				getNotification(message, status);

@@ -80,8 +80,6 @@ const ChatInput: FC = (): ReactElement => {
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-		socket.emit("typing", true);
-
 		if (e.key === "Enter" && messageValue.trim()) {
 			sendMessage();
 		}
@@ -106,7 +104,7 @@ const ChatInput: FC = (): ReactElement => {
 			handleClickEmoji={handleClickEmoji}
 			handleKeyDown={handleKeyDown}
 			sendMessage={sendMessage}
-			inputRef={inputRef}
+			inputRef={null}
 			smileRef={smileRef}
 		/>
 	);

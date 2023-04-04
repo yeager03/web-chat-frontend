@@ -1,99 +1,32 @@
-import { FC, ReactElement, useState, ChangeEvent } from "react";
+import { FC, ReactElement } from "react";
+import { useSelector } from "react-redux";
 
 // components
-import BaseSideBar from "../components/SideBar";
+import BaseSideBar from "../components";
 
-// utils
-import getNotification from "../../../utils/notification";
+// dispatch
+import { useAppDispatch } from "../../../store";
 
-// services
-import UserService from "../../../services/UserService";
-import DialogueService from "../../../services/DialogueService";
+// actions
+import { logOut } from "../../../store/slices/user/authActions";
 
-// types
-import UserResponse from "../../../models/response/UserResponse";
-import DialogueResponse from "../../../models/response/DialogueResponse";
+// hooks
+import useAuth from "../../../hooks/useAuth";
 
-interface IDialogueState {
-	email: string;
-	message: string;
-}
+// selector
+import { friendSelector } from "../../../store/slices/friend/friendSlice";
 
 const SideBar: FC = (): ReactElement => {
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [isLoading, setLoading] = useState<boolean>(false);
+	const { user } = useAuth();
+	const { requestsLength } = useSelector(friendSelector);
 
-	const [dialogueState, setDialogueState] = useState<IDialogueState>({
-		email: "",
-		message: "",
-	});
+	const dispatch = useAppDispatch();
 
-	const showModal = () => {
-		setIsModalOpen(true);
+	const logout = () => {
+		dispatch(logOut());
 	};
 
-	const handleOk = async () => {
-		setLoading(true);
-		try {
-			const { data } = await UserService.findUserByEmail(dialogueState.email);
-			const { user }: UserResponse = data;
-
-			if (user) {
-				const { data } = await DialogueService.createDialogue(user._id, dialogueState.message);
-				const { status }: DialogueResponse = data;
-
-				if (status === "success") {
-					getNotification("Сообщение было успешно доставлено", status);
-				}
-
-				setIsModalOpen(false);
-			}
-		} catch (error: any) {
-			const { message } = error.response.data;
-
-			if (message) {
-				getNotification(message, "error");
-			} else {
-				getNotification("Что-то пошло не так...", "error");
-			}
-		}
-		setLoading(false);
-	};
-
-	const handleCancel = () => {
-		setDialogueState({
-			email: "",
-			message: "",
-		});
-		setIsModalOpen(false);
-	};
-
-	const handleChangeValue = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		if (e.target.tagName === "INPUT") {
-			setDialogueState({
-				...dialogueState,
-				email: e.target.value,
-			});
-		} else {
-			setDialogueState({
-				...dialogueState,
-				message: e.target.value,
-			});
-		}
-	};
-
-	return (
-		<BaseSideBar
-			isModalOpen={isModalOpen}
-			isLoading={isLoading}
-			emailValue={dialogueState.email}
-			messageValue={dialogueState.message}
-			showModal={showModal}
-			handleOk={handleOk}
-			handleCancel={handleCancel}
-			handleChangeValue={handleChangeValue}
-		/>
-	);
+	return <BaseSideBar user={user} logout={logout} requestsLength={requestsLength} />;
 };
 
 export default SideBar;

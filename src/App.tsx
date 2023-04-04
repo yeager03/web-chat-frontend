@@ -3,10 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAppDispatch } from "./store";
 
 // layout
-import Layout from "./layout";
-import PrivateLayout from "./layout/PrivateLayout";
-import PublicLayout from "./layout/PublicLayout";
-import ActivationLayout from "./layout/ProtectedLayout";
+import HomeLayout from "./layouts/HomeLayout";
+import AuthLayout from "./layouts/AuthLayout";
 
 // pages
 import Home from "./pages/Home";
@@ -17,6 +15,8 @@ import SignInForm from "./modules/SignInForm";
 import SignUpForm from "./modules/SignUpForm";
 import ActivationForm from "./modules/ActivationForm";
 import ResetForm from "./modules/ResetForm";
+import Dialogues from "./modules/Dialogues";
+import Friends from "./modules/Friends";
 
 // hooks
 import useAuth from "./hooks/useAuth";
@@ -24,7 +24,6 @@ import useAuth from "./hooks/useAuth";
 // actions
 import { checkAuth } from "./store/slices/user/authActions";
 import NewPasswordForm from "./modules/NewPasswordForm";
-import ProtectedLayout from "./layout/ProtectedLayout";
 
 const App: FC = (): ReactElement => {
 	const { token } = useAuth();
@@ -38,29 +37,29 @@ const App: FC = (): ReactElement => {
 
 	return (
 		<Routes>
-			<Route path="/" element={<Layout />}>
-				{/* <Route element={<PrivateLayout />}>
-					<Route index element={<Home />} />
-					<Route path="dialogue/:dialogueId" element={<Home />} />
-				</Route> */}
+			<Route element={<HomeLayout />}>
+				<Route path="/*" element={<Home />}>
+					<Route element={<Navigate to="/dialogues" replace />} index />
 
-				<Route element={<PublicLayout />}>
-					<Route path="auth/*" element={<Auth />}>
-						<Route path="signin" element={<SignInForm />} />
-						<Route path="signup" element={<SignUpForm />} />
-						<Route path="activate/*" element={<ProtectedLayout />}>
-							<Route path=":id" element={<ActivationForm />} />
-						</Route>
-						<Route path="password/*">
-							<Route path="reset" element={<ResetForm />} />
-							<Route path="new/*" element={<ProtectedLayout />}>
-								<Route path=":id" element={<NewPasswordForm />} />
-							</Route>
-						</Route>
-					</Route>
+					<Route path="dialogues/:dialogueId?" element={<Dialogues />} />
+					<Route path="friends" element={<Friends />} />
+
+					<Route path="*" element={<h1>Not found 404</h1>} />
 				</Route>
+			</Route>
 
-				<Route path="*" element={<h1>Not found</h1>} />
+			<Route element={<AuthLayout />}>
+				<Route path="auth/*" element={<Auth />}>
+					<Route path="signin" element={<SignInForm />} />
+					<Route path="signup" element={<SignUpForm />} />
+
+					<Route path="activate/:id" element={<ActivationForm />} />
+
+					<Route path="password/reset" element={<ResetForm />} />
+					<Route path="password/new/:id" element={<NewPasswordForm />} />
+
+					<Route path="*" element={<Navigate to="/auth/signin" replace />} />
+				</Route>
 			</Route>
 		</Routes>
 	);

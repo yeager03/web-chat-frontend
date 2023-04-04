@@ -32,13 +32,16 @@ img {
 
 html,
 body,
-#root,
-.wrapper {
+#root {
 	height: 100%;
 }
 
+#root {
+	padding: 0 10px;
+}
+
 body {
-	font-family: "Manrope", sans-serif;
+	font-family: "Exo 2", sans-serif;
 	font-weight: 400;
 	font-size: 14px;
 	color: $black;

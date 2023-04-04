@@ -1,5 +1,5 @@
 import { FC, ReactElement, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
 
 // components
 import BaseNewPasswordForm from "../components";
@@ -30,6 +30,7 @@ export interface INewPasswordState {
 }
 
 const NewPasswordForm: FC = (): ReactElement => {
+	const [isValidUrl, setValidUrl] = useState<boolean>(true);
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [newPasswordState, setNewPasswordState] = useState<INewPasswordState>({
 		status: "loading",
@@ -41,17 +42,23 @@ const NewPasswordForm: FC = (): ReactElement => {
 
 	useEffect(() => {
 		if (id) {
-			AuthService.newPassword(id)
-				.then(({ data }) => {
-					setNewPasswordState({
-						...newPasswordState,
-						...(data as INewPasswordState),
+			if (!/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(id)) {
+				setValidUrl(false);
+			} else {
+				AuthService.newPassword(id)
+					.then(({ data }) => {
+						setNewPasswordState({
+							...newPasswordState,
+							...(data as INewPasswordState),
+						});
+					})
+					.catch((error) => {
+						const { response } = error;
+						setNewPasswordState(response.data);
 					});
-				})
-				.catch((error) => {
-					const { response } = error;
-					setNewPasswordState(response.data);
-				});
+			}
+		} else {
+			setValidUrl(false);
 		}
 	}, []);
 
@@ -110,6 +117,10 @@ const NewPasswordForm: FC = (): ReactElement => {
 			}
 		},
 	});
+
+	if (!isValidUrl) {
+		return <Navigate to={"/auth/signin"} replace />;
+	}
 
 	const handleClickShowPassword = () => {
 		setShowPassword(!showPassword);

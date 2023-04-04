@@ -7,7 +7,6 @@ export default interface IUser {
 		color: string;
 		lighten: string;
 	};
-	isActivated: boolean;
 	lastVisit: string;
 	isOnline: boolean;
 }

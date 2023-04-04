@@ -4,7 +4,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // types
 import { Status } from "../../../models/Status";
 import IDialogue from "../../../models/IDialogue";
-import IMessage from "../../../models/IMessage";
 
 // actions
 import { getDialogues } from "./dialogueActions";
@@ -37,7 +36,7 @@ export const dialogueSlice = createSlice({
 	extraReducers: (builder) => {
 		builder
 			.addCase(getDialogues.pending, (state) => {
-				// state.status = Status["LOADING"];
+				state.status = Status["LOADING"]; // ?
 			})
 			.addCase(getDialogues.fulfilled, (state, action) => {
 				if (action.payload) {

@@ -1,0 +1,123 @@
+@import "../../../assets/scss/components/variables";
+
+.sidebar {
+	width: 80px;
+	background-color: #1c263d;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+
+	padding: 30px 0;
+
+	&__top {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		&-avatar {
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+
+			span {
+				font-size: 20px;
+			}
+		}
+
+		&-list {
+			margin-top: 50px;
+
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		&-item {
+			position: relative;
+			width: 45px;
+			height: 45px;
+			border-radius: 15px;
+
+			list-style-type: none;
+
+			a {
+				width: inherit;
+				height: inherit;
+
+				display: flex;
+				justify-content: center;
+				align-items: center;
+
+				border-radius: inherit;
+
+				svg {
+					transition: color 0.1s ease-out;
+				}
+			}
+
+			&_active {
+				a {
+					svg {
+						color: $white;
+					}
+				}
+
+				background-color: $blue;
+			}
+
+			transition: background-color 0.1s ease-out;
+
+			&:hover {
+				background-color: $blue;
+
+				a {
+					svg {
+						color: $white;
+					}
+				}
+			}
+
+			&:not(:last-child) {
+				margin-bottom: 20px;
+			}
+
+			&-count {
+				position: absolute;
+				bottom: -5px;
+				right: -5px;
+
+				display: inline-block;
+				background: #f46b6b;
+				color: #fff;
+				font-weight: 600;
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 12px;
+			}
+		}
+	}
+
+	&__logout {
+		width: 45px;
+		height: 45px;
+
+		border-radius: 15px;
+
+		background: none;
+		border: none;
+
+		background-color: $red;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		cursor: pointer;
+	}
+}

@@ -10,8 +10,8 @@ import cn from "classnames";
 // styles
 import styles from "./Chat.module.scss";
 
-// icons
-import { EllipsisOutlined } from "@ant-design/icons";
+// mui components
+import { Box, Typography } from "@mui/material";
 
 // types
 import { Status } from "../../../../models/Status";
@@ -29,36 +29,32 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 	const { interlocutor, status, messagesRef } = props;
 
 	return (
-		<div className={styles["chat"]}>
-			<div className={styles["chat__header"]}>
-				{interlocutor ? (
-					<Fragment>
-						<div className={styles["chat__header-empty"]}></div>
-						<div className={styles["chat__header-info"]}>
-							<b className={styles["chat__header-title"]}>{interlocutor.fullName}</b>
-							<div
-								className={cn(styles["chat__header-status"], {
-									[styles["chat__header-status_online"]]: interlocutor.isOnline,
-								})}
-							>
-								<span className={styles["status"]}>{interlocutor.isOnline ? "онлайн" : "офлайн"}</span>
-							</div>
-						</div>
-						<EllipsisOutlined className={styles["icon"]} />
-					</Fragment>
-				) : null}
-			</div>
+		<Box className={styles["chat"]}>
+			{interlocutor && (
+				<Box className={styles["chat__header"]}>
+					<Typography className={styles["chat__header-title"]} variant="h3">
+						{interlocutor.fullName}
+					</Typography>
+					<Box
+						className={cn(styles["chat__header-status"], {
+							[styles["chat__header-status_online"]]: interlocutor.isOnline,
+						})}
+					>
+						<span className={styles["status"]}>{interlocutor.isOnline ? "онлайн" : "офлайн"}</span>
+					</Box>
+				</Box>
+			)}
 
-			<div className={styles["chat__messages"]} ref={messagesRef}>
+			<Box className={styles["chat__messages"]} ref={messagesRef}>
 				<Messages />
-			</div>
+			</Box>
 
 			{status !== "idle" && (
-				<div className={styles["chat__input"]}>
+				<Box className={styles["chat__input"]}>
 					<ChatInput />
-				</div>
+				</Box>
 			)}
-		</div>
+		</Box>
 	);
 };
 

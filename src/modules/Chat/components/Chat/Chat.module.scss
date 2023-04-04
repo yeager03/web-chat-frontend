@@ -5,26 +5,25 @@
 	flex: 1;
 
 	&__header {
-		height: 80px;
+		height: 85px;
 		padding: 20px;
 
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
+
+		justify-content: center;
 		align-items: center;
 
 		border-bottom: 1px solid #f7f7f7;
-		&-empty {
-			width: 20px;
-			height: 20px;
-		}
-		&-info {
-			text-align: center;
-		}
+
+		text-align: center;
+
 		&-title {
-			display: block;
-			font-weight: 700;
 			margin-bottom: 5px;
+			font-size: 16px;
+			font-weight: 600;
 		}
+
 		&-status {
 			display: flex;
 			align-items: center;
@@ -33,15 +32,17 @@
 			&::before {
 				display: block;
 				content: "";
-				width: 7px;
-				height: 7px;
+				width: 8px;
+				height: 8px;
 				background-color: #d3d3d3;
 				border-radius: 50%;
 				margin-right: 5px;
+				transform: translateY(1px);
 			}
 
 			.status {
 				color: #bfbfbf;
+				font-size: 15px;
 			}
 
 			&_online {
@@ -71,6 +72,6 @@
 
 	&__input {
 		width: 100%;
-		padding: 20px;
+		padding: 10px;
 	}
 }

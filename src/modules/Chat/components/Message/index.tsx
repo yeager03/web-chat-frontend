@@ -4,7 +4,7 @@ import { FC, ReactElement } from "react";
 import { Popover } from "antd";
 
 // components
-import Avatar from "../../../../components/Avatar";
+import UserAvatar from "../../../../components/UserAvatar";
 import IconRead from "../../../../components/IconRead";
 import AudioMessage from "../AudioMessage";
 
@@ -48,7 +48,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 			})}
 		>
 			<div className={styles["message__avatar"]}>
-				<Avatar user={author} />
+				<UserAvatar user={author} />
 			</div>
 
 			{isMyMessage ? (

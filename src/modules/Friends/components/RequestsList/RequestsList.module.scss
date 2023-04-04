@@ -1,0 +1,16 @@
+.requests {
+	&__items {
+		height: calc(100% - 160px);
+		overflow: auto;
+
+		&_empty {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			h3 {
+				font-size: 21px;
+			}
+		}
+	}
+}

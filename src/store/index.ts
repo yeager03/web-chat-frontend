@@ -5,9 +5,10 @@ import { useDispatch } from "react-redux";
 import dialogue from "./slices/dialogue/dialogueSlice";
 import message from "./slices/message/messageSlice";
 import user from "./slices/user/userSlice";
+import friend from "./slices/friend/friendSlice";
 
 export const store = configureStore({
-	reducer: { dialogue, message, user },
+	reducer: { dialogue, message, user, friend },
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 	devTools: process.env.NODE_ENV !== "production",
 });

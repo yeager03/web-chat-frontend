@@ -4,9 +4,9 @@ import { FC, ReactElement, useEffect, useRef, useState } from "react";
 import styles from "./AudioMessage.module.scss";
 
 // images
-import AudioWave from "../../../../assets/images/audio-wave.svg";
-import AudioPlay from "../../../../assets/images/audio-play.svg";
-import AudioPause from "../../../../assets/images/audio-pause.svg";
+import AudioWaveIcon from "../../../../assets/images/audio-wave.svg";
+import AudioPlayIcon from "../../../../assets/images/audio-play.svg";
+import AudioPauseIcon from "../../../../assets/images/audio-pause.svg";
 
 // convert time
 import getConvertedTime from "../../../../utils/convertTime";
@@ -112,13 +112,13 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
 
 				<button className={styles["button"]} onClick={handlePlayClick}>
 					{isAudioPlaying ? (
-						<img src={AudioPause} alt="Audio pause img" />
+						<img src={AudioPauseIcon} alt="Audio pause img" />
 					) : (
-						<img src={AudioPlay} alt="Audio play img" />
+						<img src={AudioPlayIcon} alt="Audio play img" />
 					)}
 				</button>
 				<div className={styles["image"]}>
-					<img src={AudioWave} alt="Audio Wave img" />
+					<img src={AudioWaveIcon} alt="Audio Wave img" />
 				</div>
 				<span className={styles["duration"]}>
 					{isAudioPlaying ? getConvertedTime(currentTime) : getConvertedTime(audioDuration)}

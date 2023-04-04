@@ -1,13 +1,21 @@
 @import "../../assets/scss/components/variables";
 
 .home {
-	width: 100%;
+	max-width: 1200px;
 	height: 100%;
 
-	max-width: 1200px;
 	margin: 0 auto;
-	background-color: $white;
-	box-shadow: 0 0 25px rgba(0, 0, 0, 0.04204);
 
 	display: flex;
+	border-right: 1px solid #e1e2e4;
+
+	&__content {
+		display: flex;
+		align-items: flex-start;
+		width: 100%;
+
+		& > div {
+			height: 100%;
+		}
+	}
 }

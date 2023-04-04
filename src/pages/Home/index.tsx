@@ -1,18 +1,83 @@
-import { FC, ReactElement } from "react";
+import { FC, ReactElement, useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-// containers
+// dispatch
+import { useAppDispatch } from "../../store";
+
+// modules
 import Sidebar from "../../modules/SideBar";
-import Chat from "../../modules/Chat";
 
 // style
 import styles from "./Home.module.scss";
 
+// hooks
+import useAuth from "../../hooks/useAuth";
+
+// socket
+import socket from "../../core/socket";
+
+// sounds
+import NotificationSound from "../../assets/sounds/requests_sound.mp3";
+
+// selectors
+import { dialogueSelector } from "../../store/slices/dialogue/dialogueSlice";
+
+// actions
+import { getRequests } from "../../store/slices/friend/friendActions";
+import { getDialogues } from "../../store/slices/dialogue/dialogueActions";
+import { addMessage } from "../../store/slices/message/messageSlice";
+
+// types
+import IMessage from "../../models/IMessage";
+
 const Home: FC = (): ReactElement => {
+	const { user } = useAuth();
+	const { currentDialogueId } = useSelector(dialogueSelector);
+
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		dispatch(getRequests());
+		dispatch(getDialogues());
+	}, []);
+
+	useEffect(() => {
+		socket.on("SERVER:NEW_FRIEND_REQUEST", (userId: string) => {
+			if (user && user._id === userId) {
+				dispatch(getRequests());
+
+				const audio = new Audio(NotificationSound);
+				audio.autoplay = true;
+				audio.volume = 0.25;
+				audio.play().catch((error) => console.log(error));
+			}
+		});
+
+		socket.on("SERVER:DIALOGUE_CREATED", () => {
+			dispatch(getDialogues());
+		});
+
+		socket.on("SERVER:MESSAGE_CREATED", (data: IMessage) => {
+			if (currentDialogueId === data.dialogue._id) {
+				dispatch(addMessage(data));
+			}
+		});
+
+		return () => {
+			socket.off("SERVER:NEW_FRIEND_REQUEST");
+			socket.off("SERVER:DIALOGUE_CREATED");
+			socket.off("SERVER:MESSAGE_CREATED");
+		};
+	}, []);
+
 	return (
-		<section className={styles["home"]}>
+		<main className={styles["home"]}>
 			<Sidebar />
-			<Chat />
-		</section>
+			<div className={styles["home__content"]}>
+				<Outlet />
+			</div>
+		</main>
 	);
 };
 

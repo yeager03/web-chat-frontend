@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, ReactElement, useState, KeyboardEvent, Ref, LegacyRef } from "react";
 
 // antd components
-import { Input, Upload, message } from "antd";
+import { TextField, Box, InputAdornment } from "@mui/material";
 
 // style
 import styles from "./ChatInput.module.scss";
@@ -9,7 +9,9 @@ import styles from "./ChatInput.module.scss";
 // classnames
 import cn from "classnames";
 
-// icons
+// mui icons
+import { SentimentSatisfiedAltRounded } from "@mui/icons-material";
+
 import { SmileOutlined, AudioOutlined, CameraOutlined, SendOutlined } from "@ant-design/icons";
 
 // emoji
@@ -19,7 +21,6 @@ import Picker from "@emoji-mart/react";
 // types
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { Emoji } from "../../containers/ChatInput";
-import type { InputRef } from "antd";
 
 type ChatInputProps = {
 	messageValue: string;
@@ -29,18 +30,8 @@ type ChatInputProps = {
 	handleClickEmoji: (emoji: Emoji) => void;
 	handleKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
 	sendMessage: () => void;
-	inputRef: Ref<InputRef>;
+	inputRef: Ref<HTMLInputElement>;
 	smileRef: LegacyRef<HTMLDivElement>;
-};
-
-type FileListComponentProps = {
-	originNode: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-	file: UploadFile<any>;
-};
-
-const FileListComponent: FC<FileListComponentProps> = (props): ReactElement => {
-	console.log(props);
-	return <h2 className={styles["file__list"]}>asd</h2>;
 };
 
 const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
@@ -56,62 +47,17 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		smileRef,
 	} = props;
 
-	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [uploading, setUploading] = useState(false);
-
-	const handleUpload = () => {
-		const formData = new FormData();
-		fileList.forEach((file) => {
-			formData.append("files[]", file as RcFile);
-		});
-		setUploading(true);
-
-		fetch("https://www.mocky.io/v2/5cc8019d300000980a055e76", {
-			method: "POST",
-			body: formData,
-		})
-			.then((res) => res.json())
-			.then(() => {
-				setFileList([]);
-				message.success("upload successfully.");
-			})
-			.catch(() => {
-				message.error("upload failed.");
-			})
-			.finally(() => {
-				setUploading(false);
-			});
-	};
-
-	const uploadProps: UploadProps = {
-		listType: "picture",
-		itemRender: (originNode, file) => {
-			return <FileListComponent file={file} originNode={originNode} />;
-		},
-		onRemove: (file) => {
-			const index = fileList.indexOf(file);
-			const newFileList = fileList.slice();
-			newFileList.splice(index, 1);
-			setFileList(newFileList);
-		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-			return false;
-		},
-		fileList,
-	};
-
 	return (
-		<div className={styles["chat-input"]} ref={smileRef}>
-			<div className={styles["chat-input__emoji"]}>
+		<Box className={styles["chat-input"]}>
+			<Box className={styles["chat-input__emoji"]}>
 				{showEmojis && <Picker data={data} onEmojiSelect={handleClickEmoji} theme="light" locale="ru" />}
-			</div>
-			<Input
+			</Box>
+			{/* <Input
 				addonBefore={
 					<SmileOutlined onClick={handleClickShowEmojis} className={cn(styles["icon"], styles["smile-icon"])} />
 				}
 				addonAfter={
-					<div className={styles["input__actions"]}>
+					<Box className={styles["input__actions"]}>
 						<Upload {...uploadProps} className={cn(styles["icon"], styles["smile-camera"])}>
 							<CameraOutlined />
 						</Upload>
@@ -120,7 +66,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 						) : (
 							<AudioOutlined className={cn(styles["icon"], styles["smile-audio"])} />
 						)}
-					</div>
+					</Box>
 				}
 				size="large"
 				value={messageValue}
@@ -128,8 +74,28 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 				onKeyDown={handleKeyDown}
 				className={styles["input"]}
 				ref={inputRef}
+			/> */}
+
+			<TextField
+				fullWidth
+				id="outlined-basic"
+				placeholder="Ваше сообщение"
+				variant="outlined"
+				multiline
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<SentimentSatisfiedAltRounded />
+						</InputAdornment>
+					),
+				}}
+				value={messageValue}
+				onChange={handleChangeSearchValue}
+				onKeyDown={handleKeyDown}
+				className={styles["input"]}
+				ref={inputRef}
 			/>
-		</div>
+		</Box>
 	);
 };
 

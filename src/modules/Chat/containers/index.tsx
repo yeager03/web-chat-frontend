@@ -16,13 +16,7 @@ const Chat: FC = (): ReactElement => {
 	const { currentDialogue } = useSelector(dialogueSelector);
 	const { user } = useAuth();
 
-	let interlocutor = null;
-
-	if (currentDialogue?.author._id === user?._id) {
-		interlocutor = currentDialogue?.interlocutor;
-	} else {
-		interlocutor = currentDialogue?.author;
-	}
+	let interlocutor = currentDialogue?.members.find((member) => member._id !== user?._id);
 
 	const messagesRef = useRef<HTMLDivElement>(null);
 
