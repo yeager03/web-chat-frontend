@@ -21,7 +21,7 @@ import socket from "../../core/socket";
 import NotificationSound from "../../assets/sounds/requests_sound.mp3";
 
 // selectors
-import { dialogueSelector } from "../../store/slices/dialogue/dialogueSlice";
+import { changeDialogueMessage, dialogueSelector } from "../../store/slices/dialogue/dialogueSlice";
 
 // actions
 import { getRequests } from "../../store/slices/friend/friendActions";
@@ -30,6 +30,7 @@ import { addMessage } from "../../store/slices/message/messageSlice";
 
 // types
 import IMessage from "../../models/IMessage";
+import IDialogue from "../../models/IDialogue";
 
 const Home: FC = (): ReactElement => {
 	const { user } = useAuth();
@@ -54,8 +55,23 @@ const Home: FC = (): ReactElement => {
 			}
 		});
 
-		socket.on("SERVER:DIALOGUE_CREATED", () => {
-			dispatch(getDialogues());
+		socket.on("SERVER:DIALOGUE_CREATED", (dialogue: IDialogue) => {
+			console.log(dialogue);
+
+			if (user && dialogue.members.find((id) => String(id) === user._id)) {
+				dispatch(getDialogues());
+			}
+		});
+
+		socket.on("SERVER:DIALOGUE_MESSAGE_UPDATE", (dialogue: IDialogue, message: IMessage) => {
+			if (user && dialogue.members.find((id) => String(id) === user._id)) {
+				dispatch(
+					changeDialogueMessage({
+						dialogueId: dialogue._id,
+						message,
+					})
+				);
+			}
 		});
 
 		socket.on("SERVER:MESSAGE_CREATED", (data: IMessage) => {
@@ -69,7 +85,7 @@ const Home: FC = (): ReactElement => {
 			socket.off("SERVER:DIALOGUE_CREATED");
 			socket.off("SERVER:MESSAGE_CREATED");
 		};
-	}, []);
+	}, [currentDialogueId]);
 
 	return (
 		<main className={styles["home"]}>

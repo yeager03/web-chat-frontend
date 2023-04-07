@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, ReactElement, useState, KeyboardEvent, Ref, LegacyRef } from "react";
+import { ChangeEvent, FC, ReactElement, KeyboardEvent, Ref, MouseEvent } from "react";
 
-// antd components
-import { TextField, Box, InputAdornment } from "@mui/material";
+// mui components
+import { Box, Popover } from "@mui/material";
 
 // style
 import styles from "./ChatInput.module.scss";
@@ -10,91 +10,83 @@ import styles from "./ChatInput.module.scss";
 import cn from "classnames";
 
 // mui icons
-import { SentimentSatisfiedAltRounded } from "@mui/icons-material";
-
-import { SmileOutlined, AudioOutlined, CameraOutlined, SendOutlined } from "@ant-design/icons";
+import { SentimentSatisfiedAltRounded, MicRounded, CameraAltRounded, SendRounded } from "@mui/icons-material";
 
 // emoji
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
 // types
-import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { Emoji } from "../../containers/ChatInput";
 
 type ChatInputProps = {
 	messageValue: string;
 	showEmojis: boolean;
-	handleChangeSearchValue: (e: ChangeEvent<HTMLInputElement>) => void;
-	handleClickShowEmojis: () => void;
+	anchorEl: Element | null;
+	handleChangeSearchValue: (e: ChangeEvent<HTMLDivElement>) => void;
+	handleClick: (e: MouseEvent<Element>) => void;
+	handleClose: () => void;
 	handleClickEmoji: (emoji: Emoji) => void;
-	handleKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+	handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
 	sendMessage: () => void;
-	inputRef: Ref<HTMLInputElement>;
-	smileRef: LegacyRef<HTMLDivElement>;
+	inputRef: Ref<HTMLDivElement>;
 };
 
 const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 	const {
 		messageValue,
 		showEmojis,
+		anchorEl,
 		handleChangeSearchValue,
-		handleClickShowEmojis,
+		handleClick,
+		handleClose,
 		handleClickEmoji,
 		handleKeyDown,
 		sendMessage,
 		inputRef,
-		smileRef,
 	} = props;
-
 	return (
 		<Box className={styles["chat-input"]}>
-			<Box className={styles["chat-input__emoji"]}>
-				{showEmojis && <Picker data={data} onEmojiSelect={handleClickEmoji} theme="light" locale="ru" />}
-			</Box>
-			{/* <Input
-				addonBefore={
-					<SmileOutlined onClick={handleClickShowEmojis} className={cn(styles["icon"], styles["smile-icon"])} />
-				}
-				addonAfter={
-					<Box className={styles["input__actions"]}>
-						<Upload {...uploadProps} className={cn(styles["icon"], styles["smile-camera"])}>
-							<CameraOutlined />
-						</Upload>
-						{messageValue.trim() ? (
-							<SendOutlined className={cn(styles["icon"], styles["smile-send"])} onClick={sendMessage} />
-						) : (
-							<AudioOutlined className={cn(styles["icon"], styles["smile-audio"])} />
-						)}
-					</Box>
-				}
-				size="large"
-				value={messageValue}
-				onChange={handleChangeSearchValue}
-				onKeyDown={handleKeyDown}
-				className={styles["input"]}
-				ref={inputRef}
-			/> */}
-
-			<TextField
-				fullWidth
-				id="outlined-basic"
-				placeholder="Ваше сообщение"
-				variant="outlined"
-				multiline
-				InputProps={{
-					startAdornment: (
-						<InputAdornment position="start">
-							<SentimentSatisfiedAltRounded />
-						</InputAdornment>
-					),
+			<Popover
+				id={"simple-popover"}
+				open={showEmojis}
+				anchorEl={anchorEl}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: "top",
+					horizontal: "center",
 				}}
-				value={messageValue}
-				onChange={handleChangeSearchValue}
-				onKeyDown={handleKeyDown}
-				className={styles["input"]}
-				ref={inputRef}
-			/>
+				transformOrigin={{
+					vertical: "bottom",
+					horizontal: "center",
+				}}
+			>
+				<Picker data={data} onEmojiSelect={handleClickEmoji} theme="light" locale="ru" />
+			</Popover>
+			<Box className={styles["input-wrapper"]}>
+				<SentimentSatisfiedAltRounded
+					className={cn(styles["input-wrapper__icon"], styles["input-wrapper__smile"])}
+					onClick={handleClick}
+				/>
+				<Box
+					contentEditable="true"
+					className={styles["input"]}
+					onInput={handleChangeSearchValue}
+					onKeyDown={handleKeyDown}
+					ref={inputRef}
+				></Box>
+				<Box className={styles["input-wrapper__actions"]}>
+					<CameraAltRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__camera"])} />
+					{messageValue.trim().length ? (
+						<SendRounded
+							className={cn(styles["input-wrapper__icon"], styles["input-wrapper__send"])}
+							onClick={sendMessage}
+						/>
+					) : (
+						<MicRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__audio"])} />
+					)}
+				</Box>
+			</Box>
 		</Box>
 	);
 };

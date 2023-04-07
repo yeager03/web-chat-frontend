@@ -1,21 +1,18 @@
-import { FC, ReactElement, ChangeEvent, KeyboardEvent, useState, useRef, useEffect } from "react";
+import { FC, ReactElement, ChangeEvent, KeyboardEvent, useState, useRef, useEffect, MouseEvent } from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../../store";
 
 // components
 import BaseChatInput from "../components/ChatInput";
 
-// socket
-import socket from "../../../core/socket";
+// hooks
+import useDebounce from "../../../hooks/useDebounce";
 
 // selector
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 // actions
 import { createMessage } from "../../../store/slices/message/messageActions";
-
-// types
-import type { InputRef } from "antd";
 
 export type Emoji = {
 	id: string;
@@ -28,59 +25,37 @@ export type Emoji = {
 
 const ChatInput: FC = (): ReactElement => {
 	const [messageValue, setMessageValue] = useState<string>("");
-	const [showEmojis, setShowEmojis] = useState<boolean>(false);
+	const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
 	const { currentDialogueId } = useSelector(dialogueSelector);
 
-	const inputRef = useRef<InputRef>(null);
-	const smileRef = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLDivElement>(null);
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		const element = inputRef.current;
-
-		if (element) {
-			inputRef.current.focus();
-		}
-	}, [currentDialogueId]);
-
-	useEffect(() => {
-		const handleOutsideClick = (e: MouseEvent) => {
-			const _event = e as MouseEvent & {
-				composedPath: () => Node[];
-			};
-
-			if (smileRef.current && !_event.composedPath().includes(smileRef.current)) {
-				setShowEmojis(false);
-				inputRef.current?.focus();
-			}
-		};
-
-		document.body.addEventListener("click", handleOutsideClick);
-
-		return () => {
-			document.body.removeEventListener("click", handleOutsideClick);
-		};
-	}, []);
-
-	const handleChangeSearchValue = (e: ChangeEvent<HTMLInputElement>) => {
-		setMessageValue(e.target.value);
-	};
-
-	const handleClickShowEmojis = () => {
-		setShowEmojis(!showEmojis);
-	};
-
-	const handleClickEmoji = (emoji: Emoji) => {
-		setMessageValue((messageValue) => messageValue + emoji.native);
-		setShowEmojis(false);
-
 		inputRef.current?.focus();
+	}, [currentDialogueId, anchorEl]);
+
+	const handleClick = (event: MouseEvent<Element>) => {
+		setAnchorEl(event.currentTarget);
 	};
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter" && messageValue.trim()) {
+	const handleClose = () => {
+		setAnchorEl(null);
+		inputRef.current && inputRef.current.focus();
+	};
+
+	const handleChangeSearchValue = (e: ChangeEvent<HTMLDivElement>) => {
+		setMessageValue(e.target.textContent ? e.target.textContent.trim() : "");
+	};
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+		}
+
+		if (e.key === "Enter" && messageValue.trim().length) {
 			sendMessage();
 		}
 	};
@@ -92,20 +67,45 @@ const ChatInput: FC = (): ReactElement => {
 				dialogueId: currentDialogueId,
 			})
 		);
+
 		setMessageValue("");
+		if (inputRef.current) {
+			inputRef.current.textContent = "";
+		}
+	};
+
+	const handleClickEmoji = (emoji: Emoji) => {
+		setMessageValue((messageValue) => messageValue + emoji.native);
+
+		const input = inputRef.current;
+
+		if (input) {
+			input.textContent = input.textContent + emoji.native;
+
+			const range = document.createRange();
+			range.selectNodeContents(input);
+			range.collapse(false);
+
+			const sel = window.getSelection();
+			sel && sel.removeAllRanges();
+			sel && sel.addRange(range);
+
+			handleClose();
+		}
 	};
 
 	return (
 		<BaseChatInput
 			messageValue={messageValue}
-			showEmojis={showEmojis}
+			showEmojis={Boolean(anchorEl)}
+			anchorEl={anchorEl}
 			handleChangeSearchValue={handleChangeSearchValue}
-			handleClickShowEmojis={handleClickShowEmojis}
+			handleClick={handleClick}
+			handleClose={handleClose}
 			handleClickEmoji={handleClickEmoji}
 			handleKeyDown={handleKeyDown}
 			sendMessage={sendMessage}
-			inputRef={null}
-			smileRef={smileRef}
+			inputRef={inputRef}
 		/>
 	);
 };

@@ -1,3 +1,5 @@
+@import "../../../../assets/scss/components/variables";
+
 @keyframes animation {
 	from {
 		opacity: 0;
@@ -10,16 +12,17 @@
 }
 
 .chat-input {
-	&__emoji {
-		position: absolute;
-		bottom: 70px;
-		z-index: 10;
-	}
+	.input-wrapper {
+		display: flex;
+		align-items: center;
 
-	.input {
-		.icon {
+		border: 1px solid #e4e7ec;
+		border-radius: 10px;
+		padding: 15px;
+		max-height: 145px;
+
+		&__icon {
 			cursor: pointer;
-			font-size: 20px;
 
 			opacity: 0.5;
 			transition: opacity 0.25s ease-out;
@@ -31,21 +34,35 @@
 			animation: animation 0.25s ease-out;
 		}
 
+		&__smile {
+			margin-right: 10px;
+		}
+
 		&__actions {
 			display: flex;
 			align-items: center;
-
-			.icon {
-				&:not(:last-child) {
-					margin-right: 20px;
-				}
-			}
-
-			// :global {
-			// 	.ant-upload-list {
-			// 		display: none;
-			// 	}
-			// }
 		}
+
+		&__camera {
+			margin-right: 10px;
+		}
+
+		&:focus-within {
+			outline: 1px solid $blue;
+		}
+	}
+
+	.input {
+		margin-right: 10px;
+
+		min-height: 1em;
+		max-height: 97px;
+		width: 100%;
+		align-content: center;
+		outline: none;
+		overflow-x: hidden;
+		overflow-y: auto;
+
+		font-size: 15px;
 	}
 }

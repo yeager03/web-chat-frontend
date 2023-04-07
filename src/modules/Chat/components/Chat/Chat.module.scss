@@ -66,12 +66,17 @@
 		position: relative;
 		padding: 20px;
 		padding-bottom: 0;
-		height: calc(100% - 160px);
-		overflow: auto;
+		height: calc(100% - 161px);
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
 	&__input {
 		width: 100%;
+		background-color: #fff;
 		padding: 10px;
+
+		position: absolute;
+		bottom: 0;
 	}
 }

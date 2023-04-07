@@ -1,5 +1,6 @@
 import { FC, ReactElement, useEffect, useState, ChangeEvent, FormEvent, Fragment, MouseEvent } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 // dispatch
 import { useAppDispatch } from "../../../store";
@@ -9,10 +10,20 @@ import { friendSelector } from "../../../store/slices/friend/friendSlice";
 
 // actions
 import { getFriends, removeFriend } from "../../../store/slices/friend/friendActions";
+import { setCurrentDialogue, setCurrentDialogueId } from "../../../store/slices/dialogue/dialogueSlice";
+
+// service
+import DialogueService from "../../../services/DialogueService";
 
 // components
 import BaseFriendsList from "../components/FriendsList";
 import MessageModal from "../components/MessageModal";
+
+// utils
+import getNotification from "../../../utils/notification";
+
+// types
+import DialogueResponse from "../../../models/response/DialogueResponse";
 
 const FriendsList: FC = (): ReactElement => {
 	const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -20,7 +31,9 @@ const FriendsList: FC = (): ReactElement => {
 	const [interlocutorId, setInterlocutorId] = useState<string | null>(null);
 
 	const { friends, status } = useSelector(friendSelector);
+
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		dispatch(getFriends());
@@ -33,14 +46,35 @@ const FriendsList: FC = (): ReactElement => {
 		console.log(id);
 	};
 
-	const handleOk = (e: FormEvent<HTMLFormElement>) => {
+	const handleOk = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (interlocutorId) {
+			try {
+				const response = await DialogueService.createDialogue(interlocutorId, messageValue.trim());
+				const { status, message, dialogue }: DialogueResponse = response.data;
 
-		console.log(messageValue);
+				if (status === "success") {
+					getNotification(message, status);
+
+					dispatch(setCurrentDialogueId(dialogue._id));
+					dispatch(setCurrentDialogue(dialogue));
+
+					navigate(`/dialogues/${dialogue._id}`, {
+						replace: true,
+					});
+				}
+			} catch (error: any) {
+				const { status, message } = error.response.data;
+
+				if (status === "error") {
+					getNotification(message, status);
+				}
+			}
+		}
 	};
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setMessageValue(e.target.value.trim());
+		setMessageValue(e.target.value);
 	};
 
 	const handleCancel = () => {

@@ -46,6 +46,11 @@
 	&_current {
 		background-color: $blue;
 		color: $white;
+		.icon {
+			svg path {
+				fill: $white;
+			}
+		}
 	}
 
 	&-avatar {

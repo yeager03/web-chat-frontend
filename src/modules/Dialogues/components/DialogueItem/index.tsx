@@ -64,7 +64,9 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 							</Typography>
 						</Box>
 						<Box className={styles["dialogue__item-subtitle"]}>
-							<Typography className={styles["text"]}>{lastMessage["message"]}</Typography>
+							<Typography className={styles["text"]}>
+								{isMyMessage ? `Вы: ${lastMessage["message"]}` : lastMessage["message"]}
+							</Typography>
 
 							{/* {lastMessage["unRead"] && lastMessage["unRead"] > 0 ? (
 								<Typography component={"span"} className={styles["count"]}>
