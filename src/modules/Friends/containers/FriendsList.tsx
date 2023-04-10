@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect, useState, ChangeEvent, FormEvent, Fragment, MouseEvent } from "react";
+import { FC, ReactElement, useEffect, useState, ChangeEvent, FormEvent, MouseEvent } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,7 @@ import { friendSelector } from "../../../store/slices/friend/friendSlice";
 // actions
 import { getFriends, removeFriend } from "../../../store/slices/friend/friendActions";
 import { setCurrentDialogue, setCurrentDialogueId } from "../../../store/slices/dialogue/dialogueSlice";
+import { clearMessages } from "../../../store/slices/message/messageSlice";
 
 // service
 import DialogueService from "../../../services/DialogueService";
@@ -36,6 +37,9 @@ const FriendsList: FC = (): ReactElement => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		dispatch(clearMessages());
+		dispatch(setCurrentDialogue(null));
+		dispatch(setCurrentDialogueId(""));
 		dispatch(getFriends());
 	}, []);
 
@@ -86,7 +90,7 @@ const FriendsList: FC = (): ReactElement => {
 	};
 
 	return (
-		<Fragment>
+		<>
 			<BaseFriendsList
 				friends={friends}
 				status={status}
@@ -101,7 +105,7 @@ const FriendsList: FC = (): ReactElement => {
 				handleOk={handleOk}
 				handleCancel={handleCancel}
 			/>
-		</Fragment>
+		</>
 	);
 };
 

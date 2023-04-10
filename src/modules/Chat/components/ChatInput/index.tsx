@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, ReactElement, KeyboardEvent, Ref, MouseEvent } from "react";
+import { ChangeEvent, FC, ReactElement, KeyboardEvent, Ref, MouseEvent, RefObject } from "react";
 
 // mui components
 import { Box, Popover } from "@mui/material";
@@ -30,6 +30,7 @@ type ChatInputProps = {
 	handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
 	sendMessage: () => void;
 	inputRef: Ref<HTMLDivElement>;
+	chatInputRef: RefObject<HTMLDivElement>;
 };
 
 const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
@@ -44,9 +45,10 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		handleKeyDown,
 		sendMessage,
 		inputRef,
+		chatInputRef,
 	} = props;
 	return (
-		<Box className={styles["chat-input"]}>
+		<Box className={styles["chat-input"]} ref={chatInputRef}>
 			<Popover
 				id={"simple-popover"}
 				open={showEmojis}

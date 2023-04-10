@@ -1,4 +1,4 @@
-import { FC, Fragment, ReactElement } from "react";
+import { FC, ReactElement } from "react";
 import { Link, useMatch } from "react-router-dom";
 
 // classnames
@@ -39,7 +39,7 @@ const ListItem: FC<ListItemProps> = (props): ReactElement => {
 			})}
 		>
 			<Link to={to}>
-				<SvgIcon component={icon} sx={{ fontSize: 24, color: "#fff" }} />
+				<SvgIcon component={icon} sx={{ fontSize: 24 }} />
 			</Link>
 			{length > 0 && (
 				<Typography component={"span"} className={styles["sidebar__top-item-count"]}>
@@ -60,7 +60,7 @@ const SideBar: FC<SideBarProps> = (props): ReactElement => {
 	const { user, logout, requestsLength } = props;
 
 	return (
-		<Fragment>
+		<>
 			{user && (
 				<aside className={styles["sidebar"]}>
 					<Box className={styles["sidebar__top"]}>
@@ -80,7 +80,7 @@ const SideBar: FC<SideBarProps> = (props): ReactElement => {
 					</button>
 				</aside>
 			)}
-		</Fragment>
+		</>
 	);
 };
 

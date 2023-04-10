@@ -1,4 +1,4 @@
-import { FC, Fragment, ReactElement, RefObject } from "react";
+import { FC, ReactElement, RefObject } from "react";
 
 // containers
 import Messages from "../../containers/Messages";
@@ -22,11 +22,14 @@ import IUser from "../../../../models/IUser";
 type ChatProps = {
 	interlocutor: IUser | null;
 	status: Status;
-	messagesRef: RefObject<HTMLDivElement>;
+	chatInputRef: RefObject<HTMLDivElement>;
+	messageValue: string;
+	setMessageValue: (value: string) => void;
+	chatInputHeight: number;
 };
 
 const Chat: FC<ChatProps> = (props): ReactElement => {
-	const { interlocutor, status, messagesRef } = props;
+	const { interlocutor, status, chatInputRef, messageValue, setMessageValue, chatInputHeight } = props;
 
 	return (
 		<Box className={styles["chat"]}>
@@ -44,15 +47,10 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 					</Box>
 				</Box>
 			)}
+			<Messages status={status} chatInputHeight={chatInputHeight} />
 
-			<Box className={styles["chat__messages"]} ref={messagesRef}>
-				<Messages />
-			</Box>
-
-			{status !== "idle" && (
-				<Box className={styles["chat__input"]}>
-					<ChatInput />
-				</Box>
+			{status === "success" && (
+				<ChatInput messageValue={messageValue} setMessageValue={setMessageValue} chatInputRef={chatInputRef} />
 			)}
 		</Box>
 	);

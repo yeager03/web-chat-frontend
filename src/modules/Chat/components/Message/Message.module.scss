@@ -132,6 +132,7 @@
 	&__text {
 		color: $white;
 		line-height: 20px;
+		word-wrap: break-word;
 	}
 
 	&__attachments {

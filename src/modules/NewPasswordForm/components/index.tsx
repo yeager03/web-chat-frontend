@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment, ChangeEvent, FormEvent } from "react";
+import { FC, ReactElement, ChangeEvent, FormEvent } from "react";
 
 // mui components
 import { TextField, Typography, IconButton, InputAdornment, Box, CircularProgress } from "@mui/material";
@@ -72,7 +72,7 @@ const NewPasswordForm: FC<NewPasswordFormProps> = (props): ReactElement => {
 
 	const successMessage =
 		status === "success" ? (
-			<Fragment>
+			<>
 				<Box className={styles["auth__top"]}>
 					<Typography variant="h2">Новый пароль</Typography>
 					<Typography>Введите новый пароль для своего аккаунта</Typography>
@@ -172,16 +172,16 @@ const NewPasswordForm: FC<NewPasswordFormProps> = (props): ReactElement => {
 						Сменить пароль
 					</Button>
 				</form>
-			</Fragment>
+			</>
 		) : null;
 
 	return (
-		<Fragment>
+		<>
 			{loadingMessage}
 			{errorMessage}
 			{expiredMessage}
 			{successMessage}
-		</Fragment>
+		</>
 	);
 };
 

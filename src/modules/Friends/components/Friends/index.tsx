@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment } from "react";
+import { FC, ReactElement } from "react";
 
 // containers
 import FriendsList from "../../containers/FriendsList";
@@ -22,11 +22,11 @@ const Friends: FC<FriendsProps> = (props): ReactElement => {
 	const { showModal, isModalOpen } = props;
 
 	return (
-		<Fragment>
+		<>
 			<Box className={styles["friends"]}>
 				<Box className={styles["friends__header"]}>
 					<Box className={styles["friends__header-title"]}>
-						<GroupRounded sx={{ fontSize: 24 }} />
+						<GroupRounded sx={{ fontSize: 22 }} />
 						<Typography variant="h2">Друзья</Typography>
 					</Box>
 
@@ -41,7 +41,7 @@ const Friends: FC<FriendsProps> = (props): ReactElement => {
 			</Box>
 
 			<Requests />
-		</Fragment>
+		</>
 	);
 };
 

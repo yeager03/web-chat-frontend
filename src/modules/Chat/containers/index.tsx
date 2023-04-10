@@ -1,34 +1,46 @@
-import { FC, ReactElement, useEffect, useRef } from "react";
+import { FC, ReactElement, useLayoutEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
 // components
 import BaseChat from "../components/Chat";
 
-// hook
+// hooks
 import useAuth from "../../../hooks/useAuth";
+import useDebounce from "../../../hooks/useDebounce";
 
 // selectors
 import { messageSelector } from "../../../store/slices/message/messageSlice";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 const Chat: FC = (): ReactElement => {
-	const { status, messages } = useSelector(messageSelector);
+	const { status } = useSelector(messageSelector);
 	const { currentDialogue } = useSelector(dialogueSelector);
 	const { user } = useAuth();
 
-	let interlocutor = currentDialogue?.members.find((member) => member._id !== user?._id);
+	const [messageValue, setMessageValue] = useState<string>("");
+	const [chatInputHeight, setChatInputHeight] = useState(76);
 
-	const messagesRef = useRef<HTMLDivElement>(null);
+	const chatInputRef = useRef<HTMLDivElement>(null);
+	const heightValue = useDebounce(messageValue, 500);
 
-	useEffect(() => {
-		const element = messagesRef.current;
-
-		if (element) {
-			element.scrollTo(0, element.scrollHeight);
+	useLayoutEffect(() => {
+		if (chatInputRef.current) {
+			setChatInputHeight(chatInputRef.current.offsetHeight);
 		}
-	}, [messages]);
+	}, [heightValue]);
 
-	return <BaseChat interlocutor={interlocutor ? interlocutor : null} status={status} messagesRef={messagesRef} />;
+	const interlocutor = currentDialogue?.members.find((member) => member._id !== user?._id);
+
+	return (
+		<BaseChat
+			interlocutor={interlocutor ? interlocutor : null}
+			status={status}
+			chatInputRef={chatInputRef}
+			messageValue={messageValue}
+			setMessageValue={setMessageValue}
+			chatInputHeight={chatInputHeight}
+		/>
+	);
 };
 
 export default Chat;

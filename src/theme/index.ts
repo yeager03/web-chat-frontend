@@ -2,7 +2,7 @@ import createTheme from "@mui/material/styles/createTheme";
 
 export const THEME = createTheme({
 	typography: {
-		fontFamily: "'Exo 2', sans-serif",
+		fontFamily: "'Nunito', sans-serif;",
 		fontSize: 14,
 
 		button: {

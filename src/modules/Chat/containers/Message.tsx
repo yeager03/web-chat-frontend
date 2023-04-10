@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState, useEffect } from "react";
+import { FC, ReactElement, useState } from "react";
 
 // dispatch
 import { useAppDispatch } from "../../../store";
@@ -29,10 +29,6 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 	const handleRemoveMessage = (messageId: string) => {
 		dispatch(removeMessage(messageId));
 	};
-
-	// useEffect(() => {
-	// 	socket.on("typingResponse", (flag: boolean) => setTyping(flag));
-	// }, [socket]);
 
 	return <BaseMessage {...props} handleRemoveMessage={handleRemoveMessage} isTyping={isTyping} />;
 };

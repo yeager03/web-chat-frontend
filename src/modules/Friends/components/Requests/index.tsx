@@ -16,7 +16,7 @@ const Requests: FC = (): ReactElement => {
 	return (
 		<Box className={styles["requests"]}>
 			<Box className={styles["requests__header"]}>
-				<Diversity2RoundedIcon sx={{ fontSize: 24 }} />
+				<Diversity2RoundedIcon sx={{ fontSize: 22 }} />
 				<Typography variant="h2">Заявки в друзья</Typography>
 			</Box>
 

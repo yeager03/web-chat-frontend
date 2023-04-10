@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment } from "react";
+import { FC, ReactElement } from "react";
 import { Link } from "react-router-dom";
 
 // mui components
@@ -25,22 +25,22 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 
 	const loadingMessage =
 		status === "loading" ? (
-			<Fragment>
+			<>
 				<CircularProgress />
-			</Fragment>
+			</>
 		) : null;
 
 	const errorMessage =
 		status === "error" ? (
-			<Fragment>
+			<>
 				<ErrorRoundedIcon sx={{ fontSize: 90, color: "#ff4d4f" }} />
 				<Typography>{message}</Typography>
-			</Fragment>
+			</>
 		) : null;
 
 	const expiredMessage =
 		status === "expired" ? (
-			<Fragment>
+			<>
 				<ErrorRoundedIcon sx={{ fontSize: 90, color: "#ff4d4f" }} />
 				<Typography>{message}</Typography>
 				<Button
@@ -51,12 +51,12 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 				>
 					Отправить письмо повторно
 				</Button>
-			</Fragment>
+			</>
 		) : null;
 
 	const successMessage =
 		status === "success" ? (
-			<Fragment>
+			<>
 				<CheckCircleRoundedIcon sx={{ fontSize: 90, color: "#52C41A" }} />
 				<Typography>{message}</Typography>
 				<Button styles={{ marginTop: "10px" }}>
@@ -64,7 +64,7 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 						Войти в аккаунт
 					</Link>
 				</Button>
-			</Fragment>
+			</>
 		) : null;
 
 	return (

@@ -22,6 +22,10 @@ export const messageSlice = createSlice({
 	name: "message",
 	initialState,
 	reducers: {
+		clearMessages: (state) => {
+			state.messages = [];
+			state.status = Status["IDLE"];
+		},
 		addMessage: (state, action: PayloadAction<IMessage>) => {
 			state.messages.push(action.payload);
 		},
@@ -64,5 +68,5 @@ export const messageSlice = createSlice({
 });
 
 export const messageSelector = (state: RootState) => state.message;
-export const { addMessage } = messageSlice.actions;
+export const { addMessage, clearMessages } = messageSlice.actions;
 export default messageSlice.reducer;

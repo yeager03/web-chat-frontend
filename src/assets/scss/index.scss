@@ -41,10 +41,12 @@ body,
 }
 
 body {
-	font-family: "Exo 2", sans-serif;
+	background: #f9f9f9;
+	color: $black;
+
+	font-family: "Nunito", sans-serif;
 	font-weight: 400;
 	font-size: 14px;
-	color: $black;
 
 	overflow: hidden;
 }

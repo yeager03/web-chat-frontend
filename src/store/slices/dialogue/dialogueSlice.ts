@@ -30,7 +30,7 @@ export const dialogueSlice = createSlice({
 		setCurrentDialogueId: (state, action: PayloadAction<string>) => {
 			state.currentDialogueId = action.payload;
 		},
-		setCurrentDialogue: (state, action: PayloadAction<IDialogue>) => {
+		setCurrentDialogue: (state, action: PayloadAction<IDialogue | null>) => {
 			state.currentDialogue = action.payload;
 		},
 		changeDialogueMessage: (

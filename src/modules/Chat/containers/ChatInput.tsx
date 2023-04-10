@@ -1,4 +1,14 @@
-import { FC, ReactElement, ChangeEvent, KeyboardEvent, useState, useRef, useEffect, MouseEvent } from "react";
+import {
+	FC,
+	ReactElement,
+	ChangeEvent,
+	KeyboardEvent,
+	useState,
+	useRef,
+	useEffect,
+	MouseEvent,
+	RefObject,
+} from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../../store";
 
@@ -14,6 +24,9 @@ import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 // actions
 import { createMessage } from "../../../store/slices/message/messageActions";
 
+// types
+import { Status } from "../../../models/Status";
+
 export type Emoji = {
 	id: string;
 	keywords: string[];
@@ -23,18 +36,24 @@ export type Emoji = {
 	unified: string;
 };
 
-const ChatInput: FC = (): ReactElement => {
-	const [messageValue, setMessageValue] = useState<string>("");
-	const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+type ChatInputProps = {
+	messageValue: string;
+	setMessageValue: (value: string) => void;
+	chatInputRef: RefObject<HTMLDivElement>;
+};
 
+const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
+	const { messageValue, setMessageValue, chatInputRef } = props;
 	const { currentDialogueId } = useSelector(dialogueSelector);
+
+	const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
 	const inputRef = useRef<HTMLDivElement>(null);
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		inputRef.current?.focus();
+		inputRef.current && inputRef.current.focus();
 	}, [currentDialogueId, anchorEl]);
 
 	const handleClick = (event: MouseEvent<Element>) => {
@@ -75,7 +94,7 @@ const ChatInput: FC = (): ReactElement => {
 	};
 
 	const handleClickEmoji = (emoji: Emoji) => {
-		setMessageValue((messageValue) => messageValue + emoji.native);
+		setMessageValue(messageValue + emoji.native);
 
 		const input = inputRef.current;
 
@@ -106,6 +125,7 @@ const ChatInput: FC = (): ReactElement => {
 			handleKeyDown={handleKeyDown}
 			sendMessage={sendMessage}
 			inputRef={inputRef}
+			chatInputRef={chatInputRef}
 		/>
 	);
 };

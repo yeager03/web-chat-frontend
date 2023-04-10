@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState, Fragment } from "react";
+import { FC, ReactElement, useState } from "react";
 
 // components
 import BaseFriends from "../components/Friends";
@@ -90,7 +90,7 @@ const Friends: FC = (): ReactElement => {
 	};
 
 	return (
-		<Fragment>
+		<>
 			<BaseFriends
 				// modal
 				isModalOpen={isModalOpen}
@@ -107,7 +107,7 @@ const Friends: FC = (): ReactElement => {
 				handleCancel={handleCancel}
 				handleOk={formik.handleSubmit}
 			/>
-		</Fragment>
+		</>
 	);
 };
 

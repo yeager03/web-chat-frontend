@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment } from "react";
+import { FC, ReactElement, RefObject } from "react";
 
 // classnames
 import cn from "classnames";
@@ -6,11 +6,11 @@ import cn from "classnames";
 // styles
 import styles from "./Messages.module.scss";
 
-// antd components
-import { Empty, Spin } from "antd";
+// mui components
+import { CircularProgress, Box, Typography } from "@mui/material";
 
-// icons
-import { LoadingOutlined } from "@ant-design/icons";
+// images
+import ChooseDialogue from "../../../../assets/images/choose_dialogue.svg";
 
 // components
 import Message from "../../containers/Message";
@@ -22,28 +22,55 @@ import IMessage from "../../../../models/IMessage";
 type MessagesProps = {
 	messages: IMessage[];
 	status: Status;
+	messagesRef: RefObject<HTMLDivElement>;
+	chatInputHeight: number;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { messages, status } = props;
+	const { messages, status, messagesRef, chatInputHeight } = props;
+
+	const chooseDialogue =
+		status === "idle" ? (
+			<Box className={cn(styles["chat__empty"], styles["messages__choose"])}>
+				<img src={ChooseDialogue} alt="Choose dialogue img" />
+				<Typography>Выберите диалог</Typography>
+			</Box>
+		) : null;
+
+	const loading =
+		status === "loading" ? (
+			<Box className={styles["chat__empty"]}>
+				<CircularProgress />
+			</Box>
+		) : null;
+
+	const emptyMessages =
+		status === "success" && !messages.length ? (
+			<Box className={styles["chat__empty"]}>
+				<Typography>Сообщение пока нет</Typography>
+			</Box>
+		) : null;
+
+	const content =
+		status === "success" && messages.length
+			? messages.map((message) => <Message key={message["_id"]} {...message} />)
+			: null;
 
 	return (
-		<Fragment>
-			{status === "idle" ? (
-				<Empty className={styles["icon"]} description="Выберите диалог" />
-			) : status === "loading" ? (
-				<Spin
-					tip="Загрузка сообщений.."
-					size="large"
-					className={cn(styles["icon"], styles["icon__loading"])}
-					indicator={<LoadingOutlined />}
-				/>
-			) : status === "success" && !messages.length ? (
-				<Empty className={styles["icon"]} description="Сообщений пока нет" />
-			) : status === "success" && messages.length ? (
-				messages.map((message) => <Message key={message["_id"]} {...message} />)
-			) : null}
-		</Fragment>
+		<Box
+			className={cn(styles["chat__messages"], {
+				[styles["chat__messages_empty"]]: chooseDialogue || loading || emptyMessages,
+			})}
+			ref={messagesRef}
+			sx={{
+				height: `calc(100% - 85px - ${chatInputHeight}px)`,
+			}}
+		>
+			{chooseDialogue}
+			{loading}
+			{emptyMessages}
+			{content}
+		</Box>
 	);
 };
 

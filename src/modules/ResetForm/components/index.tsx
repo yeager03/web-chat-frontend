@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment, ChangeEvent, FormEvent } from "react";
+import { FC, ReactElement,  ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 // mui components
@@ -28,7 +28,7 @@ const ResetForm: FC<ResetFormProps> = (props): ReactElement => {
 	const { values, touched, errors, isSubmitting, handleChange, handleBlur, handleSubmit } = props;
 
 	return (
-		<Fragment>
+		<>
 			<Box className={styles["auth__top"]}>
 				<Typography variant="h2">Забыли свой пароль?</Typography>
 				<Typography>
@@ -85,7 +85,7 @@ const ResetForm: FC<ResetFormProps> = (props): ReactElement => {
 					Вернуться назад для входа в систему
 				</Link>
 			</form>
-		</Fragment>
+		</>
 	);
 };
 

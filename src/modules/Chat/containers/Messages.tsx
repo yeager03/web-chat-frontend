@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect } from "react";
+import { FC, ReactElement, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 // dispatch
@@ -14,9 +14,21 @@ import { messageSelector } from "../../../store/slices/message/messageSlice";
 // actins
 import { getMessages } from "../../../store/slices/message/messageActions";
 
-const Messages: FC = (): ReactElement => {
+// types
+import { Status } from "../../../models/Status";
+
+type MessagesProps = {
+	status: Status;
+	chatInputHeight: number;
+};
+
+const Messages: FC<MessagesProps> = (props): ReactElement => {
+	const { status, chatInputHeight } = props;
+
 	const { currentDialogueId } = useSelector(dialogueSelector);
-	const { messages, status } = useSelector(messageSelector);
+	const { messages } = useSelector(messageSelector);
+
+	const messagesRef = useRef<HTMLDivElement>(null);
 
 	const dispatch = useAppDispatch();
 
@@ -26,7 +38,17 @@ const Messages: FC = (): ReactElement => {
 		}
 	}, [currentDialogueId]);
 
-	return <BaseMessages messages={messages} status={status} />;
+	useEffect(() => {
+		const element = messagesRef.current;
+
+		if (element) {
+			element.scrollTo(0, element.scrollHeight);
+		}
+	}, [messages]);
+
+	return (
+		<BaseMessages messages={messages} status={status} messagesRef={messagesRef} chatInputHeight={chatInputHeight} />
+	);
 };
 
 export default Messages;

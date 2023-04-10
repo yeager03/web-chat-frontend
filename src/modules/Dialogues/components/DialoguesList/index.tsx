@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment, ChangeEvent } from "react";
+import { FC, ReactElement, ChangeEvent } from "react";
 
 // classnames
 import cn from "classnames";
@@ -54,7 +54,7 @@ const DialoguesList: FC<DialoguesListProps> = (props): ReactElement => {
 			: null;
 
 	return (
-		<Fragment>
+		<>
 			<Box className={styles["dialogues__search"]}>
 				<TextField
 					fullWidth
@@ -90,7 +90,7 @@ const DialoguesList: FC<DialoguesListProps> = (props): ReactElement => {
 				{empty}
 				{sortedDialogues}
 			</ul>
-		</Fragment>
+		</>
 	);
 };
 

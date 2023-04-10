@@ -1,11 +1,30 @@
-.icon {
-	position: absolute;
-	top: 50%;
-	left: 50%;
+.chat {
+	&__messages {
+		position: relative;
+		padding: 20px;
+		padding-bottom: 10px;
+		overflow-y: auto;
+		overflow-x: hidden;
 
-	transform: translate(-50%, -50%);
+		&_empty {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 
-	&__loading {
-		color: #000;
+			height: 100%;
+		}
+	}
+
+	&__empty {
+		width: 300px;
+		height: 300px;
+
+		text-align: center;
+
+		p {
+			margin-top: 10px;
+			font-weight: 600;
+			text-decoration: underline;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { FC, Fragment, ReactElement } from "react";
+import { FC, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 
 // components
@@ -38,7 +38,7 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 	const isMyMessage = user?._id === lastMessage.author._id;
 
 	return (
-		<Fragment>
+		<>
 			{interlocutor && (
 				<li
 					className={cn(styles["dialogue__item"], {
@@ -81,7 +81,7 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 					</Box>
 				</li>
 			)}
-		</Fragment>
+		</>
 	);
 };
 

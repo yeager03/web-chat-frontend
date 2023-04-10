@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment } from "react";
+import { FC, ReactElement } from "react";
 
 // containers
 import DialoguesList from "../../containers/DialoguesList";
@@ -17,10 +17,10 @@ import styles from "./Dialogues.module.scss";
 
 const Dialogues: FC = (): ReactElement => {
 	return (
-		<Fragment>
+		<>
 			<Box className={styles["dialogues"]}>
 				<Box className={styles["dialogues__header"]}>
-					<QuestionAnswerRoundedIcon sx={{ fontSize: 21 }} />
+					<QuestionAnswerRoundedIcon sx={{ fontSize: 22 }} />
 					<Typography variant="h2">Список диалогов</Typography>
 				</Box>
 
@@ -30,7 +30,7 @@ const Dialogues: FC = (): ReactElement => {
 			</Box>
 
 			<Chat />
-		</Fragment>
+		</>
 	);
 };
 

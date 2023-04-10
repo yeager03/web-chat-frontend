@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment, ChangeEvent, FormEvent } from "react";
+import { FC, ReactElement, ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 // mui components
@@ -44,7 +44,7 @@ const SignInForm: FC<SignInFormProps> = (props): ReactElement => {
 	} = props;
 
 	return (
-		<Fragment>
+		<>
 			<Box className={styles["auth__top"]}>
 				<Typography variant="h2">Войти в аккаунт</Typography>
 				<Box className={styles["auth__top-link"]}>
@@ -144,7 +144,7 @@ const SignInForm: FC<SignInFormProps> = (props): ReactElement => {
 					Войти в аккаунт
 				</Button>
 			</form>
-		</Fragment>
+		</>
 	);
 };
 

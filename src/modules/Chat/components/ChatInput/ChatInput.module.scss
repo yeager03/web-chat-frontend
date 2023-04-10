@@ -12,6 +12,13 @@
 }
 
 .chat-input {
+	width: 100%;
+	background-color: #fff;
+	padding: 10px;
+
+	position: absolute;
+	bottom: 0;
+
 	.input-wrapper {
 		display: flex;
 		align-items: center;
@@ -64,5 +71,7 @@
 		overflow-y: auto;
 
 		font-size: 15px;
+
+		padding: 3px;
 	}
 }

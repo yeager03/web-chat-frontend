@@ -30,22 +30,25 @@ const RequestItem: FC<RequestItemProps> = (props): ReactElement => {
 				[styles["request__item_online"]]: isOnline,
 			})}
 		>
+			<Box className={styles["request__item-avatar"]}>
+				<UserAvatar user={props} />
+			</Box>
 			<Box className={styles["request__item-info"]}>
-				<Box className={styles["request__item-avatar"]}>
-					<UserAvatar user={props} />
-				</Box>
 				<Typography variant="h3" className={styles["request__item-title"]}>
 					{fullName}
 				</Typography>
-			</Box>
 
-			<Box className={styles["request__item-actions"]}>
-				<Button className={cn(styles["button"])} onClick={(e) => acceptRequestFriend(e, _id)}>
-					Принять заявку
-				</Button>
-				<Button className={cn(styles["button"], styles["button_deny"])} onClick={(e) => denyRequestFriend(e, _id)}>
-					Удалить подписчика
-				</Button>
+				<Box className={styles["request__item-actions"]}>
+					<Button className={cn(styles["button"])} onClick={(e) => acceptRequestFriend(e, _id)}>
+						Принять заявку
+					</Button>
+					<Button
+						className={cn(styles["button"], styles["button_deny"])}
+						onClick={(e) => denyRequestFriend(e, _id)}
+					>
+						Удалить подписчика
+					</Button>
+				</Box>
 			</Box>
 		</li>
 	);

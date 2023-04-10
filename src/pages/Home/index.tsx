@@ -1,5 +1,5 @@
 import { FC, ReactElement, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // dispatch
@@ -19,14 +19,20 @@ import socket from "../../core/socket";
 
 // sounds
 import NotificationSound from "../../assets/sounds/requests_sound.mp3";
+import MessageSound from "../../assets/sounds/message_sound.mp3";
 
 // selectors
-import { changeDialogueMessage, dialogueSelector } from "../../store/slices/dialogue/dialogueSlice";
+import {
+	changeDialogueMessage,
+	dialogueSelector,
+	setCurrentDialogue,
+	setCurrentDialogueId,
+} from "../../store/slices/dialogue/dialogueSlice";
 
 // actions
-import { getRequests } from "../../store/slices/friend/friendActions";
+import { getFriends, getRequests } from "../../store/slices/friend/friendActions";
 import { getDialogues } from "../../store/slices/dialogue/dialogueActions";
-import { addMessage } from "../../store/slices/message/messageSlice";
+import { addMessage, clearMessages } from "../../store/slices/message/messageSlice";
 
 // types
 import IMessage from "../../models/IMessage";
@@ -34,9 +40,10 @@ import IDialogue from "../../models/IDialogue";
 
 const Home: FC = (): ReactElement => {
 	const { user } = useAuth();
-	const { currentDialogueId } = useSelector(dialogueSelector);
+	const { currentDialogueId, dialogues } = useSelector(dialogueSelector);
 
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		dispatch(getRequests());
@@ -55,16 +62,41 @@ const Home: FC = (): ReactElement => {
 			}
 		});
 
-		socket.on("SERVER:DIALOGUE_CREATED", (dialogue: IDialogue) => {
-			console.log(dialogue);
+		socket.on("SERVER:NEW_FRIEND_ACCEPT", (userId: string) => {
+			if (user && user._id === userId) {
+				dispatch(getFriends());
+			}
+		});
 
-			if (user && dialogue.members.find((id) => String(id) === user._id)) {
+		socket.on("SERVER:FRIEND_REMOVE", (members: string[], dialogue: IDialogue | null) => {
+			if (user && members.includes(user._id)) {
+				dispatch(getFriends());
 				dispatch(getDialogues());
+
+				if (dialogue && currentDialogueId === dialogue._id) {
+					dispatch(setCurrentDialogueId(""));
+					dispatch(setCurrentDialogue(null));
+					dispatch(clearMessages());
+					navigate("/dialogues", { replace: true });
+				}
+			}
+		});
+
+		socket.on("SERVER:DIALOGUE_CREATED", (dialogue: IDialogue) => {
+			if (user && dialogue.members.find((member) => member._id === user._id)) {
+				dispatch(getDialogues());
+
+				if (dialogue.lastMessage.author._id !== user._id) {
+					const audio = new Audio(MessageSound);
+					audio.autoplay = true;
+					audio.volume = 0.25;
+					audio.play().catch((error) => console.log(error));
+				}
 			}
 		});
 
 		socket.on("SERVER:DIALOGUE_MESSAGE_UPDATE", (dialogue: IDialogue, message: IMessage) => {
-			if (user && dialogue.members.find((id) => String(id) === user._id)) {
+			if (dialogues.find((dl) => dl._id === dialogue._id)) {
 				dispatch(
 					changeDialogueMessage({
 						dialogueId: dialogue._id,
@@ -75,17 +107,29 @@ const Home: FC = (): ReactElement => {
 		});
 
 		socket.on("SERVER:MESSAGE_CREATED", (data: IMessage) => {
-			if (currentDialogueId === data.dialogue._id) {
-				dispatch(addMessage(data));
+			if (dialogues.find((dl) => dl._id === data.dialogue._id)) {
+				if (currentDialogueId === data.dialogue._id) {
+					dispatch(addMessage(data));
+				} else {
+					if (user && data.author._id !== user._id) {
+						const audio = new Audio(MessageSound);
+						audio.autoplay = true;
+						audio.volume = 0.25;
+						audio.play().catch((error) => console.log(error));
+					}
+				}
 			}
 		});
 
 		return () => {
 			socket.off("SERVER:NEW_FRIEND_REQUEST");
+			socket.off("SERVER:NEW_FRIEND_ACCEPT");
+			socket.off("SERVER:FRIEND_REMOVE");
 			socket.off("SERVER:DIALOGUE_CREATED");
+			socket.off("SERVER:DIALOGUE_MESSAGE_UPDATE");
 			socket.off("SERVER:MESSAGE_CREATED");
 		};
-	}, [currentDialogueId]);
+	}, [currentDialogueId, dialogues]);
 
 	return (
 		<main className={styles["home"]}>

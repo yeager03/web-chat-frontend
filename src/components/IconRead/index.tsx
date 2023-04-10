@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment } from "react";
+import { FC, ReactElement } from "react";
 
 type MessageProps = {
 	className: string;
@@ -11,7 +11,7 @@ const IconRead: FC<MessageProps> = (props): ReactElement => {
 	const { className, isMyMessage, isTyping, isRead } = props;
 
 	return (
-		<Fragment>
+		<>
 			{isMyMessage && !isTyping && (
 				<span className={className}>
 					{isRead ? (
@@ -35,7 +35,7 @@ const IconRead: FC<MessageProps> = (props): ReactElement => {
 					)}
 				</span>
 			)}
-		</Fragment>
+		</>
 	);
 };
 
