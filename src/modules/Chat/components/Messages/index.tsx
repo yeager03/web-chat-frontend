@@ -47,7 +47,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 	const emptyMessages =
 		status === "success" && !messages.length ? (
 			<Box className={styles["chat__empty"]}>
-				<Typography>Сообщение пока нет</Typography>
+				<Typography>У вас пока нет сообщений</Typography>
 			</Box>
 		) : null;
 

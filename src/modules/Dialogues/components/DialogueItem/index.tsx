@@ -35,7 +35,7 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 
 	const isRead = false; // test
 
-	const isMyMessage = user?._id === lastMessage.author._id;
+	const isMyMessage = user?._id === lastMessage?.author._id;
 
 	return (
 		<>
@@ -64,9 +64,11 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 							</Typography>
 						</Box>
 						<Box className={styles["dialogue__item-subtitle"]}>
-							<Typography className={styles["text"]}>
-								{isMyMessage ? `Вы: ${lastMessage["message"]}` : lastMessage["message"]}
-							</Typography>
+							{lastMessage && (
+								<Typography className={styles["text"]}>
+									{isMyMessage ? `Вы: ${lastMessage["message"]}` : lastMessage["message"]}
+								</Typography>
+							)}
 
 							{/* {lastMessage["unRead"] && lastMessage["unRead"] > 0 ? (
 								<Typography component={"span"} className={styles["count"]}>

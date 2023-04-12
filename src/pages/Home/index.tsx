@@ -11,6 +11,9 @@ import Sidebar from "../../modules/SideBar";
 // style
 import styles from "./Home.module.scss";
 
+// utils
+import decryptionText from "../../utils/decryptionText";
+
 // hooks
 import useAuth from "../../hooks/useAuth";
 
@@ -32,7 +35,7 @@ import {
 // actions
 import { getFriends, getRequests } from "../../store/slices/friend/friendActions";
 import { getDialogues } from "../../store/slices/dialogue/dialogueActions";
-import { addMessage, clearMessages } from "../../store/slices/message/messageSlice";
+import { addMessage, clearMessages, deleteMessage } from "../../store/slices/message/messageSlice";
 
 // types
 import IMessage from "../../models/IMessage";
@@ -95,28 +98,47 @@ const Home: FC = (): ReactElement => {
 			}
 		});
 
-		socket.on("SERVER:DIALOGUE_MESSAGE_UPDATE", (dialogue: IDialogue, message: IMessage) => {
-			if (dialogues.find((dl) => dl._id === dialogue._id)) {
-				dispatch(
-					changeDialogueMessage({
-						dialogueId: dialogue._id,
-						message,
-					})
-				);
+		socket.on("SERVER:DIALOGUE_MESSAGE_UPDATE", (dialogueId: string, message: IMessage) => {
+			if (dialogues.find((dl) => dl._id === dialogueId)) {
+				if (!message) {
+					dispatch(getDialogues());
+					dispatch(setCurrentDialogueId(""));
+					dispatch(setCurrentDialogue(null));
+					dispatch(clearMessages());
+					navigate("/dialogues", { replace: true });
+				} else {
+					dispatch(
+						changeDialogueMessage({
+							dialogueId,
+							message: {
+								...message,
+								message: decryptionText(message.message),
+							},
+						})
+					);
+				}
 			}
 		});
 
-		socket.on("SERVER:MESSAGE_CREATED", (data: IMessage) => {
-			if (dialogues.find((dl) => dl._id === data.dialogue._id)) {
-				if (currentDialogueId === data.dialogue._id) {
-					dispatch(addMessage(data));
+		socket.on("SERVER:MESSAGE_CREATED", (message: IMessage) => {
+			if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
+				if (currentDialogueId === String(message.dialogue)) {
+					dispatch(addMessage({ ...message, message: decryptionText(message.message) }));
 				} else {
-					if (user && data.author._id !== user._id) {
+					if (user && message.author._id !== user._id) {
 						const audio = new Audio(MessageSound);
 						audio.autoplay = true;
 						audio.volume = 0.25;
 						audio.play().catch((error) => console.log(error));
 					}
+				}
+			}
+		});
+
+		socket.on("SERVER:MESSAGE_REMOVED", (message: IMessage) => {
+			if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
+				if (currentDialogueId === String(message.dialogue)) {
+					dispatch(deleteMessage(message._id));
 				}
 			}
 		});
@@ -128,6 +150,7 @@ const Home: FC = (): ReactElement => {
 			socket.off("SERVER:DIALOGUE_CREATED");
 			socket.off("SERVER:DIALOGUE_MESSAGE_UPDATE");
 			socket.off("SERVER:MESSAGE_CREATED");
+			socket.off("SERVER:MESSAGE_REMOVED");
 		};
 	}, [currentDialogueId, dialogues]);
 

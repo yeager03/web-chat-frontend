@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import { Typography, Box, CircularProgress } from "@mui/material";
 
 // mui icons
-import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import { VerifiedUserRounded, ErrorRounded } from "@mui/icons-material";
 
 // component
 import Button from "../../../components/Button";
@@ -33,7 +32,7 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 	const errorMessage =
 		status === "error" ? (
 			<>
-				<ErrorRoundedIcon sx={{ fontSize: 90, color: "#ff4d4f" }} />
+				<ErrorRounded sx={{ fontSize: 90, color: "#ff4d4f" }} />
 				<Typography>{message}</Typography>
 			</>
 		) : null;
@@ -41,7 +40,7 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 	const expiredMessage =
 		status === "expired" ? (
 			<>
-				<ErrorRoundedIcon sx={{ fontSize: 90, color: "#ff4d4f" }} />
+				<ErrorRounded sx={{ fontSize: 90, color: "#ff4d4f" }} />
 				<Typography>{message}</Typography>
 				<Button
 					onClick={() => {
@@ -57,13 +56,11 @@ const ActivationForm: FC<ActivationFormProps> = (props): ReactElement => {
 	const successMessage =
 		status === "success" ? (
 			<>
-				<CheckCircleRoundedIcon sx={{ fontSize: 90, color: "#52C41A" }} />
+				<VerifiedUserRounded sx={{ fontSize: 90, color: "#52C41A" }} />
 				<Typography>{message}</Typography>
-				<Button styles={{ marginTop: "10px" }}>
-					<Link to="/auth/signin" className={styles["auth__activation-link"]}>
-						Войти в аккаунт
-					</Link>
-				</Button>
+				<Link to="/auth/signin" className={styles["auth__activation-link"]}>
+					Войти в аккаунт
+				</Link>
 			</>
 		) : null;
 

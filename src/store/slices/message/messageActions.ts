@@ -5,6 +5,7 @@ import MessageService from "../../../services/MessageService";
 
 // utils
 import getNotification from "../../../utils/notification";
+import decryptionText from "../../../utils/decryptionText";
 
 // types
 import IMessage from "../../../models/IMessage";
@@ -18,8 +19,7 @@ type CreateMessage = {
 export const getMessages = createAsyncThunk<IMessage[], string>("message/getMessages", async (currentDialogueId) => {
 	const response = await MessageService.getMessages(currentDialogueId);
 	const { messages }: MessagesResponse = response.data;
-
-	return messages;
+	return messages.map((item) => ({ ...item, message: decryptionText(item.message) }));
 });
 
 export const createMessage = createAsyncThunk<void, CreateMessage>(

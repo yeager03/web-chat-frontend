@@ -1,5 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+// utils
+import decryptionText from "../../../utils/decryptionText";
+
 // service
 import DialogueService from "../../../services/DialogueService";
 
@@ -10,5 +13,11 @@ export const getDialogues = createAsyncThunk<IDialogue[]>("dialogue/getDialogues
 	const response = await DialogueService.getDialogues();
 	const { dialogues } = response.data;
 
-	return dialogues;
+	return dialogues.map((item) => ({
+		...item,
+		lastMessage: {
+			...item.lastMessage,
+			message: decryptionText(item.lastMessage.message),
+		},
+	}));
 });
