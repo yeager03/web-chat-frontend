@@ -8,6 +8,7 @@ export default interface IMessage {
 	message: string;
 	dialogue: IDialogue;
 	unRead: boolean;
+	isEdited: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

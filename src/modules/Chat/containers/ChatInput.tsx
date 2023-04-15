@@ -1,72 +1,86 @@
-import {
-	FC,
-	ReactElement,
-	ChangeEvent,
-	KeyboardEvent,
-	useState,
-	useRef,
-	useEffect,
-	MouseEvent,
-	RefObject,
-} from "react";
+import { FC, ReactElement, ChangeEvent, KeyboardEvent, RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useAppDispatch } from "../../../store";
 
 // components
 import BaseChatInput from "../components/ChatInput";
 
-// hooks
-import useDebounce from "../../../hooks/useDebounce";
-
 // selector
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
-// actions
-import { createMessage } from "../../../store/slices/message/messageActions";
-
 // types
-import { Status } from "../../../models/Status";
-
-export type Emoji = {
-	id: string;
-	keywords: string[];
-	name: string;
-	native: string;
-	shortcodes: string;
-	unified: string;
-};
+import { IMessageValue } from ".";
 
 type ChatInputProps = {
-	messageValue: string;
-	setMessageValue: (value: string) => void;
+	inputRef: RefObject<HTMLDivElement>;
 	chatInputRef: RefObject<HTMLDivElement>;
+	triggerRef: RefObject<SVGSVGElement>;
+	nodeRef: RefObject<HTMLDivElement>;
+	messageValue: IMessageValue;
+	showEmojis: boolean;
+	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	toggleEmojiModal: (flag: boolean) => void;
+	cursorInput: () => void;
+	clearInput: () => void;
+	handleSendMessage: () => void;
+	handleEditMessage: (id: string, message: string) => void;
+	handleRemoveMessage: (id: string) => void;
 };
 
 const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
-	const { messageValue, setMessageValue, chatInputRef } = props;
+	const {
+		messageValue,
+		inputRef,
+		chatInputRef,
+		triggerRef,
+		nodeRef,
+		showEmojis,
+		setMessageValue,
+		toggleEmojiModal,
+		cursorInput,
+		clearInput,
+		handleSendMessage,
+		handleEditMessage,
+		handleRemoveMessage,
+	} = props;
 	const { currentDialogueId } = useSelector(dialogueSelector);
 
-	const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (triggerRef.current && triggerRef.current.contains(event.target as HTMLElement)) {
+				return toggleEmojiModal(!showEmojis);
+			}
 
-	const inputRef = useRef<HTMLDivElement>(null);
+			if (nodeRef.current && !nodeRef.current.contains(event.target as HTMLElement)) {
+				return toggleEmojiModal(false);
+			}
+		};
 
-	const dispatch = useAppDispatch();
+		document.addEventListener("click", handleClickOutside, true);
+
+		return () => {
+			document.removeEventListener("click", handleClickOutside, true);
+		};
+	}, [showEmojis]);
 
 	useEffect(() => {
-		inputRef.current && inputRef.current.focus();
-	}, [currentDialogueId, anchorEl]);
+		if (currentDialogueId) {
+			inputRef.current && inputRef.current.focus();
+		}
+	}, [currentDialogueId]);
 
-	const handleClick = (event: MouseEvent<Element>) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const handleClose = () => {
-		setAnchorEl(null);
-		inputRef.current && inputRef.current.focus();
-	};
+	useEffect(() => {
+		if (messageValue.id && messageValue.value.trim().length && inputRef.current) {
+			inputRef.current.textContent = messageValue.value;
+			inputRef.current.focus();
+			cursorInput();
+		}
+	}, [messageValue.id]);
 
 	const handleChangeSearchValue = (e: ChangeEvent<HTMLDivElement>) => {
-		setMessageValue(e.target.textContent ? e.target.textContent.trim() : "");
+		setMessageValue((prevState) => ({
+			...prevState,
+			value: e.target.textContent ? e.target.textContent.trim() : "",
+		}));
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -74,58 +88,45 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 			e.preventDefault();
 		}
 
-		if (e.key === "Enter" && messageValue.trim().length) {
-			sendMessage();
+		if (e.key === "Enter" && messageValue.value.trim().length) {
+			if (messageValue.type === "create") {
+				sendMessage();
+			} else if (messageValue.type === "edit") {
+				editMessage();
+			}
 		}
 	};
 
 	const sendMessage = () => {
-		dispatch(
-			createMessage({
-				message: messageValue.trim(),
-				dialogueId: currentDialogueId,
-			})
-		);
+		handleSendMessage();
+		clearInput();
+	};
 
-		setMessageValue("");
-		if (inputRef.current) {
-			inputRef.current.textContent = "";
+	const editMessage = () => {
+		if (messageValue.id) {
+			handleEditMessage(messageValue.id, messageValue.value);
+			clearInput();
 		}
 	};
 
-	const handleClickEmoji = (emoji: Emoji) => {
-		setMessageValue(messageValue + emoji.native);
-
-		const input = inputRef.current;
-
-		if (input) {
-			input.textContent = input.textContent + emoji.native;
-
-			const range = document.createRange();
-			range.selectNodeContents(input);
-			range.collapse(false);
-
-			const sel = window.getSelection();
-			sel && sel.removeAllRanges();
-			sel && sel.addRange(range);
-
-			handleClose();
+	const removeMessage = () => {
+		if (messageValue.id) {
+			handleRemoveMessage(messageValue.id);
+			clearInput();
 		}
 	};
 
 	return (
 		<BaseChatInput
 			messageValue={messageValue}
-			showEmojis={Boolean(anchorEl)}
-			anchorEl={anchorEl}
-			handleChangeSearchValue={handleChangeSearchValue}
-			handleClick={handleClick}
-			handleClose={handleClose}
-			handleClickEmoji={handleClickEmoji}
-			handleKeyDown={handleKeyDown}
-			sendMessage={sendMessage}
+			triggerRef={triggerRef}
 			inputRef={inputRef}
 			chatInputRef={chatInputRef}
+			handleChangeSearchValue={handleChangeSearchValue}
+			handleKeyDown={handleKeyDown}
+			sendMessage={sendMessage}
+			editMessage={editMessage}
+			removeMessage={removeMessage}
 		/>
 	);
 };

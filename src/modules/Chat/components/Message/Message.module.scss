@@ -137,6 +137,12 @@
 		color: $white;
 		line-height: 20px;
 		word-wrap: break-word;
+
+		b {
+			font-size: 12px;
+			opacity: 0.7;
+			font-weight: 500;
+		}
 	}
 
 	&__attachments {

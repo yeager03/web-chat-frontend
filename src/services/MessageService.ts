@@ -14,6 +14,12 @@ export default class MessageService {
 	}
 
 	public static async removeMessage(messageId: string): Promise<AxiosResponse<MessageResponse>> {
-		return $api.delete<MessageResponse>(`/message/${messageId}`);
+		return $api.delete<MessageResponse>(`/message/remove/${messageId}`);
+	}
+
+	public static async editMessage(messageId: string, messageText: string): Promise<AxiosResponse<MessageResponse>> {
+		return $api.put<MessageResponse>(`/message/edit/${messageId}`, {
+			message: messageText,
+		});
 	}
 }

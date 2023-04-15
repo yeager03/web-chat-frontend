@@ -6,7 +6,7 @@ import { Status } from "../../../models/Status";
 import IMessage from "../../../models/IMessage";
 
 // actions
-import { getMessages, createMessage, removeMessage } from "./messageActions";
+import { getMessages, createMessage, deleteMessage, editMessage, EditMessage } from "./messageActions";
 
 interface IMessageState {
 	status: Status;
@@ -22,15 +22,25 @@ export const messageSlice = createSlice({
 	name: "message",
 	initialState,
 	reducers: {
-		clearMessages: (state) => {
+		socketClearMessages: (state) => {
 			state.messages = [];
 			state.status = Status["IDLE"];
 		},
-		addMessage: (state, action: PayloadAction<IMessage>) => {
+		socketAddMessage: (state, action: PayloadAction<IMessage>) => {
 			state.messages.push(action.payload);
 		},
-		deleteMessage: (state, action: PayloadAction<string>) => {
+		socketDeleteMessage: (state, action: PayloadAction<string>) => {
 			state.messages = state.messages.filter((message) => message._id !== action.payload);
+		},
+		socketEditMessage: (state, action: PayloadAction<EditMessage>) => {
+			state.messages = state.messages.map((message) => {
+				if (message._id === action.payload.messageId) {
+					message.message = action.payload.messageText;
+					message.isEdited = true;
+				}
+
+				return message;
+			});
 		},
 	},
 	extraReducers: (builder) => {
@@ -57,19 +67,37 @@ export const messageSlice = createSlice({
 				state.status = Status["ERROR"];
 			})
 			// remove message
-			.addCase(removeMessage.pending, () => {})
-			.addCase(removeMessage.fulfilled, (state, action) => {
+			.addCase(deleteMessage.pending, () => {})
+			.addCase(deleteMessage.fulfilled, (state, action) => {
 				if (action.payload) {
 					state.status = Status["SUCCESS"];
 					state.messages = state.messages.filter((message) => message._id !== action.payload);
 				}
 			})
-			.addCase(removeMessage.rejected, (state) => {
+			.addCase(deleteMessage.rejected, (state) => {
+				state.status = Status["ERROR"];
+			})
+			// edit message
+			.addCase(editMessage.pending, () => {})
+			.addCase(editMessage.fulfilled, (state, action) => {
+				if (action.payload) {
+					state.status = Status["SUCCESS"];
+					state.messages = state.messages.map((message) => {
+						if (message._id === action.payload.messageId) {
+							message.message = action.payload.messageText;
+							message.isEdited = true;
+						}
+
+						return message;
+					});
+				}
+			})
+			.addCase(editMessage.rejected, (state) => {
 				state.status = Status["ERROR"];
 			});
 	},
 });
 
 export const messageSelector = (state: RootState) => state.message;
-export const { addMessage, deleteMessage, clearMessages } = messageSlice.actions;
+export const { socketAddMessage, socketDeleteMessage, socketEditMessage, socketClearMessages } = messageSlice.actions;
 export default messageSlice.reducer;

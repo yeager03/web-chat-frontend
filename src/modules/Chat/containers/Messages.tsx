@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect, useRef } from "react";
+import { FC, ReactElement, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { useSelector } from "react-redux";
 
 // dispatch
@@ -16,14 +16,17 @@ import { getMessages } from "../../../store/slices/message/messageActions";
 
 // types
 import { Status } from "../../../models/Status";
+import { IMessageValue } from ".";
 
 type MessagesProps = {
 	status: Status;
 	chatInputHeight: number;
+	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	handleRemoveMessage: (id: string) => void;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { status, chatInputHeight } = props;
+	const { status, chatInputHeight, setMessageValue, handleRemoveMessage } = props;
 
 	const { currentDialogueId } = useSelector(dialogueSelector);
 	const { messages } = useSelector(messageSelector);
@@ -47,7 +50,14 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 	}, [messages]);
 
 	return (
-		<BaseMessages messages={messages} status={status} messagesRef={messagesRef} chatInputHeight={chatInputHeight} />
+		<BaseMessages
+			messages={messages}
+			status={status}
+			messagesRef={messagesRef}
+			chatInputHeight={chatInputHeight}
+			setMessageValue={setMessageValue}
+			handleRemoveMessage={handleRemoveMessage}
+		/>
 	);
 };
 

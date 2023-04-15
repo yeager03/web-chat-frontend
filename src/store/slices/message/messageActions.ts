@@ -11,9 +11,14 @@ import decryptionText from "../../../utils/decryptionText";
 import IMessage from "../../../models/IMessage";
 import MessagesResponse, { MessageResponse } from "../../../models/response/MessageResponse";
 
-type CreateMessage = {
+export type CreateMessage = {
 	message: string;
 	dialogueId: string;
+};
+
+export type EditMessage = {
+	messageId: string;
+	messageText: string;
 };
 
 export const getMessages = createAsyncThunk<IMessage[], string>("message/getMessages", async (currentDialogueId) => {
@@ -29,7 +34,7 @@ export const createMessage = createAsyncThunk<void, CreateMessage>(
 	}
 );
 
-export const removeMessage = createAsyncThunk<string, string, { rejectValue: string }>(
+export const deleteMessage = createAsyncThunk<string, string, { rejectValue: string }>(
 	"message/removeMessage",
 	async (messageId, thunkApi) => {
 		try {
@@ -41,6 +46,34 @@ export const removeMessage = createAsyncThunk<string, string, { rejectValue: str
 			}
 
 			return messageId;
+		} catch (error: any) {
+			if (error.response && error.response.data) {
+				const { status, message } = error.response.data;
+
+				if (status === "error") {
+					getNotification(message, status);
+				}
+
+				return thunkApi.rejectWithValue(message);
+			} else {
+				return thunkApi.rejectWithValue(error.message);
+			}
+		}
+	}
+);
+
+export const editMessage = createAsyncThunk<EditMessage, EditMessage, { rejectValue: string }>(
+	"message/editMessage",
+	async ({ messageId, messageText }, thunkApi) => {
+		try {
+			const response = await MessageService.editMessage(messageId, messageText);
+			const { status, message }: MessageResponse = response.data;
+
+			if (status === "success") {
+				getNotification(message, status);
+			}
+
+			return { messageId, messageText };
 		} catch (error: any) {
 			if (error.response && error.response.data) {
 				const { status, message } = error.response.data;

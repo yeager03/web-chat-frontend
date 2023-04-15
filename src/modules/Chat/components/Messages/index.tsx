@@ -1,4 +1,4 @@
-import { FC, ReactElement, RefObject } from "react";
+import { FC, ReactElement, RefObject, Dispatch, SetStateAction } from "react";
 
 // classnames
 import cn from "classnames";
@@ -18,16 +18,19 @@ import Message from "../../containers/Message";
 // types
 import { Status } from "../../../../models/Status";
 import IMessage from "../../../../models/IMessage";
+import { IMessageValue } from "../../containers";
 
 type MessagesProps = {
 	messages: IMessage[];
 	status: Status;
 	messagesRef: RefObject<HTMLDivElement>;
 	chatInputHeight: number;
+	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	handleRemoveMessage: (id: string) => void;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { messages, status, messagesRef, chatInputHeight } = props;
+	const { messages, status, messagesRef, chatInputHeight, setMessageValue, handleRemoveMessage } = props;
 
 	const chooseDialogue =
 		status === "idle" ? (
@@ -53,7 +56,14 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 
 	const content =
 		status === "success" && messages.length
-			? messages.map((message) => <Message key={message["_id"]} {...message} />)
+			? messages.map((message) => (
+					<Message
+						key={message["_id"]}
+						{...message}
+						setMessageValue={setMessageValue}
+						handleRemoveMessage={handleRemoveMessage}
+					/>
+			  ))
 			: null;
 
 	return (

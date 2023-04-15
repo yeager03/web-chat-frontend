@@ -1,4 +1,4 @@
-import { FC, ReactElement, MouseEvent } from "react";
+import { FC, ReactElement, MouseEvent, Dispatch, SetStateAction } from "react";
 
 // mui components
 import { Popover, Box } from "@mui/material";
@@ -20,9 +20,12 @@ import getMessageDate from "../../../../utils/messageDate";
 // style
 import styles from "./Message.module.scss";
 
+// hooks
+import useAuth from "../../../../hooks/useAuth";
+
 // types
 import IMessage from "../../../../models/IMessage";
-import useAuth from "../../../../hooks/useAuth";
+import { IMessageValue } from "../../containers";
 
 type MessageProps = IMessage & {
 	isTyping: boolean; // del ?
@@ -31,9 +34,10 @@ type MessageProps = IMessage & {
 	audio?: string;
 	anchorEl: HTMLDivElement | null;
 	open: boolean;
-	handleRemoveMessage: (messageId: string) => void;
 	handleOpen: (e: MouseEvent<HTMLDivElement>) => void;
 	handleClose: () => void;
+	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	handleRemoveMessage: (id: string) => void;
 };
 
 const Message: FC<MessageProps> = (props): ReactElement => {
@@ -44,13 +48,15 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 		createdAt,
 		isTyping,
 		isRead,
+		isEdited,
 		attachments,
 		audio,
 		anchorEl,
 		open,
-		handleRemoveMessage,
 		handleOpen,
 		handleClose,
+		setMessageValue,
+		handleRemoveMessage,
 	} = props;
 	const { user } = useAuth();
 	const isMyMessage = user?._id === author._id;
@@ -82,13 +88,20 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 				}}
 			>
 				<Box className={styles["message__popover"]}>
+					<EditRounded
+						className={styles["popover__icon"]}
+						onClick={() => {
+							setMessageValue({ value: message, type: "edit", id: _id });
+							handleClose();
+						}}
+					/>
 					<DeleteRounded
 						className={styles["popover__icon"]}
 						onClick={() => {
 							handleRemoveMessage(_id);
+							handleClose();
 						}}
 					/>
-					<EditRounded className={styles["popover__icon"]} />
 				</Box>
 			</Popover>
 
@@ -110,7 +123,18 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 								<span></span>
 							</Box>
 						)}
-						{message && <p className={styles["message__text"]}>{message}</p>}
+						{message && (
+							<p className={styles["message__text"]}>
+								{isEdited ? (
+									<>
+										{message}
+										<b>(ред.)</b>
+									</>
+								) : (
+									message
+								)}
+							</p>
+						)}
 						{audio && <AudioMessage audio={audio} />}
 					</Box>
 				)}

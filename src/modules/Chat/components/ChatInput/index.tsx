@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, ReactElement, KeyboardEvent, Ref, MouseEvent, RefObject } from "react";
+import { ChangeEvent, FC, ReactElement, KeyboardEvent, RefObject } from "react";
 
 // mui components
-import { Box, Popover } from "@mui/material";
+import { Box } from "@mui/material";
 
 // style
 import styles from "./ChatInput.module.scss";
@@ -10,65 +10,48 @@ import styles from "./ChatInput.module.scss";
 import cn from "classnames";
 
 // mui icons
-import { SentimentSatisfiedAltRounded, MicRounded, CameraAltRounded, SendRounded } from "@mui/icons-material";
-
-// emoji
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import {
+	SentimentSatisfiedAltRounded,
+	MicRounded,
+	CameraAltRounded,
+	SendRounded,
+	CheckCircleRounded,
+	DeleteRounded,
+} from "@mui/icons-material";
 
 // types
-import { Emoji } from "../../containers/ChatInput";
+import { IMessageValue } from "../../containers";
 
 type ChatInputProps = {
-	messageValue: string;
-	showEmojis: boolean;
-	anchorEl: Element | null;
+	messageValue: IMessageValue;
+	triggerRef: RefObject<SVGSVGElement>;
+	inputRef: RefObject<HTMLDivElement>;
+	chatInputRef: RefObject<HTMLDivElement>;
 	handleChangeSearchValue: (e: ChangeEvent<HTMLDivElement>) => void;
-	handleClick: (e: MouseEvent<Element>) => void;
-	handleClose: () => void;
-	handleClickEmoji: (emoji: Emoji) => void;
 	handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
 	sendMessage: () => void;
-	inputRef: Ref<HTMLDivElement>;
-	chatInputRef: RefObject<HTMLDivElement>;
+	editMessage: () => void;
+	removeMessage: () => void;
 };
 
 const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 	const {
 		messageValue,
-		showEmojis,
-		anchorEl,
-		handleChangeSearchValue,
-		handleClick,
-		handleClose,
-		handleClickEmoji,
-		handleKeyDown,
-		sendMessage,
+		triggerRef,
 		inputRef,
 		chatInputRef,
+		handleChangeSearchValue,
+		handleKeyDown,
+		sendMessage,
+		editMessage,
+		removeMessage,
 	} = props;
 	return (
 		<Box className={styles["chat-input"]} ref={chatInputRef}>
-			<Popover
-				id={"simple-popover"}
-				open={showEmojis}
-				anchorEl={anchorEl}
-				onClose={handleClose}
-				anchorOrigin={{
-					vertical: "top",
-					horizontal: "center",
-				}}
-				transformOrigin={{
-					vertical: "bottom",
-					horizontal: "center",
-				}}
-			>
-				<Picker data={data} onEmojiSelect={handleClickEmoji} theme="light" locale="ru" />
-			</Popover>
 			<Box className={styles["input-wrapper"]}>
 				<SentimentSatisfiedAltRounded
 					className={cn(styles["input-wrapper__icon"], styles["input-wrapper__smile"])}
-					onClick={handleClick}
+					ref={triggerRef}
 				/>
 				<Box
 					contentEditable="true"
@@ -79,13 +62,25 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 				></Box>
 				<Box className={styles["input-wrapper__actions"]}>
 					<CameraAltRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__camera"])} />
-					{messageValue.trim().length ? (
-						<SendRounded
+					{messageValue.type === "create" ? (
+						messageValue.value.trim().length ? (
+							<SendRounded
+								className={cn(styles["input-wrapper__icon"], styles["input-wrapper__send"])}
+								onClick={sendMessage}
+							/>
+						) : (
+							<MicRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__audio"])} />
+						)
+					) : messageValue.value.trim().length ? (
+						<CheckCircleRounded
 							className={cn(styles["input-wrapper__icon"], styles["input-wrapper__send"])}
-							onClick={sendMessage}
+							onClick={editMessage}
 						/>
 					) : (
-						<MicRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__audio"])} />
+						<DeleteRounded
+							className={cn(styles["input-wrapper__icon"], styles["input-wrapper__audio"])}
+							onClick={removeMessage}
+						/>
 					)}
 				</Box>
 			</Box>

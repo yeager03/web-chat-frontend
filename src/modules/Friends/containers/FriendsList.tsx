@@ -11,7 +11,7 @@ import { friendSelector } from "../../../store/slices/friend/friendSlice";
 // actions
 import { getFriends, removeFriend } from "../../../store/slices/friend/friendActions";
 import { setCurrentDialogue, setCurrentDialogueId } from "../../../store/slices/dialogue/dialogueSlice";
-import { clearMessages } from "../../../store/slices/message/messageSlice";
+import { socketClearMessages } from "../../../store/slices/message/messageSlice";
 
 // service
 import DialogueService from "../../../services/DialogueService";
@@ -37,7 +37,7 @@ const FriendsList: FC = (): ReactElement => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		dispatch(clearMessages());
+		dispatch(socketClearMessages());
 		dispatch(setCurrentDialogue(null));
 		dispatch(setCurrentDialogueId(""));
 		dispatch(getFriends());
