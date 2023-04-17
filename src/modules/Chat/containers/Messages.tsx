@@ -4,6 +4,9 @@ import { useSelector } from "react-redux";
 // dispatch
 import { useAppDispatch } from "../../../store";
 
+// socket
+import { socket } from "../../../core/socket";
+
 // components
 import BaseMessages from "../components/Messages";
 
@@ -13,23 +16,32 @@ import { messageSelector } from "../../../store/slices/message/messageSlice";
 
 // actins
 import { getMessages } from "../../../store/slices/message/messageActions";
+import { setTyping } from "../../../store/slices/message/messageSlice";
 
 // types
 import { Status } from "../../../models/Status";
 import { IMessageValue } from ".";
+import IUser from "../../../models/IUser";
 
 type MessagesProps = {
 	status: Status;
 	chatInputHeight: number;
+	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
 	handleRemoveMessage: (id: string) => void;
 };
 
+type TypingResponse = {
+	flag: boolean;
+	interlocutorId: string;
+	currentDialogueId: string;
+};
+
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { status, chatInputHeight, setMessageValue, handleRemoveMessage } = props;
+	const { status, chatInputHeight, interlocutor, setMessageValue, handleRemoveMessage } = props;
 
 	const { currentDialogueId } = useSelector(dialogueSelector);
-	const { messages } = useSelector(messageSelector);
+	const { messages, isTyping } = useSelector(messageSelector);
 
 	const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +50,24 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 	useEffect(() => {
 		if (currentDialogueId) {
 			dispatch(getMessages(currentDialogueId));
+
+			let timer: NodeJS.Timeout;
+
+			socket.on("SERVER:TYPING_RESPONSE", (data: TypingResponse) => {
+				if (currentDialogueId === data.currentDialogueId) {
+					dispatch(setTyping(data.flag));
+
+					timer = setTimeout(() => {
+						dispatch(setTyping(false));
+					}, 3000);
+				}
+
+				console.log(data);
+			});
+
+			return () => {
+				clearTimeout(timer);
+			};
 		}
 	}, [currentDialogueId]);
 
@@ -55,6 +85,8 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 			status={status}
 			messagesRef={messagesRef}
 			chatInputHeight={chatInputHeight}
+			isTyping={isTyping}
+			interlocutor={interlocutor}
 			setMessageValue={setMessageValue}
 			handleRemoveMessage={handleRemoveMessage}
 		/>

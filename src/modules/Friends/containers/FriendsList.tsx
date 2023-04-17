@@ -54,7 +54,10 @@ const FriendsList: FC = (): ReactElement => {
 		e.preventDefault();
 		if (interlocutorId) {
 			try {
-				const response = await DialogueService.createDialogue(interlocutorId, messageValue.trim());
+				const response = await DialogueService.createDialogue({
+					interlocutorId,
+					lastMessageText: messageValue.trim(),
+				});
 				const { status, message, dialogue }: DialogueResponse = response.data;
 
 				if (status === "success") {

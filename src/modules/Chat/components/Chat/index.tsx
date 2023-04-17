@@ -81,7 +81,9 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 					</Box>
 				</Box>
 			)}
+
 			<Messages
+				interlocutor={interlocutor}
 				status={status}
 				chatInputHeight={chatInputHeight}
 				setMessageValue={setMessageValue}
@@ -91,6 +93,7 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 			{status === "success" && (
 				<>
 					<ChatInput
+						interlocutor={interlocutor}
 						inputRef={inputRef}
 						chatInputRef={chatInputRef}
 						nodeRef={nodeRef}

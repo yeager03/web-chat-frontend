@@ -1,6 +1,12 @@
 import { FC, ReactElement, ChangeEvent, KeyboardEvent, RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import { useSelector } from "react-redux";
 
+// hooks
+import useDebounce from "../../../hooks/useDebounce";
+
+// socket
+import { socket } from "../../../core/socket";
+
 // components
 import BaseChatInput from "../components/ChatInput";
 
@@ -9,6 +15,7 @@ import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 // types
 import { IMessageValue } from ".";
+import IUser from "../../../models/IUser";
 
 type ChatInputProps = {
 	inputRef: RefObject<HTMLDivElement>;
@@ -17,6 +24,7 @@ type ChatInputProps = {
 	nodeRef: RefObject<HTMLDivElement>;
 	messageValue: IMessageValue;
 	showEmojis: boolean;
+	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
 	toggleEmojiModal: (flag: boolean) => void;
 	cursorInput: () => void;
@@ -34,6 +42,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		triggerRef,
 		nodeRef,
 		showEmojis,
+		interlocutor,
 		setMessageValue,
 		toggleEmojiModal,
 		cursorInput,
@@ -43,6 +52,8 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		handleRemoveMessage,
 	} = props;
 	const { currentDialogueId } = useSelector(dialogueSelector);
+
+	const debounceMessage = useDebounce(messageValue.value, 2000);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -75,6 +86,24 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 			cursorInput();
 		}
 	}, [messageValue.id]);
+
+	useEffect(() => {
+		if (debounceMessage.trim().length) {
+			let timer: NodeJS.Timeout;
+
+			timer = setTimeout(() => {
+				socket.emit("CLIENT:MESSAGE_TYPING", {
+					flag: true,
+					currentDialogueId,
+					interlocutorId: interlocutor?._id,
+				});
+			}, 2000);
+
+			return () => {
+				clearTimeout(timer);
+			};
+		}
+	}, [debounceMessage]);
 
 	const handleChangeSearchValue = (e: ChangeEvent<HTMLDivElement>) => {
 		setMessageValue((prevState) => ({

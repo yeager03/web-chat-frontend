@@ -1,5 +1,5 @@
 import { RootState } from "../../index";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // types
 import { Status } from "../../../models/Status";
@@ -25,7 +25,15 @@ const initialState: IFriendState = {
 export const friendSlice = createSlice({
 	name: "friend",
 	initialState,
-	reducers: {},
+	reducers: {
+		socketAddRequest: (state, action: PayloadAction<IUser>) => {
+			state.requests.push(action.payload);
+			state.requestsLength = state.requests.length;
+		},
+		socketAddFriend: (state, action: PayloadAction<IUser>) => {
+			state.friends.push(action.payload);
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			// get friends
@@ -99,4 +107,5 @@ export const friendSlice = createSlice({
 });
 
 export const friendSelector = (state: RootState) => state.friend;
+export const { socketAddRequest, socketAddFriend } = friendSlice.actions;
 export default friendSlice.reducer;

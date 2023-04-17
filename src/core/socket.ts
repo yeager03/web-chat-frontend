@@ -1,8 +1,16 @@
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 
 // url
 import { API_URL } from "./axios";
 
-const socket = io(API_URL || "");
+let socket: Socket;
 
-export default socket;
+const connectSocket = (user_id: string) => {
+	socket = io(API_URL || "", {
+		query: {
+			user_id,
+		},
+	});
+};
+
+export { socket, connectSocket };

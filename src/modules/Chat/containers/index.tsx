@@ -1,4 +1,4 @@
-import { FC, ReactElement, useLayoutEffect, useState, useRef, useEffect } from "react";
+import { FC, ReactElement, useLayoutEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
 // dispatch
@@ -97,13 +97,19 @@ const Chat: FC = (): ReactElement => {
 		setShowEmojis(flag);
 	};
 
-	const handleSendMessage = () =>
-		dispatch(
-			createMessage({
-				message: messageValue.value.trim(),
-				dialogueId: currentDialogueId,
-			})
-		);
+	const handleSendMessage = () => {
+		if (user && interlocutor) {
+			dispatch(
+				createMessage({
+					from: user._id,
+					to: interlocutor._id,
+					messageText: messageValue.value.trim(),
+					dialogueId: currentDialogueId,
+				})
+			);
+		}
+	};
+
 	const handleEditMessage = (messageId: string, messageText: string) =>
 		messageText !== prevMessageValue &&
 		dispatch(

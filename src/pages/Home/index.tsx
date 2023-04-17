@@ -18,7 +18,7 @@ import decryptionText from "../../utils/decryptionText";
 import useAuth from "../../hooks/useAuth";
 
 // socket
-import socket from "../../core/socket";
+import { socket, connectSocket } from "../../core/socket";
 
 // sounds
 import NotificationSound from "../../assets/sounds/requests_sound.mp3";
@@ -33,18 +33,21 @@ import {
 } from "../../store/slices/dialogue/dialogueSlice";
 
 // actions
-import { getFriends, getRequests } from "../../store/slices/friend/friendActions";
+import { getRequests, getFriends } from "../../store/slices/friend/friendActions";
+import { socketAddRequest, socketAddFriend } from "../../store/slices/friend/friendSlice";
 import { getDialogues } from "../../store/slices/dialogue/dialogueActions";
 import {
 	socketAddMessage,
 	socketEditMessage,
 	socketDeleteMessage,
 	socketClearMessages,
+	setTyping,
 } from "../../store/slices/message/messageSlice";
 
 // types
 import IMessage from "../../models/IMessage";
 import IDialogue from "../../models/IDialogue";
+import IUser from "../../models/IUser";
 
 const Home: FC = (): ReactElement => {
 	const { user } = useAuth();
@@ -54,14 +57,19 @@ const Home: FC = (): ReactElement => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		if (!socket && user) {
+			connectSocket(user._id);
+		}
+
 		dispatch(getRequests());
 		dispatch(getDialogues());
 	}, []);
 
 	useEffect(() => {
-		socket.on("SERVER:NEW_FRIEND_REQUEST", (userId: string) => {
-			if (user && user._id === userId) {
-				dispatch(getRequests());
+		socket.on("SERVER:NEW_FRIEND_REQUEST", (recipientId: string, request: IUser) => {
+			// если получатель мы
+			if (user && user._id === recipientId) {
+				dispatch(socketAddRequest(request));
 
 				const audio = new Audio(NotificationSound);
 				audio.autoplay = true;
@@ -70,13 +78,18 @@ const Home: FC = (): ReactElement => {
 			}
 		});
 
-		socket.on("SERVER:NEW_FRIEND_ACCEPT", (userId: string) => {
-			if (user && user._id === userId) {
-				dispatch(getFriends());
+		socket.on("SERVER:NEW_FRIEND_ACCEPT", (recipientId: string, friend: IUser) => {
+			console.log("friend accept", friend._id);
+
+			// если получатель мы
+			if (user && user._id === recipientId) {
+				dispatch(socketAddFriend(friend));
 			}
 		});
 
 		socket.on("SERVER:FRIEND_REMOVE", (members: string[], dialogue: IDialogue | null) => {
+			console.log("friend removed");
+
 			if (user && members.includes(user._id)) {
 				dispatch(getFriends());
 				dispatch(getDialogues());
@@ -91,6 +104,8 @@ const Home: FC = (): ReactElement => {
 		});
 
 		socket.on("SERVER:DIALOGUE_CREATED", (dialogue: IDialogue) => {
+			console.log(dialogue);
+			console.log("new dialogue created");
 			if (user && dialogue.members.find((member) => member._id === user._id)) {
 				dispatch(getDialogues());
 
@@ -105,8 +120,9 @@ const Home: FC = (): ReactElement => {
 
 		socket.on("SERVER:DIALOGUE_MESSAGE_UPDATE", (dialogueId: string, message: IMessage) => {
 			if (dialogues.find((dl) => dl._id === dialogueId)) {
-				console.log("changed");
+				console.log("dialogue message changed");
 				if (!message) {
+					console.log(message);
 					dispatch(getDialogues());
 					dispatch(setCurrentDialogueId(""));
 					dispatch(setCurrentDialogue(null));
@@ -127,8 +143,10 @@ const Home: FC = (): ReactElement => {
 		});
 
 		socket.on("SERVER:MESSAGE_CREATED", (message: IMessage) => {
+			// console.log(message);
 			if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
 				if (currentDialogueId === String(message.dialogue)) {
+					dispatch(setTyping(false));
 					dispatch(socketAddMessage({ ...message, message: decryptionText(message.message) }));
 				} else {
 					if (user && message.author._id !== user._id) {
@@ -142,6 +160,7 @@ const Home: FC = (): ReactElement => {
 		});
 
 		socket.on("SERVER:MESSAGE_DELETED", (message: IMessage) => {
+			console.log("message deleted");
 			if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
 				if (currentDialogueId === String(message.dialogue)) {
 					dispatch(socketDeleteMessage(message._id));

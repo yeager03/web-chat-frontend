@@ -7,6 +7,9 @@ import BaseSideBar from "../components";
 // dispatch
 import { useAppDispatch } from "../../../store";
 
+// socket
+import { socket } from "../../../core/socket";
+
 // actions
 import { logOut } from "../../../store/slices/user/authActions";
 
@@ -24,6 +27,7 @@ const SideBar: FC = (): ReactElement => {
 
 	const logout = () => {
 		dispatch(logOut());
+		socket.emit("logout");
 	};
 
 	return <BaseSideBar user={user} logout={logout} requestsLength={requestsLength} />;

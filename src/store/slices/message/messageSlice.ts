@@ -10,11 +10,13 @@ import { getMessages, createMessage, deleteMessage, editMessage, EditMessage } f
 
 interface IMessageState {
 	status: Status;
+	isTyping: boolean;
 	messages: IMessage[];
 }
 
 const initialState: IMessageState = {
 	status: Status["IDLE"],
+	isTyping: false,
 	messages: [],
 };
 
@@ -22,6 +24,9 @@ export const messageSlice = createSlice({
 	name: "message",
 	initialState,
 	reducers: {
+		setTyping: (state, action: PayloadAction<boolean>) => {
+			state.isTyping = action.payload;
+		},
 		socketClearMessages: (state) => {
 			state.messages = [];
 			state.status = Status["IDLE"];
@@ -99,5 +104,6 @@ export const messageSlice = createSlice({
 });
 
 export const messageSelector = (state: RootState) => state.message;
-export const { socketAddMessage, socketDeleteMessage, socketEditMessage, socketClearMessages } = messageSlice.actions;
+export const { setTyping, socketAddMessage, socketDeleteMessage, socketEditMessage, socketClearMessages } =
+	messageSlice.actions;
 export default messageSlice.reducer;

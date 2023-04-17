@@ -16,6 +16,8 @@ import useAuth from "../../../hooks/useAuth";
 
 // actions
 import { setCurrentDialogueId, setCurrentDialogue } from "../../../store/slices/dialogue/dialogueSlice";
+import { setTyping } from "../../../store/slices/message/messageSlice";
+import { socket } from "../../../core/socket";
 
 const DialoguesList: FC = (): ReactElement => {
 	const [searchValue, setSearchValue] = useState<string>("");
@@ -33,6 +35,10 @@ const DialoguesList: FC = (): ReactElement => {
 			if (currentDialogue) {
 				dispatch(setCurrentDialogueId(dialogueId));
 				dispatch(setCurrentDialogue(currentDialogue));
+				dispatch(setTyping(false));
+
+				socket.emit("CLIENT:LEAVE_ROOM", currentDialogueId);
+				socket.emit("CLIENT:JOIN_ROOM", dialogueId);
 			}
 		}
 	}, [dialogueId]);

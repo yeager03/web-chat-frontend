@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // service
-import MessageService from "../../../services/MessageService";
+import MessageService, { CreateMessage } from "../../../services/MessageService";
 
 // utils
 import getNotification from "../../../utils/notification";
@@ -10,11 +10,6 @@ import decryptionText from "../../../utils/decryptionText";
 // types
 import IMessage from "../../../models/IMessage";
 import MessagesResponse, { MessageResponse } from "../../../models/response/MessageResponse";
-
-export type CreateMessage = {
-	message: string;
-	dialogueId: string;
-};
 
 export type EditMessage = {
 	messageId: string;
@@ -27,12 +22,9 @@ export const getMessages = createAsyncThunk<IMessage[], string>("message/getMess
 	return messages.map((item) => ({ ...item, message: decryptionText(item.message) }));
 });
 
-export const createMessage = createAsyncThunk<void, CreateMessage>(
-	"message/createMessage",
-	async ({ message, dialogueId }) => {
-		await MessageService.createMessage(message, dialogueId);
-	}
-);
+export const createMessage = createAsyncThunk<void, CreateMessage>("message/createMessage", async (data) => {
+	await MessageService.createMessage(data);
+});
 
 export const deleteMessage = createAsyncThunk<string, string, { rejectValue: string }>(
 	"message/removeMessage",

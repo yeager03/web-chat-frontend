@@ -28,7 +28,6 @@ import IMessage from "../../../../models/IMessage";
 import { IMessageValue } from "../../containers";
 
 type MessageProps = IMessage & {
-	isTyping: boolean; // del ?
 	isRead?: boolean;
 	attachments?: any[];
 	audio?: string;
@@ -46,7 +45,6 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 		author,
 		message,
 		createdAt,
-		isTyping,
 		isRead,
 		isEdited,
 		attachments,
@@ -65,7 +63,6 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 		<Box
 			className={cn(styles["message"], {
 				[styles["message_my-message"]]: isMyMessage,
-				[styles["message_typing"]]: isTyping,
 				[styles["message_image"]]: attachments?.length === 1,
 				[styles["message_audio"]]: audio,
 			})}
@@ -114,15 +111,8 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 					handleOpen(e);
 				}}
 			>
-				{(audio || isTyping || message) && (
+				{(audio || message) && (
 					<Box className={styles["message__bubble"]}>
-						{isTyping && (
-							<Box className={styles["message__typing"]}>
-								<span></span>
-								<span></span>
-								<span></span>
-							</Box>
-						)}
 						{message && (
 							<p className={styles["message__text"]}>
 								{isEdited ? (
@@ -159,12 +149,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 
 				{createdAt && <span className={styles["message__date"]}>{getMessageDate(createdAt)}</span>}
 
-				<IconRead
-					className={styles["message__checked-icon"]}
-					isMyMessage={isMyMessage}
-					isTyping={isTyping}
-					isRead={false}
-				/>
+				<IconRead className={styles["message__checked-icon"]} isMyMessage={isMyMessage} isRead={false} />
 			</Box>
 		</Box>
 	);

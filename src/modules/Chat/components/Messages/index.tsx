@@ -14,23 +14,36 @@ import ChooseDialogue from "../../../../assets/images/choose_dialogue.svg";
 
 // components
 import Message from "../../containers/Message";
+import TypingMessage from "../TypingMessage";
 
 // types
 import { Status } from "../../../../models/Status";
 import IMessage from "../../../../models/IMessage";
 import { IMessageValue } from "../../containers";
+import IUser from "../../../../models/IUser";
 
 type MessagesProps = {
 	messages: IMessage[];
 	status: Status;
 	messagesRef: RefObject<HTMLDivElement>;
 	chatInputHeight: number;
+	isTyping: boolean;
+	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
 	handleRemoveMessage: (id: string) => void;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { messages, status, messagesRef, chatInputHeight, setMessageValue, handleRemoveMessage } = props;
+	const {
+		messages,
+		status,
+		messagesRef,
+		chatInputHeight,
+		isTyping,
+		interlocutor,
+		setMessageValue,
+		handleRemoveMessage,
+	} = props;
 
 	const chooseDialogue =
 		status === "idle" ? (
@@ -66,6 +79,11 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 			  ))
 			: null;
 
+	const typing =
+		status === "success" && messages.length && isTyping ? (
+			<TypingMessage isTyping={isTyping} interlocutor={interlocutor} />
+		) : null;
+
 	return (
 		<Box
 			className={cn(styles["chat__messages"], {
@@ -80,6 +98,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 			{loading}
 			{emptyMessages}
 			{content}
+			{typing}
 		</Box>
 	);
 };

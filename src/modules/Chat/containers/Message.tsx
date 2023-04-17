@@ -8,7 +8,6 @@ import IMessage from "../../../models/IMessage";
 import { IMessageValue } from ".";
 
 type MessageProps = IMessage & {
-	isTyping?: boolean; // del ?
 	isRead?: boolean;
 	attachments?: any[];
 	audio?: string;
@@ -19,7 +18,6 @@ type MessageProps = IMessage & {
 const Message: FC<MessageProps> = (props): ReactElement => {
 	const { setMessageValue, handleRemoveMessage } = props;
 
-	const [isTyping, setTyping] = useState<boolean>(false);
 	const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
 	const open = Boolean(anchorEl);
@@ -30,7 +28,6 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 	return (
 		<BaseMessage
 			{...props}
-			isTyping={isTyping}
 			anchorEl={anchorEl}
 			open={open}
 			handleOpen={handleOpen}
