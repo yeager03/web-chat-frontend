@@ -18,8 +18,8 @@ import TypingMessage from "../TypingMessage";
 
 // types
 import { Status } from "../../../../models/Status";
-import IMessage from "../../../../models/IMessage";
-import { IMessageValue } from "../../containers";
+import IMessage, { IFile } from "../../../../models/IMessage";
+import { IImage, IMessageValue } from "../../containers";
 import IUser from "../../../../models/IUser";
 
 type MessagesProps = {
@@ -30,7 +30,9 @@ type MessagesProps = {
 	isTyping: boolean;
 	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	setImages: Dispatch<SetStateAction<IImage[]>>;
 	handleRemoveMessage: (id: string) => void;
+	handleEditFiles: (files: IFile[]) => void;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
@@ -42,7 +44,9 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 		isTyping,
 		interlocutor,
 		setMessageValue,
+		setImages,
 		handleRemoveMessage,
+		handleEditFiles,
 	} = props;
 
 	const chooseDialogue =
@@ -73,8 +77,10 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 					<Message
 						key={message["_id"]}
 						{...message}
+						setImages={setImages}
 						setMessageValue={setMessageValue}
 						handleRemoveMessage={handleRemoveMessage}
+						handleEditFiles={handleEditFiles}
 					/>
 			  ))
 			: null;
@@ -126,20 +132,20 @@ export default Messages;
 // 	date="Wed Feb 22 2023 02:21:08 GMT+0600 (Восточный Казахстан)"
 // 	user={{}}
 // 	isMyMessage={true}
-// 	attachments={[
-// 		{
-// 			filename: "image",
-// 			url: "https://source.unsplash.com/100x100/?random=1",
-// 		},
-// 		{
-// 			filename: "image",
-// 			url: "https://source.unsplash.com/100x100/?random=2",
-// 		},
-// 		{
-// 			filename: "image",
-// 			url: "https://source.unsplash.com/100x100/?random=3",
-// 		},
-// 	]}
+// attachments={[
+// 	{
+// 		filename: "image",
+// 		url: "https://source.unsplash.com/100x100/?random=1",
+// 	},
+// 	{
+// 		filename: "image",
+// 		url: "https://source.unsplash.com/100x100/?random=2",
+// 	},
+// 	{
+// 		filename: "image",
+// 		url: "https://source.unsplash.com/100x100/?random=3",
+// 	},
+// ]}
 // />
 // <Message
 // 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"

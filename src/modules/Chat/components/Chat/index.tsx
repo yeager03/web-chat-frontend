@@ -18,11 +18,12 @@ import { Status } from "../../../../models/Status";
 
 // models
 import IUser from "../../../../models/IUser";
-import { Emoji, IMessageValue } from "../../containers";
+import { Emoji, IImage, IMessageValue } from "../../containers";
 
 // emoji
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { IFile } from "../../../../models/IMessage";
 
 type ChatProps = {
 	interlocutor: IUser | null;
@@ -34,14 +35,18 @@ type ChatProps = {
 	nodeRef: RefObject<HTMLDivElement>;
 	chatInputHeight: number;
 	messageValue: IMessageValue;
+	images: IImage[];
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	setImageFiles: Dispatch<SetStateAction<File[]>>;
+	setImages: Dispatch<SetStateAction<IImage[]>>;
 	toggleEmojiModal: (flag: boolean) => void;
 	cursorInput: () => void;
 	clearInput: () => void;
 	handleClickEmoji: (emoji: Emoji) => void;
 	handleSendMessage: () => void;
-	handleEditMessage: (id: string, message: string) => void;
+	handleEditMessage: () => void;
 	handleRemoveMessage: (id: string) => void;
+	handleEditFiles: (files: IFile[]) => void;
 };
 
 const Chat: FC<ChatProps> = (props): ReactElement => {
@@ -55,14 +60,18 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 		triggerRef,
 		nodeRef,
 		messageValue,
+		images,
 		toggleEmojiModal,
 		setMessageValue,
+		setImageFiles,
+		setImages,
 		clearInput,
 		cursorInput,
 		handleClickEmoji,
 		handleSendMessage,
 		handleEditMessage,
 		handleRemoveMessage,
+		handleEditFiles,
 	} = props;
 
 	return (
@@ -88,6 +97,8 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 				chatInputHeight={chatInputHeight}
 				setMessageValue={setMessageValue}
 				handleRemoveMessage={handleRemoveMessage}
+				handleEditFiles={handleEditFiles}
+				setImages={setImages}
 			/>
 
 			{status === "success" && (
@@ -100,7 +111,10 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
 						triggerRef={triggerRef}
 						showEmojis={showEmojis}
 						messageValue={messageValue}
+						images={images}
 						toggleEmojiModal={toggleEmojiModal}
+						setImageFiles={setImageFiles}
+						setImages={setImages}
 						setMessageValue={setMessageValue}
 						cursorInput={cursorInput}
 						clearInput={clearInput}

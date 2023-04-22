@@ -4,19 +4,21 @@ import { FC, ReactElement, useState, MouseEvent, Dispatch, SetStateAction } from
 import BaseMessage from "../components/Message";
 
 // types
-import IMessage from "../../../models/IMessage";
-import { IMessageValue } from ".";
+import IMessage, { IFile } from "../../../models/IMessage";
+import { IImage, IMessageValue } from ".";
 
 type MessageProps = IMessage & {
 	isRead?: boolean;
 	attachments?: any[];
 	audio?: string;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	setImages: Dispatch<SetStateAction<IImage[]>>;
 	handleRemoveMessage: (id: string) => void;
+	handleEditFiles: (files: IFile[]) => void;
 };
 
 const Message: FC<MessageProps> = (props): ReactElement => {
-	const { setMessageValue, handleRemoveMessage } = props;
+	const { setMessageValue, handleRemoveMessage, handleEditFiles } = props;
 
 	const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
@@ -34,6 +36,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 			handleClose={handleClose}
 			setMessageValue={setMessageValue}
 			handleRemoveMessage={handleRemoveMessage}
+			handleEditFiles={handleEditFiles}
 		/>
 	);
 };

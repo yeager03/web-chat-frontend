@@ -24,8 +24,8 @@ import styles from "./Message.module.scss";
 import useAuth from "../../../../hooks/useAuth";
 
 // types
-import IMessage from "../../../../models/IMessage";
-import { IMessageValue } from "../../containers";
+import IMessage, { IFile } from "../../../../models/IMessage";
+import { IImage, IMessageValue } from "../../containers";
 
 type MessageProps = IMessage & {
 	isRead?: boolean;
@@ -36,7 +36,9 @@ type MessageProps = IMessage & {
 	handleOpen: (e: MouseEvent<HTMLDivElement>) => void;
 	handleClose: () => void;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	setImages: Dispatch<SetStateAction<IImage[]>>;
 	handleRemoveMessage: (id: string) => void;
+	handleEditFiles: (files: IFile[]) => void;
 };
 
 const Message: FC<MessageProps> = (props): ReactElement => {
@@ -47,14 +49,16 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 		createdAt,
 		isRead,
 		isEdited,
-		attachments,
+		files,
 		audio,
 		anchorEl,
 		open,
 		handleOpen,
 		handleClose,
 		setMessageValue,
+		setImages,
 		handleRemoveMessage,
+		handleEditFiles,
 	} = props;
 	const { user } = useAuth();
 	const isMyMessage = user?._id === author._id;
@@ -63,7 +67,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 		<Box
 			className={cn(styles["message"], {
 				[styles["message_my-message"]]: isMyMessage,
-				[styles["message_image"]]: attachments?.length === 1,
+				[styles["message_image"]]: files.length <= 5 && !message,
 				[styles["message_audio"]]: audio,
 			})}
 		>
@@ -89,6 +93,19 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 						className={styles["popover__icon"]}
 						onClick={() => {
 							setMessageValue({ value: message, type: "edit", id: _id });
+							if (files.length) {
+								handleEditFiles(files);
+
+								setImages(
+									files.map((file) => {
+										return {
+											fileName: file.fileName,
+											size: file.size,
+											src: file.url,
+										};
+									})
+								);
+							}
 							handleClose();
 						}}
 					/>
@@ -129,15 +146,15 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 					</Box>
 				)}
 
-				{attachments && (
+				{files && (
 					<Box className={styles["message__attachments"]}>
 						<ul className={styles["attachments-items"]}>
-							{attachments.map((attachment) => {
+							{files.map((file) => {
 								return (
-									<li className={styles["attachment-item"]} key={attachment["url"]}>
+									<li className={styles["attachment-item"]} key={file["_id"]}>
 										<img
-											src={attachment["url"]}
-											alt={attachment["filename"]}
+											src={file["url"]}
+											alt={file["fileName"]}
 											className={styles["attachment-item__image"]}
 										/>
 									</li>
@@ -149,7 +166,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 
 				{createdAt && <span className={styles["message__date"]}>{getMessageDate(createdAt)}</span>}
 
-				<IconRead className={styles["message__checked-icon"]} isMyMessage={isMyMessage} isRead={false} />
+				<IconRead className={styles["message__checked-icon"]} isMyMessage={isMyMessage} isRead={isRead} />
 			</Box>
 		</Box>
 	);

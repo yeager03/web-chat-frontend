@@ -33,8 +33,6 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 	const { user } = useAuth();
 	const navigate = useNavigate();
 
-	const isRead = false; // test
-
 	const isMyMessage = user?._id === lastMessage?.author._id;
 
 	return (
@@ -70,15 +68,15 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
 								</Typography>
 							)}
 
-							{/* {lastMessage["unRead"] && lastMessage["unRead"] > 0 ? (
+							{/* {lastMessage.isRead && lastMessage.isRead > 0 ? (
 								<Typography component={"span"} className={styles["count"]}>
-									{lastMessage["unRead"] > 10 ? "10+" : lastMessage["unRead"]}
+									{lastMessage["isRead"] > 10 ? "10+" : lastMessage["isRead"]}
 								</Typography>
 							) : (
 								<IconRead className={styles["icon"]} isMyMessage={isMyMessage} isRead={isRead} />
 							)} */}
 
-							<IconRead className={styles["icon"]} isMyMessage={isMyMessage} isRead={isRead} />
+							<IconRead className={styles["icon"]} isMyMessage={isMyMessage} isRead={lastMessage.isRead} />
 						</Box>
 					</Box>
 				</li>

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // service
-import MessageService, { CreateMessage } from "../../../services/MessageService";
+import MessageService from "../../../services/MessageService";
 
 // utils
 import getNotification from "../../../utils/notification";
@@ -19,10 +19,10 @@ export type EditMessage = {
 export const getMessages = createAsyncThunk<IMessage[], string>("message/getMessages", async (currentDialogueId) => {
 	const response = await MessageService.getMessages(currentDialogueId);
 	const { messages }: MessagesResponse = response.data;
-	return messages.map((item) => ({ ...item, message: decryptionText(item.message) }));
+	return messages.map((item) => ({ ...item, message: item.message ? decryptionText(item.message) : "" }));
 });
 
-export const createMessage = createAsyncThunk<void, CreateMessage>("message/createMessage", async (data) => {
+export const createMessage = createAsyncThunk<void, FormData>("message/createMessage", async (data) => {
 	await MessageService.createMessage(data);
 });
 

@@ -18,11 +18,18 @@ import usePrevious from "../../../hooks/usePrevious";
 // selectors
 import { messageSelector } from "../../../store/slices/message/messageSlice";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
+import { IFile } from "../../../models/IMessage";
 
 export interface IMessageValue {
 	value: string;
 	type: "create" | "edit";
 	id: string;
+}
+
+export interface IImage {
+	fileName: string;
+	size: number;
+	src: string;
 }
 
 export type Emoji = {
@@ -46,6 +53,8 @@ const Chat: FC = (): ReactElement => {
 	});
 	const [chatInputHeight, setChatInputHeight] = useState<number>(76);
 	const [showEmojis, setShowEmojis] = useState<boolean>(false);
+	const [imageFiles, setImageFiles] = useState<File[]>([]);
+	const [images, setImages] = useState<IImage[]>([]);
 
 	const inputRef = useRef<HTMLDivElement>(null);
 	const triggerRef = useRef<SVGSVGElement>(null);
@@ -53,7 +62,12 @@ const Chat: FC = (): ReactElement => {
 	const chatInputRef = useRef<HTMLDivElement>(null);
 
 	const heightValue = useDebounce(messageValue, 500);
+
 	const prevMessageValue = usePrevious<string, string>(messageValue.value, messageValue.id);
+	const prevMessageImagesSize = usePrevious<number, string>(
+		images.reduce((prev, img) => prev + img.size, 0),
+		messageValue.id
+	);
 
 	const dispatch = useAppDispatch();
 	const interlocutor = currentDialogue?.members.find((member) => member._id !== user?._id);
@@ -62,8 +76,9 @@ const Chat: FC = (): ReactElement => {
 		if (chatInputRef.current) {
 			setChatInputHeight(chatInputRef.current.offsetHeight);
 		}
-	}, [heightValue]);
+	}, [heightValue, images]);
 
+	/* Input  */
 	const cursorInput = () => {
 		if (inputRef.current) {
 			const range = document.createRange();
@@ -82,6 +97,11 @@ const Chat: FC = (): ReactElement => {
 		}
 	};
 
+	/* Emoji  */
+	const toggleEmojiModal = (flag: boolean) => {
+		setShowEmojis(flag);
+	};
+
 	const handleClickEmoji = (emoji: Emoji) => {
 		setMessageValue((prevState) => ({ ...prevState, value: messageValue.value + emoji.native.toString() }));
 		const input = inputRef.current;
@@ -93,33 +113,68 @@ const Chat: FC = (): ReactElement => {
 		}
 	};
 
-	const toggleEmojiModal = (flag: boolean) => {
-		setShowEmojis(flag);
-	};
-
+	/* Send message, edit message, remove message */
 	const handleSendMessage = () => {
 		if (user && interlocutor) {
-			dispatch(
-				createMessage({
-					from: user._id,
-					to: interlocutor._id,
-					messageText: messageValue.value.trim(),
-					dialogueId: currentDialogueId,
-				})
-			);
+			const formData = new FormData();
+			const data: Record<string, string> = {
+				from: user._id,
+				to: interlocutor._id,
+				messageText: messageValue.value.trim(),
+				dialogueId: currentDialogueId,
+			};
+
+			for (let key in data) {
+				formData.append(key, data[key]);
+			}
+
+			for (let file of imageFiles) {
+				formData.append("files", file);
+			}
+
+			dispatch(createMessage(formData));
 		}
 	};
 
-	const handleEditMessage = (messageId: string, messageText: string) =>
-		messageText !== prevMessageValue &&
-		dispatch(
-			editMessage({
-				messageId,
-				messageText,
+	const handleEditMessage = () => {
+		if (
+			messageValue.value !== prevMessageValue ||
+			images.reduce((prev, img) => prev + img.size, 0) !== prevMessageImagesSize
+		) {
+			// dispatch(
+			// 	editMessage({
+			// 		messageId: messageValue.id,
+			// 		messageText: messageValue.value,
+			// 	})
+			// );
+
+			console.log("edit message");
+		} else {
+			console.log("not edit");
+		}
+	};
+
+	const handleRemoveMessage = (messageId: string) => dispatch(deleteMessage(messageId));
+
+	const handleEditFiles = async (files: IFile[]) => {
+		if (!files.length) return;
+
+		const editedFiles = await Promise.all(
+			files.map(async (file) => {
+				const response = await fetch(file.url);
+				const blob = await response.blob();
+
+				return new File([blob], file.fileName, {
+					type: blob.type,
+				});
 			})
 		);
 
-	const handleRemoveMessage = (messageId: string) => dispatch(deleteMessage(messageId));
+		const editedImages = files.map((file) => ({ fileName: file.fileName, src: file.url, size: file.size }));
+
+		setImageFiles(editedFiles);
+		setImages(editedImages);
+	};
 
 	return (
 		<BaseChat
@@ -132,14 +187,18 @@ const Chat: FC = (): ReactElement => {
 			nodeRef={nodeRef}
 			triggerRef={triggerRef}
 			messageValue={messageValue}
+			images={images}
 			toggleEmojiModal={toggleEmojiModal}
 			setMessageValue={setMessageValue}
+			setImageFiles={setImageFiles}
+			setImages={setImages}
 			clearInput={clearInput}
 			cursorInput={cursorInput}
 			handleClickEmoji={handleClickEmoji}
 			handleSendMessage={handleSendMessage}
 			handleEditMessage={handleEditMessage}
 			handleRemoveMessage={handleRemoveMessage}
+			handleEditFiles={handleEditFiles}
 		/>
 	);
 };

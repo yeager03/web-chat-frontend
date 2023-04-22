@@ -17,16 +17,22 @@ import {
 	SendRounded,
 	CheckCircleRounded,
 	DeleteRounded,
+	CloseRounded,
 } from "@mui/icons-material";
 
 // types
-import { IMessageValue } from "../../containers";
+import { IImage, IMessageValue } from "../../containers";
 
 type ChatInputProps = {
 	messageValue: IMessageValue;
 	triggerRef: RefObject<SVGSVGElement>;
+	fileInputRef: RefObject<HTMLInputElement>;
 	inputRef: RefObject<HTMLDivElement>;
 	chatInputRef: RefObject<HTMLDivElement>;
+	images: IImage[];
+	handleChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
+	handleFilePick: () => void;
+	handleRemoveImage: (key: string) => void;
 	handleChangeSearchValue: (e: ChangeEvent<HTMLDivElement>) => void;
 	handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
 	sendMessage: () => void;
@@ -38,8 +44,13 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 	const {
 		messageValue,
 		triggerRef,
+		fileInputRef,
 		inputRef,
 		chatInputRef,
+		images,
+		handleChangeImage,
+		handleFilePick,
+		handleRemoveImage,
 		handleChangeSearchValue,
 		handleKeyDown,
 		sendMessage,
@@ -61,9 +72,23 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 					ref={inputRef}
 				></Box>
 				<Box className={styles["input-wrapper__actions"]}>
-					<CameraAltRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__camera"])} />
+					<input
+						type="file"
+						accept="image/*,.png,.jpg,.jpeg,.gif,.web"
+						multiple
+						className={styles["file-input_hidden"]}
+						hidden
+						ref={fileInputRef}
+						onChange={handleChangeImage}
+					/>
+
+					<CameraAltRounded
+						className={cn(styles["input-wrapper__icon"], styles["input-wrapper__camera"])}
+						onClick={handleFilePick}
+					/>
+
 					{messageValue.type === "create" ? (
-						messageValue.value.trim().length ? (
+						messageValue.value.trim().length || images.length ? (
 							<SendRounded
 								className={cn(styles["input-wrapper__icon"], styles["input-wrapper__send"])}
 								onClick={sendMessage}
@@ -71,7 +96,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 						) : (
 							<MicRounded className={cn(styles["input-wrapper__icon"], styles["input-wrapper__audio"])} />
 						)
-					) : messageValue.value.trim().length ? (
+					) : messageValue.value.trim().length || images.length ? (
 						<CheckCircleRounded
 							className={cn(styles["input-wrapper__icon"], styles["input-wrapper__send"])}
 							onClick={editMessage}
@@ -84,6 +109,21 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 					)}
 				</Box>
 			</Box>
+
+			{images.length > 0 && (
+				<ul className={styles["input-images"]}>
+					{images.map((image, index) => {
+						return (
+							<li key={image.fileName}>
+								<span onClick={() => handleRemoveImage(image.fileName)}>
+									<CloseRounded sx={{ color: "#fff", fontSize: 20 }} />
+								</span>
+								<img src={image.src} alt={`Uploaded ${index + 1} file`} />
+							</li>
+						);
+					})}
+				</ul>
+			)}
 		</Box>
 	);
 };

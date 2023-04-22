@@ -1,4 +1,14 @@
-import { FC, ReactElement, ChangeEvent, KeyboardEvent, RefObject, Dispatch, SetStateAction, useEffect } from "react";
+import {
+	FC,
+	ReactElement,
+	ChangeEvent,
+	KeyboardEvent,
+	RefObject,
+	Dispatch,
+	SetStateAction,
+	useEffect,
+	useRef,
+} from "react";
 import { useSelector } from "react-redux";
 
 // hooks
@@ -14,8 +24,14 @@ import BaseChatInput from "../components/ChatInput";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 // types
-import { IMessageValue } from ".";
+import { IImage, IMessageValue } from ".";
 import IUser from "../../../models/IUser";
+
+// notification
+import getNotification from "../../../utils/notification";
+
+// reg exp
+const imageTypeRegex = /image\/(png|jpg|jpeg|svg|web|gif)/gm;
 
 type ChatInputProps = {
 	inputRef: RefObject<HTMLDivElement>;
@@ -25,12 +41,15 @@ type ChatInputProps = {
 	messageValue: IMessageValue;
 	showEmojis: boolean;
 	interlocutor: IUser | null;
+	images: IImage[];
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	setImageFiles: Dispatch<SetStateAction<File[]>>;
+	setImages: Dispatch<SetStateAction<IImage[]>>;
 	toggleEmojiModal: (flag: boolean) => void;
 	cursorInput: () => void;
 	clearInput: () => void;
 	handleSendMessage: () => void;
-	handleEditMessage: (id: string, message: string) => void;
+	handleEditMessage: () => void;
 	handleRemoveMessage: (id: string) => void;
 };
 
@@ -43,7 +62,10 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		nodeRef,
 		showEmojis,
 		interlocutor,
+		images,
 		setMessageValue,
+		setImageFiles,
+		setImages,
 		toggleEmojiModal,
 		cursorInput,
 		clearInput,
@@ -54,6 +76,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 	const { currentDialogueId } = useSelector(dialogueSelector);
 
 	const debounceMessage = useDebounce(messageValue.value, 2000);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -97,7 +120,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 					currentDialogueId,
 					interlocutorId: interlocutor?._id,
 				});
-			}, 2000);
+			}, 1000);
 
 			return () => {
 				clearTimeout(timer);
@@ -110,6 +133,56 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 			...prevState,
 			value: e.target.textContent ? e.target.textContent.trim() : "",
 		}));
+	};
+
+	const handleFilePick = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.click();
+		}
+	};
+
+	const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+		const files = e.target.files;
+
+		if (files) {
+			const validImageFiles: File[] = [];
+
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+
+				console.log(file);
+
+				if (file.type.match(imageTypeRegex)) {
+					if (file.size <= 5000000) {
+						validImageFiles.push(file);
+					} else {
+						return getNotification("Размер картинки не должен превышать 5 мегабайт!", "error");
+					}
+				} else {
+					return getNotification("Выбранный вами файл, не является картинкой!", "error");
+				}
+			}
+
+			if (validImageFiles.length <= 5) {
+				setImageFiles((prevState) => [...prevState, ...validImageFiles]);
+				setImages((prevState) => [
+					...prevState,
+					...validImageFiles.map((file) => ({
+						fileName: file.name,
+						src: URL.createObjectURL(file),
+						size: file.size,
+					})),
+				]);
+				return;
+			} else {
+				return getNotification("Больше 5 файлов нельзя загрузить!", "error");
+			}
+		}
+	};
+
+	const handleRemoveImage = (fileName: string) => {
+		setImageFiles((prevState) => prevState.filter((file) => file.name !== fileName));
+		setImages((prevState) => prevState.filter((image) => image.fileName !== fileName));
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -129,19 +202,22 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 	const sendMessage = () => {
 		handleSendMessage();
 		clearInput();
+		setImageFiles([]);
+		setImages([]);
 	};
 
 	const editMessage = () => {
 		if (messageValue.id) {
-			handleEditMessage(messageValue.id, messageValue.value);
+			handleEditMessage();
 			clearInput();
+			setImageFiles([]);
+			setImages([]);
 		}
 	};
 
 	const removeMessage = () => {
 		if (messageValue.id) {
 			handleRemoveMessage(messageValue.id);
-			clearInput();
 		}
 	};
 
@@ -149,8 +225,13 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		<BaseChatInput
 			messageValue={messageValue}
 			triggerRef={triggerRef}
+			fileInputRef={fileInputRef}
 			inputRef={inputRef}
 			chatInputRef={chatInputRef}
+			images={images}
+			handleChangeImage={handleChangeImage}
+			handleFilePick={handleFilePick}
+			handleRemoveImage={handleRemoveImage}
 			handleChangeSearchValue={handleChangeSearchValue}
 			handleKeyDown={handleKeyDown}
 			sendMessage={sendMessage}

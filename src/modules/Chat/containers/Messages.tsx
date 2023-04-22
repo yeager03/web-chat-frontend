@@ -20,15 +20,18 @@ import { setTyping } from "../../../store/slices/message/messageSlice";
 
 // types
 import { Status } from "../../../models/Status";
-import { IMessageValue } from ".";
+import { IImage, IMessageValue } from ".";
 import IUser from "../../../models/IUser";
+import { IFile } from "../../../models/IMessage";
 
 type MessagesProps = {
 	status: Status;
 	chatInputHeight: number;
 	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+	setImages: Dispatch<SetStateAction<IImage[]>>;
 	handleRemoveMessage: (id: string) => void;
+	handleEditFiles: (files: IFile[]) => void;
 };
 
 type TypingResponse = {
@@ -38,7 +41,8 @@ type TypingResponse = {
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { status, chatInputHeight, interlocutor, setMessageValue, handleRemoveMessage } = props;
+	const { status, chatInputHeight, interlocutor, setMessageValue, setImages, handleRemoveMessage, handleEditFiles } =
+		props;
 
 	const { currentDialogueId } = useSelector(dialogueSelector);
 	const { messages, isTyping } = useSelector(messageSelector);
@@ -88,7 +92,9 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 			isTyping={isTyping}
 			interlocutor={interlocutor}
 			setMessageValue={setMessageValue}
+			setImages={setImages}
 			handleRemoveMessage={handleRemoveMessage}
+			handleEditFiles={handleEditFiles}
 		/>
 	);
 };

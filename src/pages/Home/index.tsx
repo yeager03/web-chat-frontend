@@ -134,7 +134,7 @@ const Home: FC = (): ReactElement => {
 							dialogueId,
 							message: {
 								...message,
-								message: decryptionText(message.message),
+								message: message.message ? decryptionText(message.message) : "Изображения",
 							},
 						})
 					);
@@ -143,11 +143,14 @@ const Home: FC = (): ReactElement => {
 		});
 
 		socket.on("SERVER:MESSAGE_CREATED", (message: IMessage) => {
-			// console.log(message);
+			console.log(message);
+
 			if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
 				if (currentDialogueId === String(message.dialogue)) {
 					dispatch(setTyping(false));
-					dispatch(socketAddMessage({ ...message, message: decryptionText(message.message) }));
+					dispatch(
+						socketAddMessage({ ...message, message: message.message ? decryptionText(message.message) : "" })
+					);
 				} else {
 					if (user && message.author._id !== user._id) {
 						const audio = new Audio(MessageSound);
@@ -181,6 +184,10 @@ const Home: FC = (): ReactElement => {
 			}
 		});
 
+		socket.on("SERVER:MESSAGES_READ", (messagesId: string[]) => {
+			console.log(messagesId);
+		});
+
 		return () => {
 			socket.off("SERVER:NEW_FRIEND_REQUEST");
 			socket.off("SERVER:NEW_FRIEND_ACCEPT");
@@ -190,6 +197,7 @@ const Home: FC = (): ReactElement => {
 			socket.off("SERVER:MESSAGE_CREATED");
 			socket.off("SERVER:MESSAGE_DELETED");
 			socket.off("SERVER:MESSAGE_EDITED");
+			socket.off("SERVER:MESSAGES_READ");
 		};
 	}, [currentDialogueId, dialogues]);
 

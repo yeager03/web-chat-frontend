@@ -17,7 +17,7 @@ export const getDialogues = createAsyncThunk<IDialogue[]>("dialogue/getDialogues
 		...item,
 		lastMessage: {
 			...item.lastMessage,
-			message: decryptionText(item.lastMessage.message),
+			message: item.lastMessage.message ? decryptionText(item.lastMessage.message) : "Изображения",
 		},
 	}));
 });

@@ -12,6 +12,8 @@
 }
 
 .chat-input {
+	background-color: $white;
+
 	width: 100%;
 	padding: 10px;
 
@@ -55,6 +57,57 @@
 
 		&:focus-within {
 			outline: 1px solid $blue;
+		}
+	}
+
+	.file-input {
+		&_hidden {
+			opacity: 0;
+			height: 0;
+			width: 0;
+			line-height: 0;
+			overflow: hidden;
+			padding: 0;
+			margin: 0;
+			display: none;
+			pointer-events: none;
+			visibility: hidden;
+		}
+	}
+
+	.input-images {
+		margin-top: 10px;
+		display: flex;
+		align-items: center;
+
+		& li {
+			position: relative;
+			list-style-type: none;
+
+			&:not(:last-child) {
+				margin-right: 15px;
+			}
+
+			span {
+				cursor: pointer;
+				background-color: rgba(0, 0, 0, 0.5);
+				position: absolute;
+				top: 0;
+				right: 0;
+
+				svg {
+					float: right;
+				}
+			}
+
+			img {
+				width: 90px;
+				height: 100px;
+
+				border-radius: 5px;
+
+				object-fit: cover;
+			}
 		}
 	}
 
