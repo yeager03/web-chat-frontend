@@ -19,7 +19,7 @@ import TypingMessage from "../TypingMessage";
 // types
 import { Status } from "../../../../models/Status";
 import IMessage, { IFile } from "../../../../models/IMessage";
-import { IImage, IMessageValue } from "../../containers";
+import { IMessageValue } from "../../containers";
 import IUser from "../../../../models/IUser";
 
 type MessagesProps = {
@@ -30,7 +30,7 @@ type MessagesProps = {
 	isTyping: boolean;
 	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImages: Dispatch<SetStateAction<IImage[]>>;
+	setImages: Dispatch<SetStateAction<IFile[]>>;
 	handleRemoveMessage: (id: string) => void;
 	handleEditFiles: (files: IFile[]) => void;
 };

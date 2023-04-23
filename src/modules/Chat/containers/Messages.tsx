@@ -20,7 +20,7 @@ import { setTyping } from "../../../store/slices/message/messageSlice";
 
 // types
 import { Status } from "../../../models/Status";
-import { IImage, IMessageValue } from ".";
+import { IMessageValue } from ".";
 import IUser from "../../../models/IUser";
 import { IFile } from "../../../models/IMessage";
 
@@ -29,7 +29,7 @@ type MessagesProps = {
 	chatInputHeight: number;
 	interlocutor: IUser | null;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImages: Dispatch<SetStateAction<IImage[]>>;
+	setImages: Dispatch<SetStateAction<IFile[]>>;
 	handleRemoveMessage: (id: string) => void;
 	handleEditFiles: (files: IFile[]) => void;
 };

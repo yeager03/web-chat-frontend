@@ -20,16 +20,15 @@ import { messageSelector } from "../../../store/slices/message/messageSlice";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 import { IFile } from "../../../models/IMessage";
 
+export interface IFileImage {
+	_id: string;
+	file: File;
+}
+
 export interface IMessageValue {
 	value: string;
 	type: "create" | "edit";
 	id: string;
-}
-
-export interface IImage {
-	fileName: string;
-	size: number;
-	src: string;
 }
 
 export type Emoji = {
@@ -53,8 +52,8 @@ const Chat: FC = (): ReactElement => {
 	});
 	const [chatInputHeight, setChatInputHeight] = useState<number>(76);
 	const [showEmojis, setShowEmojis] = useState<boolean>(false);
-	const [imageFiles, setImageFiles] = useState<File[]>([]);
-	const [images, setImages] = useState<IImage[]>([]);
+	const [imageFiles, setImageFiles] = useState<IFileImage[]>([]);
+	const [images, setImages] = useState<IFile[]>([]);
 
 	const inputRef = useRef<HTMLDivElement>(null);
 	const triggerRef = useRef<SVGSVGElement>(null);
@@ -128,8 +127,8 @@ const Chat: FC = (): ReactElement => {
 				formData.append(key, data[key]);
 			}
 
-			for (let file of imageFiles) {
-				formData.append("files", file);
+			for (let item of imageFiles) {
+				formData.append("files", item.file);
 			}
 
 			dispatch(createMessage(formData));
@@ -141,16 +140,22 @@ const Chat: FC = (): ReactElement => {
 			messageValue.value !== prevMessageValue ||
 			images.reduce((prev, img) => prev + img.size, 0) !== prevMessageImagesSize
 		) {
-			// dispatch(
-			// 	editMessage({
-			// 		messageId: messageValue.id,
-			// 		messageText: messageValue.value,
-			// 	})
-			// );
+			const formData = new FormData();
+			formData.append("messageId", messageValue.id);
+			formData.append("messageText", messageValue.value);
 
-			console.log("edit message");
-		} else {
-			console.log("not edit");
+			for (let item of imageFiles) {
+				formData.append("files", item.file);
+			}
+
+			dispatch(
+				editMessage({
+					messageId: messageValue.id,
+					messageText: messageValue.value,
+					files: images,
+					formData,
+				})
+			);
 		}
 	};
 
@@ -164,16 +169,17 @@ const Chat: FC = (): ReactElement => {
 				const response = await fetch(file.url);
 				const blob = await response.blob();
 
-				return new File([blob], file.fileName, {
-					type: blob.type,
-				});
+				return {
+					_id: file._id,
+					file: new File([blob], file.fileName, {
+						type: blob.type,
+					}),
+				};
 			})
 		);
 
-		const editedImages = files.map((file) => ({ fileName: file.fileName, src: file.url, size: file.size }));
-
 		setImageFiles(editedFiles);
-		setImages(editedImages);
+		setImages(files);
 	};
 
 	return (

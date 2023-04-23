@@ -21,7 +21,8 @@ import {
 } from "@mui/icons-material";
 
 // types
-import { IImage, IMessageValue } from "../../containers";
+import { IMessageValue } from "../../containers";
+import { IFile } from "../../../../models/IMessage";
 
 type ChatInputProps = {
 	messageValue: IMessageValue;
@@ -29,7 +30,7 @@ type ChatInputProps = {
 	fileInputRef: RefObject<HTMLInputElement>;
 	inputRef: RefObject<HTMLDivElement>;
 	chatInputRef: RefObject<HTMLDivElement>;
-	images: IImage[];
+	images: IFile[];
 	handleChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleFilePick: () => void;
 	handleRemoveImage: (key: string) => void;
@@ -80,6 +81,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 						hidden
 						ref={fileInputRef}
 						onChange={handleChangeImage}
+						onClick={(event) => ((event.target as HTMLInputElement).value = "")}
 					/>
 
 					<CameraAltRounded
@@ -114,11 +116,11 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 				<ul className={styles["input-images"]}>
 					{images.map((image, index) => {
 						return (
-							<li key={image.fileName}>
-								<span onClick={() => handleRemoveImage(image.fileName)}>
+							<li key={image.url}>
+								<span onClick={() => handleRemoveImage(image._id)}>
 									<CloseRounded sx={{ color: "#fff", fontSize: 20 }} />
 								</span>
-								<img src={image.src} alt={`Uploaded ${index + 1} file`} />
+								<img src={image.url} alt={`Uploaded ${index + 1} file`} />
 							</li>
 						);
 					})}

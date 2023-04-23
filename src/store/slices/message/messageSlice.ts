@@ -41,6 +41,7 @@ export const messageSlice = createSlice({
 			state.messages = state.messages.map((message) => {
 				if (message._id === action.payload.messageId) {
 					message.message = action.payload.messageText;
+					message.files = action.payload.files;
 					message.isEdited = true;
 				}
 
@@ -84,18 +85,8 @@ export const messageSlice = createSlice({
 			})
 			// edit message
 			.addCase(editMessage.pending, () => {})
-			.addCase(editMessage.fulfilled, (state, action) => {
-				if (action.payload) {
-					state.status = Status["SUCCESS"];
-					state.messages = state.messages.map((message) => {
-						if (message._id === action.payload.messageId) {
-							message.message = action.payload.messageText;
-							message.isEdited = true;
-						}
-
-						return message;
-					});
-				}
+			.addCase(editMessage.fulfilled, (state) => {
+				state.status = Status["SUCCESS"];
 			})
 			.addCase(editMessage.rejected, (state) => {
 				state.status = Status["ERROR"];

@@ -5,14 +5,14 @@ import BaseMessage from "../components/Message";
 
 // types
 import IMessage, { IFile } from "../../../models/IMessage";
-import { IImage, IMessageValue } from ".";
+import { IMessageValue } from ".";
 
 type MessageProps = IMessage & {
 	isRead?: boolean;
 	attachments?: any[];
 	audio?: string;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImages: Dispatch<SetStateAction<IImage[]>>;
+	setImages: Dispatch<SetStateAction<IFile[]>>;
 	handleRemoveMessage: (id: string) => void;
 	handleEditFiles: (files: IFile[]) => void;
 };

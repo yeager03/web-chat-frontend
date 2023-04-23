@@ -8,12 +8,14 @@ import getNotification from "../../../utils/notification";
 import decryptionText from "../../../utils/decryptionText";
 
 // types
-import IMessage from "../../../models/IMessage";
+import IMessage, { IFile } from "../../../models/IMessage";
 import MessagesResponse, { MessageResponse } from "../../../models/response/MessageResponse";
 
 export type EditMessage = {
 	messageId: string;
 	messageText: string;
+	files: IFile[];
+	formData: FormData | null;
 };
 
 export const getMessages = createAsyncThunk<IMessage[], string>("message/getMessages", async (currentDialogueId) => {
@@ -22,8 +24,8 @@ export const getMessages = createAsyncThunk<IMessage[], string>("message/getMess
 	return messages.map((item) => ({ ...item, message: item.message ? decryptionText(item.message) : "" }));
 });
 
-export const createMessage = createAsyncThunk<void, FormData>("message/createMessage", async (data) => {
-	await MessageService.createMessage(data);
+export const createMessage = createAsyncThunk<void, FormData>("message/createMessage", async (formData) => {
+	await MessageService.createMessage(formData);
 });
 
 export const deleteMessage = createAsyncThunk<string, string, { rejectValue: string }>(
@@ -54,18 +56,18 @@ export const deleteMessage = createAsyncThunk<string, string, { rejectValue: str
 	}
 );
 
-export const editMessage = createAsyncThunk<EditMessage, EditMessage, { rejectValue: string }>(
+export const editMessage = createAsyncThunk<void, EditMessage, { rejectValue: string }>(
 	"message/editMessage",
-	async ({ messageId, messageText }, thunkApi) => {
+	async ({ messageId, formData }, thunkApi) => {
 		try {
-			const response = await MessageService.editMessage(messageId, messageText);
-			const { status, message }: MessageResponse = response.data;
+			if (formData) {
+				const response = await MessageService.editMessage(messageId, formData);
+				const { status, message }: MessageResponse = response.data;
 
-			if (status === "success") {
-				getNotification(message, status);
+				if (status === "success") {
+					getNotification(message, status);
+				}
 			}
-
-			return { messageId, messageText };
 		} catch (error: any) {
 			if (error.response && error.response.data) {
 				const { status, message } = error.response.data;

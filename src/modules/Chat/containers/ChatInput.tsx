@@ -11,6 +11,9 @@ import {
 } from "react";
 import { useSelector } from "react-redux";
 
+// uuid
+import { v4 as uuidv4 } from "uuid";
+
 // hooks
 import useDebounce from "../../../hooks/useDebounce";
 
@@ -24,8 +27,9 @@ import BaseChatInput from "../components/ChatInput";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 // types
-import { IImage, IMessageValue } from ".";
+import { IFileImage, IMessageValue } from ".";
 import IUser from "../../../models/IUser";
+import { IFile } from "../../../models/IMessage";
 
 // notification
 import getNotification from "../../../utils/notification";
@@ -41,10 +45,10 @@ type ChatInputProps = {
 	messageValue: IMessageValue;
 	showEmojis: boolean;
 	interlocutor: IUser | null;
-	images: IImage[];
+	images: IFile[];
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImageFiles: Dispatch<SetStateAction<File[]>>;
-	setImages: Dispatch<SetStateAction<IImage[]>>;
+	setImageFiles: Dispatch<SetStateAction<IFileImage[]>>;
+	setImages: Dispatch<SetStateAction<IFile[]>>;
 	toggleEmojiModal: (flag: boolean) => void;
 	cursorInput: () => void;
 	clearInput: () => void;
@@ -145,7 +149,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		const files = e.target.files;
 
 		if (files) {
-			const validImageFiles: File[] = [];
+			const validImageFiles: IFileImage[] = [];
 
 			for (let i = 0; i < files.length; i++) {
 				const file = files[i];
@@ -154,7 +158,10 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 
 				if (file.type.match(imageTypeRegex)) {
 					if (file.size <= 5000000) {
-						validImageFiles.push(file);
+						validImageFiles.push({
+							_id: uuidv4(),
+							file,
+						});
 					} else {
 						return getNotification("Размер картинки не должен превышать 5 мегабайт!", "error");
 					}
@@ -167,12 +174,19 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 				setImageFiles((prevState) => [...prevState, ...validImageFiles]);
 				setImages((prevState) => [
 					...prevState,
-					...validImageFiles.map((file) => ({
-						fileName: file.name,
-						src: URL.createObjectURL(file),
-						size: file.size,
-					})),
+					...validImageFiles.map(({ _id, file }) => {
+						const url = URL.createObjectURL(file);
+
+						return {
+							_id,
+							url,
+							fileName: file.name,
+							size: file.size,
+							extension: file.type.split("/")[1],
+						};
+					}),
 				]);
+
 				return;
 			} else {
 				return getNotification("Больше 5 файлов нельзя загрузить!", "error");
@@ -180,9 +194,9 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 		}
 	};
 
-	const handleRemoveImage = (fileName: string) => {
-		setImageFiles((prevState) => prevState.filter((file) => file.name !== fileName));
-		setImages((prevState) => prevState.filter((image) => image.fileName !== fileName));
+	const handleRemoveImage = (id: string) => {
+		setImageFiles((prevState) => prevState.filter(({ _id }) => _id !== id));
+		setImages((prevState) => prevState.filter((image) => image._id !== id));
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {

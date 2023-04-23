@@ -18,7 +18,7 @@ import { Status } from "../../../../models/Status";
 
 // models
 import IUser from "../../../../models/IUser";
-import { Emoji, IImage, IMessageValue } from "../../containers";
+import { Emoji, IFileImage, IMessageValue } from "../../containers";
 
 // emoji
 import data from "@emoji-mart/data";
@@ -35,10 +35,10 @@ type ChatProps = {
 	nodeRef: RefObject<HTMLDivElement>;
 	chatInputHeight: number;
 	messageValue: IMessageValue;
-	images: IImage[];
+	images: IFile[];
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImageFiles: Dispatch<SetStateAction<File[]>>;
-	setImages: Dispatch<SetStateAction<IImage[]>>;
+	setImageFiles: Dispatch<SetStateAction<IFileImage[]>>;
+	setImages: Dispatch<SetStateAction<IFile[]>>;
 	toggleEmojiModal: (flag: boolean) => void;
 	cursorInput: () => void;
 	clearInput: () => void;

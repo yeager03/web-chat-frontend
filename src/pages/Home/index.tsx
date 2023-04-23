@@ -143,8 +143,6 @@ const Home: FC = (): ReactElement => {
 		});
 
 		socket.on("SERVER:MESSAGE_CREATED", (message: IMessage) => {
-			console.log(message);
-
 			if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
 				if (currentDialogueId === String(message.dialogue)) {
 					dispatch(setTyping(false));
@@ -177,7 +175,9 @@ const Home: FC = (): ReactElement => {
 					dispatch(
 						socketEditMessage({
 							messageId: message._id,
-							messageText: decryptionText(message.message),
+							messageText: message.message ? decryptionText(message.message) : "",
+							files: message.files,
+							formData: null,
 						})
 					);
 				}

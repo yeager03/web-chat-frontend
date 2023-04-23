@@ -25,7 +25,7 @@ import useAuth from "../../../../hooks/useAuth";
 
 // types
 import IMessage, { IFile } from "../../../../models/IMessage";
-import { IImage, IMessageValue } from "../../containers";
+import { IMessageValue } from "../../containers";
 
 type MessageProps = IMessage & {
 	isRead?: boolean;
@@ -36,7 +36,7 @@ type MessageProps = IMessage & {
 	handleOpen: (e: MouseEvent<HTMLDivElement>) => void;
 	handleClose: () => void;
 	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImages: Dispatch<SetStateAction<IImage[]>>;
+	setImages: Dispatch<SetStateAction<IFile[]>>;
 	handleRemoveMessage: (id: string) => void;
 	handleEditFiles: (files: IFile[]) => void;
 };
@@ -95,16 +95,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 							setMessageValue({ value: message, type: "edit", id: _id });
 							if (files.length) {
 								handleEditFiles(files);
-
-								setImages(
-									files.map((file) => {
-										return {
-											fileName: file.fileName,
-											size: file.size,
-											src: file.url,
-										};
-									})
-								);
+								setImages(files);
 							}
 							handleClose();
 						}}
@@ -161,6 +152,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 								);
 							})}
 						</ul>
+						{isEdited && !message && <b>(ред.)</b>}
 					</Box>
 				)}
 

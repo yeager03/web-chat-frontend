@@ -9,8 +9,8 @@ export default class MessageService {
 		return $api.get<MessagesResponse>(`/message/all/${currentDialogueId}`);
 	}
 
-	public static async createMessage(data: FormData): Promise<AxiosResponse<MessageResponse>> {
-		return $api.post<MessageResponse>("/message/create", data, {
+	public static async createMessage(formData: FormData): Promise<AxiosResponse<MessageResponse>> {
+		return $api.post<MessageResponse>("/message/create", formData, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -21,9 +21,11 @@ export default class MessageService {
 		return $api.delete<MessageResponse>(`/message/remove/${messageId}`);
 	}
 
-	public static async editMessage(messageId: string, messageText: string): Promise<AxiosResponse<MessageResponse>> {
-		return $api.put<MessageResponse>(`/message/edit/${messageId}`, {
-			message: messageText,
+	public static async editMessage(messageId: string, formData: FormData): Promise<AxiosResponse<MessageResponse>> {
+		return $api.put<MessageResponse>(`/message/edit/${messageId}`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
 		});
 	}
 }
