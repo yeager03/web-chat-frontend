@@ -5,9 +5,7 @@ import { Link } from "react-router-dom";
 import { TextField, Typography, IconButton, InputAdornment, Box } from "@mui/material";
 
 // mui icons
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import MarkEmailUnreadRoundedIcon from "@mui/icons-material/MarkEmailUnreadRounded";
+import { Visibility, VisibilityOff, MarkEmailUnreadRounded } from "@mui/icons-material";
 
 // components
 import Button from "../../../components/Button";
@@ -49,7 +47,7 @@ const SignUpForm: FC<SignUpFormProps> = (props): ReactElement => {
 	if (success) {
 		return (
 			<Box className={styles["auth__activation"]}>
-				<MarkEmailUnreadRoundedIcon sx={{ fontSize: 80 }} />
+				<MarkEmailUnreadRounded sx={{ fontSize: 80 }} />
 				<Typography variant="h2">Подтвердите свой аккаунт</Typography>
 				<Typography>На вашу почту было отправлено письмо с ссылкой на подтверждение аккаунта.</Typography>
 			</Box>

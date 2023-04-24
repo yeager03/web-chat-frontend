@@ -17,6 +17,7 @@ import ActivationForm from "./modules/ActivationForm";
 import ResetForm from "./modules/ResetForm";
 import Dialogues from "./modules/Dialogues";
 import Friends from "./modules/Friends";
+import Profile from "./modules/Profile";
 
 // hooks
 import useAuth from "./hooks/useAuth";
@@ -43,6 +44,7 @@ const App: FC = (): ReactElement => {
 
 					<Route path="dialogues/:dialogueId?" element={<Dialogues />} />
 					<Route path="friends" element={<Friends />} />
+					<Route path="profile" element={<Profile />} />
 
 					<Route path="*" element={<h1>Not found 404</h1>} />
 				</Route>

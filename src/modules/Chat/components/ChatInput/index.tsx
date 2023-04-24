@@ -77,7 +77,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 						type="file"
 						accept="image/*,.png,.jpg,.jpeg,.gif,.web"
 						multiple
-						className={styles["file-input_hidden"]}
+						className="input_hidden"
 						hidden
 						ref={fileInputRef}
 						onChange={handleChangeImage}

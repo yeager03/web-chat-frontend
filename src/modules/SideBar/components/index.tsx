@@ -8,7 +8,8 @@ import cn from "classnames";
 import { SvgIcon, Box, Typography } from "@mui/material";
 
 // icons
-import { LogoutRounded, GroupRounded, CallRounded, SvgIconComponent, QuestionAnswerRounded } from "@mui/icons-material";
+import { LogoutRounded, GroupRounded, SvgIconComponent, QuestionAnswerRounded, CallRounded } from "@mui/icons-material";
+
 // style
 import styles from "./SideBar.module.scss";
 
@@ -21,7 +22,7 @@ import IUser from "../../../models/IUser";
 type ListItemProps = {
 	to: string;
 	icon: SvgIconComponent;
-	length: number;
+	length?: number;
 };
 
 const ListItem: FC<ListItemProps> = (props): ReactElement => {
@@ -41,11 +42,11 @@ const ListItem: FC<ListItemProps> = (props): ReactElement => {
 			<Link to={to}>
 				<SvgIcon component={icon} sx={{ fontSize: 24 }} />
 			</Link>
-			{length > 0 && (
+			{length && length > 0 ? (
 				<Typography component={"span"} className={styles["sidebar__top-item-count"]}>
 					{length > 10 ? "10+" : length}
 				</Typography>
-			)}
+			) : null}
 		</li>
 	);
 };
@@ -57,7 +58,7 @@ type SideBarProps = {
 };
 
 const SideBar: FC<SideBarProps> = (props): ReactElement => {
-	const { user, logout, requestsLength } = props;
+	const { user, requestsLength, logout } = props;
 
 	return (
 		<>
@@ -69,9 +70,9 @@ const SideBar: FC<SideBarProps> = (props): ReactElement => {
 						</Link>
 
 						<ul className={styles["sidebar__top-list"]}>
-							<ListItem to={"/dialogues"} icon={QuestionAnswerRounded} length={0} />
+							<ListItem to={"/dialogues"} icon={QuestionAnswerRounded} />
+							<ListItem to={"/calls"} icon={CallRounded} />
 							<ListItem to={"/friends"} icon={GroupRounded} length={requestsLength} />
-							<ListItem to={"/calls"} icon={CallRounded} length={0} />
 						</ul>
 					</Box>
 

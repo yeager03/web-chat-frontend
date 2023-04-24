@@ -72,14 +72,6 @@ export const messageSlice = createSlice({
 			.addCase(createMessage.rejected, (state) => {
 				state.status = Status["ERROR"];
 			})
-			// remove message
-			.addCase(deleteMessage.pending, () => {})
-			.addCase(deleteMessage.fulfilled, (state, action) => {
-				if (action.payload) {
-					state.status = Status["SUCCESS"];
-					state.messages = state.messages.filter((message) => message._id !== action.payload);
-				}
-			})
 			.addCase(deleteMessage.rejected, (state) => {
 				state.status = Status["ERROR"];
 			})
@@ -90,6 +82,14 @@ export const messageSlice = createSlice({
 			})
 			.addCase(editMessage.rejected, (state) => {
 				state.status = Status["ERROR"];
+			})
+			// remove message
+			.addCase(deleteMessage.pending, () => {})
+			.addCase(deleteMessage.fulfilled, (state, action) => {
+				if (action.payload) {
+					state.status = Status["SUCCESS"];
+					state.messages = state.messages.filter((message) => message._id !== action.payload);
+				}
 			});
 	},
 });

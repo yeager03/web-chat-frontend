@@ -60,21 +60,6 @@
 		}
 	}
 
-	.file-input {
-		&_hidden {
-			opacity: 0;
-			height: 0;
-			width: 0;
-			line-height: 0;
-			overflow: hidden;
-			padding: 0;
-			margin: 0;
-			display: none;
-			pointer-events: none;
-			visibility: hidden;
-		}
-	}
-
 	.input-images {
 		margin-top: 10px;
 		display: flex;

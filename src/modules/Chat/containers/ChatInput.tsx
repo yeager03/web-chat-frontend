@@ -34,8 +34,8 @@ import { IFile } from "../../../models/IMessage";
 // notification
 import getNotification from "../../../utils/notification";
 
-// reg exp
-const imageTypeRegex = /image\/(png|jpg|jpeg|svg|web|gif)/gm;
+//patterns
+import getPatterns from "../../../utils/validationPatterns";
 
 type ChatInputProps = {
 	inputRef: RefObject<HTMLDivElement>;
@@ -156,7 +156,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 
 				console.log(file);
 
-				if (file.type.match(imageTypeRegex)) {
+				if (file.type.match(getPatterns().image)) {
 					if (file.size <= 5000000) {
 						validImageFiles.push({
 							_id: uuidv4(),
