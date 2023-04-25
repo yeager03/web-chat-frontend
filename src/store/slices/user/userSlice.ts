@@ -1,5 +1,5 @@
 import { RootState } from "../../index";
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 // types
 import IUser from "../../../models/IUser";
@@ -27,7 +27,11 @@ const initialState: IUserState = {
 export const userSlice = createSlice({
 	name: "user",
 	initialState,
-	reducers: {},
+	reducers: {
+		setNewProfile: (state, action: PayloadAction<IUser>) => {
+			if (action.payload) state.user = action.payload;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			// signUp reducer
@@ -104,4 +108,5 @@ export const userSlice = createSlice({
 });
 
 export const userSelector = (state: RootState) => state.user;
+export const { setNewProfile } = userSlice.actions;
 export default userSlice.reducer;

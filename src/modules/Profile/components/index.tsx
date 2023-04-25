@@ -1,7 +1,7 @@
-import { FC, ReactElement, ChangeEvent, FormEvent, useState, RefObject } from "react";
+import { FC, ReactElement, ChangeEvent, FormEvent, useState, useEffect, RefObject } from "react";
 
 // mui components
-import { Typography, TextField, Box, InputAdornment, IconButton } from "@mui/material";
+import { Typography, TextField, Box } from "@mui/material";
 
 // components
 import Button from "../../../components/Button";
@@ -28,13 +28,14 @@ type ProfileProps = {
 	handleChange: (e: ChangeEvent<any>) => void;
 	handleBlur: (e: any) => void;
 	handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-	// user
+	// file, user
 	user: IUser | null;
-	// file
 	image: IFile | null;
+	fileImage: File | null;
+	fileInputRef: RefObject<HTMLInputElement>;
+	isValid: boolean;
 	handleChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
 	handleFilePick: () => void;
-	fileInputRef: RefObject<HTMLInputElement>;
 };
 
 const Profile: FC<ProfileProps> = (props): ReactElement => {
@@ -45,13 +46,29 @@ const Profile: FC<ProfileProps> = (props): ReactElement => {
 		errors,
 		user,
 		image,
+		fileImage,
 		fileInputRef,
+		isValid,
 		handleChange,
 		handleBlur,
 		handleSubmit,
 		handleChangeImage,
 		handleFilePick,
 	} = props;
+
+	const [disabled, setDisabled] = useState(true);
+
+	useEffect(() => {
+		const name = user?.fullName.split(" ")[0],
+			surname = user?.fullName.split(" ")[1],
+			about_me = user?.about_me ? user.about_me : "";
+
+		if (name !== values["name"] || surname !== values["surname"] || about_me !== values["about_me"] || fileImage) {
+			setDisabled(false);
+		} else {
+			setDisabled(true);
+		}
+	}, [values, fileImage]);
 
 	return (
 		<>
@@ -176,7 +193,12 @@ const Profile: FC<ProfileProps> = (props): ReactElement => {
 								}}
 							/>
 
-							<Button loading={isSubmitting} type="submit" className={styles["profile__form-button"]}>
+							<Button
+								loading={isSubmitting}
+								type="submit"
+								className={styles["profile__form-button"]}
+								disabled={disabled || isValid}
+							>
 								Сохранить
 							</Button>
 						</form>

@@ -34,4 +34,12 @@ export default class UserService {
 	public static async removeFriend(friendId: string): Promise<AxiosResponse<UserResponse>> {
 		return $api.delete(`/user/friend/remove/${friendId}`);
 	}
+
+	public static async editProfile(formData: FormData): Promise<AxiosResponse<UserResponse>> {
+		return $api.post(`/user/profile/edit`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+	}
 }

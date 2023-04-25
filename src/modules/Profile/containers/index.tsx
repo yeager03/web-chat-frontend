@@ -1,5 +1,10 @@
 import { FC, ReactElement, ChangeEvent, useRef, useState } from "react";
 
+// dispatch
+import { useAppDispatch } from "../../../store";
+
+// actions
+
 // components
 import BaseProfile from "../components";
 
@@ -22,6 +27,7 @@ import getPatterns from "../../../utils/validationPatterns";
 // hooks
 import useAuth from "../../../hooks/useAuth";
 import { IFile } from "../../../models/IMessage";
+import { setNewProfile } from "../../../store/slices/user/userSlice";
 
 export type ProfileValues = {
 	name: string;
@@ -31,6 +37,7 @@ export type ProfileValues = {
 
 const Profile: FC = (): ReactElement => {
 	const { user } = useAuth();
+	const dispatch = useAppDispatch();
 
 	const [image, setImage] = useState<IFile | null>(user && user.avatar);
 	const [fileImage, setFileImage] = useState<File | null>(null);
@@ -41,7 +48,7 @@ const Profile: FC = (): ReactElement => {
 		initialValues: {
 			name: user?.fullName.split(" ")[0],
 			surname: user?.fullName.split(" ")[1],
-			about_me: "",
+			about_me: user?.about_me ? user.about_me : "",
 		} as ProfileValues,
 		validate: (values: ProfileValues) => {
 			const errors: Record<string, string> = {};
@@ -67,28 +74,31 @@ const Profile: FC = (): ReactElement => {
 			return errors;
 		},
 		onSubmit: async (values, { setSubmitting }) => {
+			const formData = new FormData();
 			const data = getTrimmedFields(values) as ProfileValues;
 
-			console.log(data);
+			formData.append("fullName", `${data.name} ${data.surname}`);
+			formData.append("about_me", data.about_me);
+			fileImage && formData.append("file", fileImage);
 
-			// если данные не поменялись, то оставить их и не отправлять запрос
+			setSubmitting(true);
 
-			// setSubmitting(true);
+			try {
+				const { data } = await UserService.editProfile(formData);
+				const { status, message, user }: UserResponse = data;
 
-			// try {
-			// 	const { data } = await UserService.friendRequest("");
-			// 	const { status, message }: UserResponse = data;
+				if (status === "success") {
+					getNotification(message, status);
 
-			// 	if (status === "success") {
-			// 		getNotification(message, status);
-			// 	}
-			// } catch (error: any) {
-			// 	const { message, status } = error.response.data;
+					dispatch(setNewProfile(user));
+				}
+			} catch (error: any) {
+				const { message, status } = error.response.data;
 
-			// 	getNotification(message, status);
-			// } finally {
-			// 	setSubmitting(false);
-			// }
+				getNotification(message, status);
+			} finally {
+				setSubmitting(false);
+			}
 		},
 	});
 
@@ -128,9 +138,11 @@ const Profile: FC = (): ReactElement => {
 			handleSubmit={formik.handleSubmit}
 			user={user}
 			image={image}
+			fileImage={fileImage}
 			fileInputRef={fileInputRef}
 			handleFilePick={handleFilePick}
 			handleChangeImage={handleChangeImage}
+			isValid={!formik.isValid}
 		/>
 	);
 };

@@ -12,6 +12,8 @@ import { socket } from "../../../core/socket";
 
 // actions
 import { logOut } from "../../../store/slices/user/authActions";
+import { setCurrentDialogue, setCurrentDialogueId } from "../../../store/slices/dialogue/dialogueSlice";
+import { socketClearMessages } from "../../../store/slices/message/messageSlice";
 
 // hooks
 import useAuth from "../../../hooks/useAuth";
@@ -30,7 +32,15 @@ const SideBar: FC = (): ReactElement => {
 		socket.emit("logout");
 	};
 
-	return <BaseSideBar user={user} logout={logout} requestsLength={requestsLength} />;
+	const handleChangeLink = () => {
+		dispatch(setCurrentDialogueId(""));
+		dispatch(setCurrentDialogue(null));
+		dispatch(socketClearMessages());
+	};
+
+	return (
+		<BaseSideBar user={user} logout={logout} requestsLength={requestsLength} handleChangeLink={handleChangeLink} />
+	);
 };
 
 export default SideBar;

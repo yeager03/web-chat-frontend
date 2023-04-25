@@ -23,10 +23,11 @@ type ListItemProps = {
 	to: string;
 	icon: SvgIconComponent;
 	length?: number;
+	handleChangeLink: () => void;
 };
 
 const ListItem: FC<ListItemProps> = (props): ReactElement => {
-	const { to, icon, length } = props;
+	const { to, icon, length, handleChangeLink } = props;
 
 	const match = useMatch({
 		path: to,
@@ -39,7 +40,7 @@ const ListItem: FC<ListItemProps> = (props): ReactElement => {
 				[styles["sidebar__top-item_active"]]: match,
 			})}
 		>
-			<Link to={to}>
+			<Link to={to} replace onClick={handleChangeLink}>
 				<SvgIcon component={icon} sx={{ fontSize: 24 }} />
 			</Link>
 			{length && length > 0 ? (
@@ -53,12 +54,13 @@ const ListItem: FC<ListItemProps> = (props): ReactElement => {
 
 type SideBarProps = {
 	user: IUser | null;
-	logout: () => void;
 	requestsLength: number;
+	logout: () => void;
+	handleChangeLink: () => void;
 };
 
 const SideBar: FC<SideBarProps> = (props): ReactElement => {
-	const { user, requestsLength, logout } = props;
+	const { user, requestsLength, logout, handleChangeLink } = props;
 
 	return (
 		<>
@@ -70,9 +72,14 @@ const SideBar: FC<SideBarProps> = (props): ReactElement => {
 						</Link>
 
 						<ul className={styles["sidebar__top-list"]}>
-							<ListItem to={"/dialogues"} icon={QuestionAnswerRounded} />
-							<ListItem to={"/calls"} icon={CallRounded} />
-							<ListItem to={"/friends"} icon={GroupRounded} length={requestsLength} />
+							<ListItem to={"/dialogues"} icon={QuestionAnswerRounded} handleChangeLink={handleChangeLink} />
+							<ListItem to={"/calls"} icon={CallRounded} handleChangeLink={handleChangeLink} />
+							<ListItem
+								to={"/friends"}
+								icon={GroupRounded}
+								length={requestsLength}
+								handleChangeLink={handleChangeLink}
+							/>
 						</ul>
 					</Box>
 
