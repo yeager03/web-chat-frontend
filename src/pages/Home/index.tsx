@@ -57,8 +57,9 @@ const Home: FC = (): ReactElement => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (!socket && user) {
+		if (user) {
 			connectSocket(user._id);
+			console.log("connected to the socket");
 		}
 
 		dispatch(getRequests());
@@ -83,6 +84,7 @@ const Home: FC = (): ReactElement => {
 
 			// если получатель мы
 			if (user && user._id === recipientId) {
+				console.log("asdasdadsada");
 				dispatch(socketAddFriend(friend));
 			}
 		});
