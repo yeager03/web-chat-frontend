@@ -27,43 +27,44 @@ import { checkAuth } from "./store/slices/user/authActions";
 import NewPasswordForm from "./modules/NewPasswordForm";
 
 const App: FC = (): ReactElement => {
-	const { token } = useAuth();
-	const dispatch = useAppDispatch();
+  const { token } = useAuth();
+  const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		if (token) {
-			dispatch(checkAuth());
-		}
-	}, []);
+  useEffect(() => {
+    if (token) {
+      dispatch(checkAuth());
+    }
+  }, []);
 
-	return (
-		<Routes>
-			<Route element={<HomeLayout />}>
-				<Route path="/*" element={<Home />}>
-					<Route element={<Navigate to="/dialogues" replace />} index />
+  return (
+    <Routes>
+      <Route element={<HomeLayout />}>
+        <Route path="/*" element={<Home />}>
+          <Route element={<Navigate to="/dialogues" replace />} index />
 
-					<Route path="dialogues/:dialogueId?" element={<Dialogues />} />
-					<Route path="friends" element={<Friends />} />
-					<Route path="profile" element={<Profile />} />
+          <Route path="dialogues/:dialogueId?" element={<Dialogues />} />
+          <Route path="friends" element={<Friends />} />
+          <Route path="profile" element={<Profile />} />
 
-					<Route path="*" element={<h1>Not found 404</h1>} />
-				</Route>
-			</Route>
+          <Route path="*" element={<h1>Not found 404</h1>} />
+        </Route>
+      </Route>
 
-			<Route element={<AuthLayout />}>
-				<Route path="auth/*" element={<Auth />}>
-					<Route path="signin" element={<SignInForm />} />
-					<Route path="signup" element={<SignUpForm />} />
+      <Route element={<AuthLayout />}>
+        <Route path="auth/*" element={<Auth />}>
+          <Route path="signin" element={<SignInForm />} />
+          <Route path="signup" element={<SignUpForm />} />
 
-					<Route path="activate/:id" element={<ActivationForm />} />
+          <Route path="activate/:id" element={<ActivationForm />} />
 
-					<Route path="password/reset" element={<ResetForm />} />
-					<Route path="password/new/:id" element={<NewPasswordForm />} />
+          <Route path="password/reset" element={<ResetForm />} />
+          <Route path="password/new/:id" element={<NewPasswordForm />} />
 
-					<Route path="*" element={<Navigate to="/auth/signin" replace />} />
-				</Route>
-			</Route>
-		</Routes>
-	);
+          <Route path="*" element={<Navigate to="/auth/signin" replace />} />
+        </Route>
+      </Route>
+    </Routes>
+  );
 };
+
 export default App;

@@ -2,13 +2,14 @@
 
 .friends {
 	flex-basis: 400px;
-	box-shadow: 0px 0px 1px #e1e2e4;
+	border-right: 1px solid #eeeeee;
+	border-left: 1px solid #eeeeee;
 
 	&__header {
 		padding: 30px 22px;
 		height: 85px;
 
-		border-bottom: 1px solid #f5f5f5;
+		border-bottom: 1px solid #eeeeee;
 
 		display: flex;
 		align-items: center;

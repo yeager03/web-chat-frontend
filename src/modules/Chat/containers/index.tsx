@@ -8,7 +8,11 @@ import { useAppDispatch } from "../../../store";
 import BaseChat from "../components/Chat";
 
 // actions
-import { createMessage, editMessage, deleteMessage } from "../../../store/slices/message/messageActions";
+import {
+  createMessage,
+  editMessage,
+  deleteMessage,
+} from "../../../store/slices/message/messageActions";
 
 // hooks
 import useAuth from "../../../hooks/useAuth";
@@ -21,192 +25,201 @@ import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 import { IFile } from "../../../models/IMessage";
 
 export interface IFileImage {
-	_id: string;
-	file: File;
+  _id: string;
+  file: File;
 }
 
 export interface IMessageValue {
-	value: string;
-	type: "create" | "edit";
-	id: string;
+  value: string;
+  type: "create" | "edit";
+  id: string;
 }
 
 export type Emoji = {
-	id: string;
-	keywords: string[];
-	name: string;
-	native: string;
-	shortcodes: string;
-	unified: string;
+  id: string;
+  keywords: string[];
+  name: string;
+  native: string;
+  shortcodes: string;
+  unified: string;
 };
 
 const Chat: FC = (): ReactElement => {
-	const { status } = useSelector(messageSelector);
-	const { currentDialogue, currentDialogueId } = useSelector(dialogueSelector);
-	const { user } = useAuth();
+  const { status } = useSelector(messageSelector);
+  const { currentDialogue, currentDialogueId } = useSelector(dialogueSelector);
+  const { user } = useAuth();
 
-	const [messageValue, setMessageValue] = useState<IMessageValue>({
-		value: "",
-		type: "create",
-		id: "",
-	});
-	const [chatInputHeight, setChatInputHeight] = useState<number>(76);
-	const [showEmojis, setShowEmojis] = useState<boolean>(false);
-	const [imageFiles, setImageFiles] = useState<IFileImage[]>([]);
-	const [images, setImages] = useState<IFile[]>([]);
+  const [messageValue, setMessageValue] = useState<IMessageValue>({
+    value: "",
+    type: "create",
+    id: "",
+  });
+  const [chatInputHeight, setChatInputHeight] = useState<number>(76);
+  const [showEmojis, setShowEmojis] = useState<boolean>(false);
+  const [imageFiles, setImageFiles] = useState<IFileImage[]>([]);
+  const [images, setImages] = useState<IFile[]>([]);
 
-	const inputRef = useRef<HTMLDivElement>(null);
-	const triggerRef = useRef<SVGSVGElement>(null);
-	const nodeRef = useRef<HTMLDivElement>(null);
-	const chatInputRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<SVGSVGElement>(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLDivElement>(null);
 
-	const heightValue = useDebounce(messageValue, 500);
+  const heightValue = useDebounce(messageValue, 500);
 
-	const prevMessageValue = usePrevious<string, string>(messageValue.value, messageValue.id);
-	const prevMessageImagesSize = usePrevious<number, string>(
-		images.reduce((prev, img) => prev + img.size, 0),
-		messageValue.id
-	);
+  const prevMessageValue = usePrevious<string, string>(
+    messageValue.value,
+    messageValue.id
+  );
+  const prevMessageImagesSize = usePrevious<number, string>(
+    images.reduce((prev, img) => prev + img.size, 0),
+    messageValue.id
+  );
 
-	const dispatch = useAppDispatch();
-	const interlocutor = currentDialogue?.members.find((member) => member._id !== user?._id);
+  const dispatch = useAppDispatch();
+  const interlocutor = currentDialogue?.members.find(
+    (member) => member._id !== user?._id
+  );
 
-	useLayoutEffect(() => {
-		if (chatInputRef.current) {
-			setChatInputHeight(chatInputRef.current.offsetHeight);
-		}
-	}, [heightValue, images]);
+  useLayoutEffect(() => {
+    if (chatInputRef.current) {
+      setChatInputHeight(chatInputRef.current.offsetHeight);
+    }
+  }, [heightValue, images]);
 
-	/* Input  */
-	const cursorInput = () => {
-		if (inputRef.current) {
-			const range = document.createRange();
-			range.selectNodeContents(inputRef.current);
-			range.collapse(false);
-			const sel = window.getSelection();
-			sel && sel.removeAllRanges();
-			sel && sel.addRange(range);
-		}
-	};
+  /* Input  */
+  const cursorInput = () => {
+    if (inputRef.current) {
+      const range = document.createRange();
+      range.selectNodeContents(inputRef.current);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel && sel.removeAllRanges();
+      sel && sel.addRange(range);
+    }
+  };
 
-	const clearInput = () => {
-		if (inputRef.current) {
-			inputRef.current.textContent = "";
-			setMessageValue({ type: "create", value: "", id: "" });
-		}
-	};
+  const clearInput = () => {
+    if (inputRef.current) {
+      inputRef.current.textContent = "";
+      setMessageValue({ type: "create", value: "", id: "" });
+    }
+  };
 
-	/* Emoji  */
-	const toggleEmojiModal = (flag: boolean) => {
-		setShowEmojis(flag);
-	};
+  /* Emoji  */
+  const toggleEmojiModal = (flag: boolean) => {
+    setShowEmojis(flag);
+  };
 
-	const handleClickEmoji = (emoji: Emoji) => {
-		setMessageValue((prevState) => ({ ...prevState, value: messageValue.value + emoji.native.toString() }));
-		const input = inputRef.current;
+  const handleClickEmoji = (emoji: Emoji) => {
+    setMessageValue((prevState) => ({
+      ...prevState,
+      value: messageValue.value + emoji.native.toString(),
+    }));
+    const input = inputRef.current;
 
-		if (input) {
-			input.textContent = input.textContent + emoji.native;
-			toggleEmojiModal(false);
-			cursorInput();
-		}
-	};
+    if (input) {
+      input.textContent = input.textContent + emoji.native;
+      toggleEmojiModal(false);
+      cursorInput();
+    }
+  };
 
-	/* Send message, edit message, remove message */
-	const handleSendMessage = () => {
-		if (user && interlocutor) {
-			const formData = new FormData();
-			const data: Record<string, string> = {
-				from: user._id,
-				to: interlocutor._id,
-				messageText: messageValue.value.trim(),
-				dialogueId: currentDialogueId,
-			};
+  /* Send message, edit message, remove message */
+  const handleSendMessage = () => {
+    if (user && interlocutor) {
+      const formData = new FormData();
+      const data: Record<string, string> = {
+        from: user._id,
+        to: interlocutor._id,
+        messageText: messageValue.value.trim(),
+        dialogueId: currentDialogueId,
+      };
 
-			for (let key in data) {
-				formData.append(key, data[key]);
-			}
+      for (let key in data) {
+        formData.append(key, data[key]);
+      }
 
-			for (let item of imageFiles) {
-				formData.append("files", item.file);
-			}
+      for (let item of imageFiles) {
+        formData.append("files", item.file);
+      }
 
-			dispatch(createMessage(formData));
-		}
-	};
+      dispatch(createMessage(formData));
+    }
+  };
 
-	const handleEditMessage = () => {
-		if (
-			messageValue.value !== prevMessageValue ||
-			images.reduce((prev, img) => prev + img.size, 0) !== prevMessageImagesSize
-		) {
-			const formData = new FormData();
-			formData.append("messageId", messageValue.id);
-			formData.append("messageText", messageValue.value);
+  const handleEditMessage = () => {
+    if (
+      messageValue.value !== prevMessageValue ||
+      images.reduce((prev, img) => prev + img.size, 0) !== prevMessageImagesSize
+    ) {
+      const formData = new FormData();
+      formData.append("messageId", messageValue.id);
+      formData.append("messageText", messageValue.value);
 
-			for (let item of imageFiles) {
-				formData.append("files", item.file);
-			}
+      for (let item of imageFiles) {
+        formData.append("files", item.file);
+      }
 
-			dispatch(
-				editMessage({
-					messageId: messageValue.id,
-					messageText: messageValue.value,
-					files: images,
-					formData,
-				})
-			);
-		}
-	};
+      dispatch(
+        editMessage({
+          messageId: messageValue.id,
+          messageText: messageValue.value,
+          files: images,
+          formData,
+        })
+      );
+    }
+  };
 
-	const handleRemoveMessage = (messageId: string) => dispatch(deleteMessage(messageId));
+  const handleRemoveMessage = (messageId: string) =>
+    dispatch(deleteMessage(messageId));
 
-	const handleEditFiles = async (files: IFile[]) => {
-		if (!files.length) return;
+  const handleEditFiles = async (files: IFile[]) => {
+    if (!files.length) return;
 
-		const editedFiles = await Promise.all(
-			files.map(async (file) => {
-				const response = await fetch(file.url);
-				const blob = await response.blob();
+    const editedFiles = await Promise.all(
+      files.map(async (file) => {
+        const response = await fetch(file.url);
+        const blob = await response.blob();
 
-				return {
-					_id: file._id,
-					file: new File([blob], file.fileName, {
-						type: blob.type,
-					}),
-				};
-			})
-		);
+        return {
+          _id: file._id,
+          file: new File([blob], file.fileName, {
+            type: blob.type,
+          }),
+        };
+      })
+    );
 
-		setImageFiles(editedFiles);
-		setImages(files);
-	};
+    setImageFiles(editedFiles);
+    setImages(files);
+  };
 
-	return (
-		<BaseChat
-			interlocutor={interlocutor ? interlocutor : null}
-			status={status}
-			showEmojis={showEmojis}
-			inputRef={inputRef}
-			chatInputRef={chatInputRef}
-			chatInputHeight={chatInputHeight}
-			nodeRef={nodeRef}
-			triggerRef={triggerRef}
-			messageValue={messageValue}
-			images={images}
-			toggleEmojiModal={toggleEmojiModal}
-			setMessageValue={setMessageValue}
-			setImageFiles={setImageFiles}
-			setImages={setImages}
-			clearInput={clearInput}
-			cursorInput={cursorInput}
-			handleClickEmoji={handleClickEmoji}
-			handleSendMessage={handleSendMessage}
-			handleEditMessage={handleEditMessage}
-			handleRemoveMessage={handleRemoveMessage}
-			handleEditFiles={handleEditFiles}
-		/>
-	);
+  return (
+    <BaseChat
+      interlocutor={interlocutor ? interlocutor : null}
+      status={status}
+      showEmojis={showEmojis}
+      inputRef={inputRef}
+      chatInputRef={chatInputRef}
+      chatInputHeight={chatInputHeight}
+      nodeRef={nodeRef}
+      triggerRef={triggerRef}
+      messageValue={messageValue}
+      images={images}
+      toggleEmojiModal={toggleEmojiModal}
+      setMessageValue={setMessageValue}
+      setImageFiles={setImageFiles}
+      setImages={setImages}
+      clearInput={clearInput}
+      cursorInput={cursorInput}
+      handleClickEmoji={handleClickEmoji}
+      handleSendMessage={handleSendMessage}
+      handleEditMessage={handleEditMessage}
+      handleRemoveMessage={handleRemoveMessage}
+      handleEditFiles={handleEditFiles}
+    />
+  );
 };
 
 export default Chat;
