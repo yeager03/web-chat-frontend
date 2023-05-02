@@ -11,6 +11,47 @@
 	}
 }
 
+.input-wrapper {
+	display: flex;
+	align-items: center;
+
+	border: 1px solid #e4e7ec;
+	border-radius: 10px;
+	padding: 15px;
+	max-height: 145px;
+
+	&__icon {
+		cursor: pointer;
+
+		opacity: 0.5;
+		transition: opacity 0.25s ease-out;
+
+		&:hover {
+			opacity: 1;
+		}
+
+		animation: animation 0.25s ease-out;
+	}
+
+	&__smile {
+		margin-right: 10px;
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+	}
+
+	&__attach {
+		margin-right: 10px;
+	}
+
+	&:focus-within {
+		outline: 1px solid $blue;
+	}
+}
+
+
 .chat-input {
 	background-color: $white;
 
@@ -20,45 +61,7 @@
 	position: absolute;
 	bottom: 0;
 
-	.input-wrapper {
-		display: flex;
-		align-items: center;
 
-		border: 1px solid #e4e7ec;
-		border-radius: 10px;
-		padding: 15px;
-		max-height: 145px;
-
-		&__icon {
-			cursor: pointer;
-
-			opacity: 0.5;
-			transition: opacity 0.25s ease-out;
-
-			&:hover {
-				opacity: 1;
-			}
-
-			animation: animation 0.25s ease-out;
-		}
-
-		&__smile {
-			margin-right: 10px;
-		}
-
-		&__actions {
-			display: flex;
-			align-items: center;
-		}
-
-		&__camera {
-			margin-right: 10px;
-		}
-
-		&:focus-within {
-			outline: 1px solid $blue;
-		}
-	}
 
 	.input-images {
 		margin-top: 10px;

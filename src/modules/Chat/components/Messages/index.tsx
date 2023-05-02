@@ -23,90 +23,91 @@ import { IMessageValue } from "../../containers";
 import IUser from "../../../../models/IUser";
 
 type MessagesProps = {
-	messages: IMessage[];
-	status: Status;
-	messagesRef: RefObject<HTMLDivElement>;
-	chatInputHeight: number;
-	isTyping: boolean;
-	interlocutor: IUser | null;
-	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImages: Dispatch<SetStateAction<IFile[]>>;
-	handleRemoveMessage: (id: string) => void;
-	handleEditFiles: (files: IFile[]) => void;
+  messages: IMessage[];
+  status: Status;
+  messagesRef: RefObject<HTMLDivElement>;
+  chatInputHeight: number;
+  isTyping: boolean;
+  interlocutor: IUser | null;
+  setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+  setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
+  handleRemoveMessage: (id: string) => void;
+  handleEditFiles: (files: IFile[]) => void;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const {
-		messages,
-		status,
-		messagesRef,
-		chatInputHeight,
-		isTyping,
-		interlocutor,
-		setMessageValue,
-		setImages,
-		handleRemoveMessage,
-		handleEditFiles,
-	} = props;
+  const {
+    messages,
+    status,
+    messagesRef,
+    chatInputHeight,
+    isTyping,
+    interlocutor,
+    setMessageValue,
+    setUploadedFiles,
+    handleRemoveMessage,
+    handleEditFiles,
+  } = props;
 
-	const chooseDialogue =
-		status === "idle" ? (
-			<Box className={cn(styles["chat__empty"], styles["messages__choose"])}>
-				<img src={ChooseDialogue} alt="Choose dialogue img" />
-				<Typography>Выберите диалог</Typography>
-			</Box>
-		) : null;
+  const chooseDialogue =
+    status === "idle" ? (
+      <Box className={cn(styles["chat__empty"], styles["messages__choose"])}>
+        <img src={ChooseDialogue} alt="Choose dialogue img" />
+        <Typography>Выберите диалог</Typography>
+      </Box>
+    ) : null;
 
-	const loading =
-		status === "loading" ? (
-			<Box className={styles["chat__empty"]}>
-				<CircularProgress />
-			</Box>
-		) : null;
+  const loading =
+    status === "loading" ? (
+      <Box className={styles["chat__empty"]}>
+        <CircularProgress />
+      </Box>
+    ) : null;
 
-	const emptyMessages =
-		status === "success" && !messages.length ? (
-			<Box className={styles["chat__empty"]}>
-				<Typography>У вас пока нет сообщений</Typography>
-			</Box>
-		) : null;
+  const emptyMessages =
+    status === "success" && !messages.length ? (
+      <Box className={styles["chat__empty"]}>
+        <Typography>У вас пока нет сообщений</Typography>
+      </Box>
+    ) : null;
 
-	const content =
-		status === "success" && messages.length
-			? messages.map((message) => (
-					<Message
-						key={message["_id"]}
-						{...message}
-						setImages={setImages}
-						setMessageValue={setMessageValue}
-						handleRemoveMessage={handleRemoveMessage}
-						handleEditFiles={handleEditFiles}
-					/>
-			  ))
-			: null;
+  const content =
+    status === "success" && messages.length
+      ? messages.map((message) => (
+          <Message
+            key={message["_id"]}
+            {...message}
+            setUploadedFiles={setUploadedFiles}
+            setMessageValue={setMessageValue}
+            handleRemoveMessage={handleRemoveMessage}
+            handleEditFiles={handleEditFiles}
+          />
+        ))
+      : null;
 
-	const typing =
-		status === "success" && messages.length && isTyping ? (
-			<TypingMessage isTyping={isTyping} interlocutor={interlocutor} />
-		) : null;
+  const typing =
+    status === "success" && messages.length && isTyping ? (
+      <TypingMessage isTyping={isTyping} interlocutor={interlocutor} />
+    ) : null;
 
-	return (
-		<Box
-			className={cn(styles["chat__messages"], {
-				[styles["chat__messages_empty"]]: chooseDialogue || loading || emptyMessages,
-			})}
-			ref={messagesRef}
-			sx={{
-				height: `calc(100% - 85px - ${chatInputHeight}px)`,
-			}}
-		>
-			{chooseDialogue}
-			{loading}
-			{emptyMessages}
-			{content}
-			{typing}
-		</Box>
-	);
+  return (
+    <Box
+      className={cn(styles["chat__messages"], {
+        [styles["chat__messages_empty"]]:
+          chooseDialogue || loading || emptyMessages,
+      })}
+      ref={messagesRef}
+      sx={{
+        height: `calc(100% - 85px - ${chatInputHeight}px)`,
+      }}
+    >
+      {chooseDialogue}
+      {loading}
+      {emptyMessages}
+      {content}
+      {typing}
+    </Box>
+  );
 };
 
 export default Messages;

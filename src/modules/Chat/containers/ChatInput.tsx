@@ -1,6 +1,7 @@
 import {
   FC,
   ReactElement,
+  MouseEvent as ReactMouseEvent,
   ChangeEvent,
   KeyboardEvent,
   RefObject,
@@ -28,7 +29,7 @@ import BaseChatInput from "../components/ChatInput";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 // types
-import { IFileImage, IMessageValue } from ".";
+import { IMessageValue, IUploadedFile } from ".";
 import IUser from "../../../models/IUser";
 import { IFile } from "../../../models/IMessage";
 
@@ -59,10 +60,10 @@ type ChatInputProps = {
   messageValue: IMessageValue;
   showEmojis: boolean;
   interlocutor: IUser | null;
-  images: IFile[];
+  uploadedFiles: IFile[];
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-  setImageFiles: Dispatch<SetStateAction<IFileImage[]>>;
-  setImages: Dispatch<SetStateAction<IFile[]>>;
+  setFiles: Dispatch<SetStateAction<IUploadedFile[]>>;
+  setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
   toggleEmojiModal: (flag: boolean) => void;
   cursorInput: () => void;
   clearInput: () => void;
@@ -80,10 +81,10 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     nodeRef,
     showEmojis,
     interlocutor,
-    images,
+    uploadedFiles,
     setMessageValue,
-    setImageFiles,
-    setImages,
+    setFiles,
+    setUploadedFiles,
     toggleEmojiModal,
     cursorInput,
     clearInput,
@@ -94,7 +95,9 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
   const { currentDialogueId } = useSelector(dialogueSelector);
 
   const debounceMessage = useDebounce(messageValue.value, 2000);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -169,7 +172,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
     if (
       e.key === "Enter" &&
-      (messageValue.value.trim().length || images.length)
+      (messageValue.value.trim().length || uploadedFiles.length)
     ) {
       if (messageValue.type === "create") {
         sendMessage();
@@ -187,10 +190,14 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 
       if (file.type.match(getPatterns().image)) {
         if (file.size <= 5000000) {
-          const validImageFile = { _id: uuidv4(), file };
+          const validImageFile: IUploadedFile = {
+            _id: uuidv4(),
+            type: "image",
+            file,
+          };
 
-          setImageFiles((prevState) => [...prevState, validImageFile]);
-          setImages((prevState) => [
+          setFiles((prevState) => [...prevState, validImageFile]);
+          setUploadedFiles((prevState) => [
             ...prevState,
             {
               _id: validImageFile._id,
@@ -198,6 +205,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
               fileName: file.name,
               size: file.size,
               extension: file.type.split("/")[1],
+              type: "image",
             },
           ]);
           inputRef.current && inputRef.current.focus();
@@ -225,8 +233,9 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 
           if (response.status === 200) {
             const blob = await response.blob();
-            const image = {
+            const image: IUploadedFile = {
               _id: uuidv4(),
+              type: "image",
               file: new File(
                 [blob],
                 `image${blob.size}.${blob.type.split("/")[1]}`,
@@ -236,8 +245,8 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
               ),
             };
 
-            setImageFiles((prevState) => [...prevState, image]);
-            setImages((prevState) => [
+            setFiles((prevState) => [...prevState, image]);
+            setUploadedFiles((prevState) => [
               ...prevState,
               {
                 _id: image._id,
@@ -245,6 +254,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
                 fileName: image.file.name,
                 size: image.file.size,
                 extension: image.file.type.split("/")[1],
+                type: "image",
               },
             ]);
             inputRef.current && inputRef.current.focus();
@@ -255,25 +265,37 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
-  const handleFilePick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  // TODO:
+  const handleFilePick = (e: ReactMouseEvent<SVGSVGElement>) => {
+    const type = e.currentTarget.getAttribute("file-type");
+
+    switch (type) {
+      case "image":
+        imageInputRef.current && imageInputRef.current.click();
+        break;
+      case "audio":
+        audioInputRef.current && audioInputRef.current.click();
+        break;
     }
   };
 
   const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    const type = e.currentTarget.getAttribute("file-type");
 
     if (files) {
-      const validImageFiles: IFileImage[] = [];
+      const validImageFiles: IUploadedFile[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        console.log(file);
 
         if (file.type.match(getPatterns().image)) {
           if (file.size <= 5000000) {
             validImageFiles.push({
               _id: uuidv4(),
+              type: "image",
               file,
             });
           } else {
@@ -290,17 +312,20 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
         }
       }
 
-      if (validImageFiles.length <= 5) {
-        setImageFiles((prevState) => [...prevState, ...validImageFiles]);
-        setImages((prevState) => [
-          ...prevState,
-          ...validImageFiles.map(({ _id, file }) => {
-            const url = URL.createObjectURL(file);
+      if (uploadedFiles.length >= 5) {
+        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
+      }
 
+      if (validImageFiles.length <= 5) {
+        setFiles((prevState) => [...prevState, ...validImageFiles]);
+        setUploadedFiles((prevState) => [
+          ...prevState,
+          ...validImageFiles.map(({ _id, file, type }) => {
             return {
               _id,
-              url,
+              type,
               fileName: file.name,
+              url: URL.createObjectURL(file),
               size: file.size,
               extension: file.type.split("/")[1],
             };
@@ -309,35 +334,52 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
         inputRef.current && inputRef.current.focus();
         return;
       } else {
-        return getNotification("Больше 5 файлов нельзя загрузить!", "error");
+        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
       }
     }
   };
 
-  const handleRemoveImage = (id: string) => {
-    setImageFiles((prevState) => prevState.filter(({ _id }) => _id !== id));
-    setImages((prevState) => prevState.filter((image) => image._id !== id));
+  const handleRemoveFile = (id: string) => {
+    setFiles((prevState) => prevState.filter(({ _id }) => _id !== id));
+    setUploadedFiles((prevState) =>
+      prevState.filter((file) => file._id !== id)
+    );
   };
 
   const sendMessage = () => {
-    handleSendMessage();
-    clearInput();
-    setImageFiles([]);
-    setImages([]);
+    if (uploadedFiles.length <= 5) {
+      handleSendMessage();
+      clearInput();
+      setFiles([]);
+      setUploadedFiles([]);
+      return;
+    } else {
+      return getNotification("Нелья отправить больше 5 файлов!", "error");
+    }
   };
 
   const editMessage = () => {
     if (messageValue.id) {
-      handleEditMessage();
-      clearInput();
-      setImageFiles([]);
-      setImages([]);
+      if (uploadedFiles.length <= 5) {
+        handleEditMessage();
+        clearInput();
+        setFiles([]);
+        setUploadedFiles([]);
+        return;
+      } else {
+        return getNotification("Нелья отправить больше 5 файлов!", "error");
+      }
+    } else {
+      return getNotification("Не найдено сообщение!", "error");
     }
   };
 
   const removeMessage = () => {
     if (messageValue.id) {
       handleRemoveMessage(messageValue.id);
+      return;
+    } else {
+      return getNotification("Не найдено сообщение!", "error");
     }
   };
 
@@ -345,13 +387,14 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     <BaseChatInput
       messageValue={messageValue}
       triggerRef={triggerRef}
-      fileInputRef={fileInputRef}
+      imageInputRef={imageInputRef}
+      audioInputRef={audioInputRef}
       inputRef={inputRef}
       chatInputRef={chatInputRef}
-      images={images}
+      uploadedFiles={uploadedFiles}
       handleChangeImage={handleChangeImage}
       handleFilePick={handleFilePick}
-      handleRemoveImage={handleRemoveImage}
+      handleRemoveFile={handleRemoveFile}
       handleChangeSearchValue={handleChangeSearchValue}
       handleKeyDown={handleKeyDown}
       handleOnPaste={handleOnPaste}

@@ -1,14 +1,16 @@
 import {
-  ChangeEvent,
   FC,
   ReactElement,
+  MouseEvent,
+  ChangeEvent,
   KeyboardEvent,
   RefObject,
   ClipboardEvent,
+  useState,
 } from "react";
 
 // mui components
-import { Box } from "@mui/material";
+import { Box, Popover } from "@mui/material";
 
 // style
 import styles from "./ChatInput.module.scss";
@@ -25,6 +27,8 @@ import {
   CheckCircleRounded,
   DeleteRounded,
   CloseRounded,
+  AttachFileRounded,
+  AudioFileRounded,
 } from "@mui/icons-material";
 
 // types
@@ -34,13 +38,14 @@ import { IFile } from "../../../../models/IMessage";
 type ChatInputProps = {
   messageValue: IMessageValue;
   triggerRef: RefObject<SVGSVGElement>;
-  fileInputRef: RefObject<HTMLInputElement>;
+  imageInputRef: RefObject<HTMLInputElement>;
+  audioInputRef: RefObject<HTMLInputElement>;
   inputRef: RefObject<HTMLDivElement>;
   chatInputRef: RefObject<HTMLDivElement>;
-  images: IFile[];
+  uploadedFiles: IFile[];
+  handleFilePick: (e: MouseEvent<SVGSVGElement>) => void;
   handleChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleFilePick: () => void;
-  handleRemoveImage: (key: string) => void;
+  handleRemoveFile: (id: string) => void;
   handleChangeSearchValue: (e: ChangeEvent<HTMLDivElement>) => void;
   handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
   handleOnPaste: (e: ClipboardEvent<HTMLDivElement>) => void;
@@ -53,13 +58,14 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
   const {
     messageValue,
     triggerRef,
-    fileInputRef,
+    imageInputRef,
+    audioInputRef,
     inputRef,
     chatInputRef,
-    images,
+    uploadedFiles,
     handleChangeImage,
     handleFilePick,
-    handleRemoveImage,
+    handleRemoveFile,
     handleChangeSearchValue,
     handleKeyDown,
     handleOnPaste,
@@ -67,6 +73,19 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     editMessage,
     removeMessage,
   } = props;
+
+  const [anchorEl, setAnchorEl] = useState<SVGSVGElement | null>(null);
+
+  const handleClick = (event: MouseEvent<SVGSVGElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
   return (
     <Box className={styles["chat-input"]} ref={chatInputRef}>
       <Box className={styles["input-wrapper"]}>
@@ -92,21 +111,71 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
             multiple
             className="input_hidden"
             hidden
-            ref={fileInputRef}
+            ref={imageInputRef}
             onChange={handleChangeImage}
             onClick={(event) => ((event.target as HTMLInputElement).value = "")}
           />
-
-          <CameraAltRounded
+          <input
+            type="file"
+            accept="audio/*,.mp3,.wav,.wma,.aac,.flac,.ogg,.m4a,.aiff,.alac,.amr,.ape,.au,.mpc,.tta,.wv,.opus"
+            multiple
+            className="input_hidden"
+            hidden
+            ref={audioInputRef}
+            onChange={handleChangeImage}
+            onClick={(event) => ((event.target as HTMLInputElement).value = "")}
+          />
+          <AttachFileRounded
             className={cn(
               styles["input-wrapper__icon"],
-              styles["input-wrapper__camera"]
+              styles["input-wrapper__attach"]
             )}
-            onClick={handleFilePick}
+            onClick={handleClick}
           />
 
+          <Popover
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            sx={{
+              ["& div"]: {
+                padding: "10px",
+                display: "flex",
+                flexDirection: "column-reverse",
+              },
+            }}
+          >
+            <CameraAltRounded
+              className={styles["input-wrapper__icon"]}
+              file-type="image"
+              onClick={(e) => {
+                handleFilePick(e);
+                handleClose();
+              }}
+            />
+            <AudioFileRounded
+              className={styles["input-wrapper__icon"]}
+              sx={{
+                marginBottom: "10px",
+              }}
+              file-type="audio"
+              onClick={(e) => {
+                handleFilePick(e);
+                handleClose();
+              }}
+            />
+          </Popover>
+
           {messageValue.type === "create" ? (
-            messageValue.value.trim().length || images.length ? (
+            messageValue.value.trim().length || uploadedFiles.length ? (
               <SendRounded
                 className={cn(
                   styles["input-wrapper__icon"],
@@ -122,7 +191,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
                 )}
               />
             )
-          ) : messageValue.value.trim().length || images.length ? (
+          ) : messageValue.value.trim().length || uploadedFiles.length ? (
             <CheckCircleRounded
               className={cn(
                 styles["input-wrapper__icon"],
@@ -142,15 +211,15 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
         </Box>
       </Box>
 
-      {images.length > 0 && (
+      {uploadedFiles.length > 0 && (
         <ul className={styles["input-images"]}>
-          {images.map((image, index) => {
+          {uploadedFiles.map((file, index) => {
             return (
-              <li key={image.url}>
-                <span onClick={() => handleRemoveImage(image._id)}>
+              <li key={file.url}>
+                <span onClick={() => handleRemoveFile(file._id)}>
                   <CloseRounded sx={{ color: "#fff", fontSize: 20 }} />
                 </span>
-                <img src={image.url} alt={`Uploaded ${index + 1} file`} />
+                <img src={file.url} alt={`Uploaded ${index + 1} file`} />
               </li>
             );
           })}

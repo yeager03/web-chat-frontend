@@ -47,7 +47,7 @@ type MessageProps = IMessage & {
   handleOpen: (e: MouseEvent<HTMLDivElement>) => void;
   handleClose: () => void;
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-  setImages: Dispatch<SetStateAction<IFile[]>>;
+  setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
   handleRemoveMessage: (id: string) => void;
   handleEditFiles: (files: IFile[]) => void;
 };
@@ -68,7 +68,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
     handleOpen,
     handleClose,
     setMessageValue,
-    setImages,
+    setUploadedFiles,
     handleRemoveMessage,
     handleEditFiles,
   } = props;
@@ -107,7 +107,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
 							setMessageValue({ value: message, type: "edit", id: _id });
 							if (files.length) {
 								handleEditFiles(files);
-								setImages(files);
+								setUploadedFiles(files);
 							}
 							handleClose();
 						}}

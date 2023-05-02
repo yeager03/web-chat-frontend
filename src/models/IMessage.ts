@@ -8,6 +8,7 @@ export interface IFile {
   url: string;
   size: number;
   extension: string;
+  type: "image" | "audio";
 }
 
 export default interface IMessage {

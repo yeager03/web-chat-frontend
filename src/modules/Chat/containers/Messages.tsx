@@ -1,4 +1,11 @@
-import { FC, ReactElement, useEffect, useRef, Dispatch, SetStateAction } from "react";
+import {
+  FC,
+  ReactElement,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { useSelector } from "react-redux";
 
 // dispatch
@@ -25,78 +32,93 @@ import IUser from "../../../models/IUser";
 import { IFile } from "../../../models/IMessage";
 
 type MessagesProps = {
-	status: Status;
-	chatInputHeight: number;
-	interlocutor: IUser | null;
-	setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
-	setImages: Dispatch<SetStateAction<IFile[]>>;
-	handleRemoveMessage: (id: string) => void;
-	handleEditFiles: (files: IFile[]) => void;
+  status: Status;
+  chatInputHeight: number;
+  interlocutor: IUser | null;
+  setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
+  setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
+  handleRemoveMessage: (id: string) => void;
+  handleEditFiles: (files: IFile[]) => void;
 };
 
 type TypingResponse = {
-	flag: boolean;
-	interlocutorId: string;
-	currentDialogueId: string;
+  flag: boolean;
+  interlocutorId: string;
+  currentDialogueId: string;
 };
 
 const Messages: FC<MessagesProps> = (props): ReactElement => {
-	const { status, chatInputHeight, interlocutor, setMessageValue, setImages, handleRemoveMessage, handleEditFiles } =
-		props;
+  const {
+    status,
+    chatInputHeight,
+    interlocutor,
+    setMessageValue,
+    setUploadedFiles,
+    handleRemoveMessage,
+    handleEditFiles,
+  } = props;
 
-	const { currentDialogueId } = useSelector(dialogueSelector);
-	const { messages, isTyping } = useSelector(messageSelector);
+  const { currentDialogueId } = useSelector(dialogueSelector);
+  const { messages, isTyping } = useSelector(messageSelector);
 
-	const messagesRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
-	const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		if (currentDialogueId) {
-			dispatch(getMessages(currentDialogueId));
+  useEffect(() => {
+    if (currentDialogueId) {
+      dispatch(getMessages(currentDialogueId));
 
-			let timer: NodeJS.Timeout;
+      let timer: NodeJS.Timeout;
 
-			socket.on("SERVER:TYPING_RESPONSE", (data: TypingResponse) => {
-				if (currentDialogueId === data.currentDialogueId) {
-					dispatch(setTyping(data.flag));
+      socket.on("SERVER:TYPING_RESPONSE", (data: TypingResponse) => {
+        if (currentDialogueId === data.currentDialogueId) {
+          dispatch(setTyping(data.flag));
 
-					timer = setTimeout(() => {
-						dispatch(setTyping(false));
-					}, 3000);
-				}
+          timer = setTimeout(() => {
+            dispatch(setTyping(false));
+          }, 3000);
+        }
 
-				console.log(data);
-			});
+        console.log(data);
+      });
 
-			return () => {
-				clearTimeout(timer);
-			};
-		}
-	}, [currentDialogueId]);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [currentDialogueId]);
 
-	useEffect(() => {
-		const element = messagesRef.current;
+  useEffect(() => {
+    const element = messagesRef.current;
 
-		if (element) {
-			element.scrollTo(0, element.scrollHeight);
-		}
-	}, [messages]);
+    let timeout: NodeJS.Timeout;
 
-	return (
-		<BaseMessages
-			messages={messages}
-			status={status}
-			messagesRef={messagesRef}
-			chatInputHeight={chatInputHeight}
-			isTyping={isTyping}
-			interlocutor={interlocutor}
-			setMessageValue={setMessageValue}
-			setImages={setImages}
-			handleRemoveMessage={handleRemoveMessage}
-			handleEditFiles={handleEditFiles}
-		/>
-	);
+    if (element) {
+      timeout = setTimeout(function () {
+        element.scrollTo(0, element.scrollHeight);
+      }, 0);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [messages, chatInputHeight]);
+
+  return (
+    <BaseMessages
+      messages={messages}
+      status={status}
+      messagesRef={messagesRef}
+      chatInputHeight={chatInputHeight}
+      isTyping={isTyping}
+      interlocutor={interlocutor}
+      setMessageValue={setMessageValue}
+      setUploadedFiles={setUploadedFiles}
+      handleRemoveMessage={handleRemoveMessage}
+      handleEditFiles={handleEditFiles}
+    />
+  );
 };
 
 export default Messages;

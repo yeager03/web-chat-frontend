@@ -24,8 +24,9 @@ import { messageSelector } from "../../../store/slices/message/messageSlice";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 import { IFile } from "../../../models/IMessage";
 
-export interface IFileImage {
+export interface IUploadedFile {
   _id: string;
+  type: "image" | "audio";
   file: File;
 }
 
@@ -56,22 +57,23 @@ const Chat: FC = (): ReactElement => {
   });
   const [chatInputHeight, setChatInputHeight] = useState<number>(76);
   const [showEmojis, setShowEmojis] = useState<boolean>(false);
-  const [imageFiles, setImageFiles] = useState<IFileImage[]>([]);
-  const [images, setImages] = useState<IFile[]>([]);
+
+  const [files, setFiles] = useState<IUploadedFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([]);
 
   const inputRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<SVGSVGElement>(null);
   const nodeRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLDivElement>(null);
 
-  const heightValue = useDebounce(messageValue, 500);
+  const messageHeightValue = useDebounce(messageValue, 500);
 
   const prevMessageValue = usePrevious<string, string>(
     messageValue.value,
     messageValue.id
   );
-  const prevMessageImagesSize = usePrevious<number, string>(
-    images.reduce((prev, img) => prev + img.size, 0),
+  const prevMessageUploadedFilesSize = usePrevious<number, string>(
+    uploadedFiles.reduce((prev, file) => prev + file.size, 0),
     messageValue.id
   );
 
@@ -84,7 +86,7 @@ const Chat: FC = (): ReactElement => {
     if (chatInputRef.current) {
       setChatInputHeight(chatInputRef.current.offsetHeight);
     }
-  }, [heightValue, images]);
+  }, [messageHeightValue, uploadedFiles]);
 
   /* Input  */
   const cursorInput = () => {
@@ -139,7 +141,7 @@ const Chat: FC = (): ReactElement => {
         formData.append(key, data[key]);
       }
 
-      for (let item of imageFiles) {
+      for (let item of files) {
         formData.append("files", item.file);
       }
 
@@ -150,13 +152,14 @@ const Chat: FC = (): ReactElement => {
   const handleEditMessage = () => {
     if (
       messageValue.value !== prevMessageValue ||
-      images.reduce((prev, img) => prev + img.size, 0) !== prevMessageImagesSize
+      uploadedFiles.reduce((prev, file) => prev + file.size, 0) !==
+        prevMessageUploadedFilesSize
     ) {
       const formData = new FormData();
       formData.append("messageId", messageValue.id);
       formData.append("messageText", messageValue.value);
 
-      for (let item of imageFiles) {
+      for (let item of files) {
         formData.append("files", item.file);
       }
 
@@ -164,7 +167,7 @@ const Chat: FC = (): ReactElement => {
         editMessage({
           messageId: messageValue.id,
           messageText: messageValue.value,
-          files: images,
+          files: uploadedFiles,
           formData,
         })
       );
@@ -177,13 +180,14 @@ const Chat: FC = (): ReactElement => {
   const handleEditFiles = async (files: IFile[]) => {
     if (!files.length) return;
 
-    const editedFiles = await Promise.all(
+    const editedFiles: IUploadedFile[] = await Promise.all(
       files.map(async (file) => {
         const response = await fetch(file.url);
         const blob = await response.blob();
 
         return {
           _id: file._id,
+          type: "image",
           file: new File([blob], file.fileName, {
             type: blob.type,
           }),
@@ -191,8 +195,8 @@ const Chat: FC = (): ReactElement => {
       })
     );
 
-    setImageFiles(editedFiles);
-    setImages(files);
+    setFiles(editedFiles);
+    setUploadedFiles(files);
   };
 
   return (
@@ -206,11 +210,11 @@ const Chat: FC = (): ReactElement => {
       nodeRef={nodeRef}
       triggerRef={triggerRef}
       messageValue={messageValue}
-      images={images}
+      uploadedFiles={uploadedFiles}
       toggleEmojiModal={toggleEmojiModal}
       setMessageValue={setMessageValue}
-      setImageFiles={setImageFiles}
-      setImages={setImages}
+      setFiles={setFiles}
+      setUploadedFiles={setUploadedFiles}
       clearInput={clearInput}
       cursorInput={cursorInput}
       handleClickEmoji={handleClickEmoji}
