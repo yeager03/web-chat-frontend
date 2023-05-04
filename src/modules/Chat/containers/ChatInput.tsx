@@ -1,17 +1,20 @@
 import {
-  FC,
-  ReactElement,
-  MouseEvent as ReactMouseEvent,
   ChangeEvent,
-  KeyboardEvent,
-  RefObject,
-  Dispatch,
-  SetStateAction,
   ClipboardEvent,
+  Dispatch,
+  FC,
+  KeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  ReactElement,
+  RefObject,
+  SetStateAction,
   useEffect,
   useRef,
 } from "react";
 import { useSelector } from "react-redux";
+
+// dispatch
+import { useAppDispatch } from "../../../store";
 
 // uuid
 import { v4 as uuidv4 } from "uuid";
@@ -28,6 +31,13 @@ import BaseChatInput from "../components/ChatInput";
 // selector
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
+// actions
+import {
+  IMediaFile,
+  MediaFileStatus,
+  setMediaFiles,
+} from "../../../store/slices/audio/audioSlice";
+
 // types
 import { IMessageValue, IUploadedFile } from ".";
 import IUser from "../../../models/IUser";
@@ -36,11 +46,12 @@ import { IFile } from "../../../models/IMessage";
 // notification
 import getNotification from "../../../utils/notification";
 
-//patterns
+// patterns
 import getPatterns from "../../../utils/validationPatterns";
 
 // is valid url
 import isValidUrl from "../../../utils/validUrl";
+import AudioProvider from "../../../context/AudioProvider";
 
 const isUrlHasImage = (url: string) => {
   const img = new Image();
@@ -98,6 +109,8 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -159,6 +172,23 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   }, [debounceMessage]);
 
+  useEffect(() => {
+    if (uploadedFiles.length) {
+      uploadedFiles.forEach((file) => {
+        if (file.type === "audio") {
+          dispatch(
+            setMediaFiles({
+              _id: file._id,
+              title: file.fileName,
+              status: MediaFileStatus.IDLE,
+              duration: 0,
+            })
+          );
+        }
+      });
+    }
+  }, [uploadedFiles]);
+
   const handleChangeSearchValue = (e: ChangeEvent<HTMLDivElement>) => {
     setMessageValue((prevState) => ({
       ...prevState,
@@ -182,6 +212,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
+  // TODO:
   const handleOnPaste = async (e: ClipboardEvent<HTMLDivElement>) => {
     if (e.clipboardData.files.length) {
       e.preventDefault();
@@ -279,48 +310,72 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
-  const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeFile = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    const type = e.currentTarget.getAttribute("file-type");
+    const type = e.target.getAttribute("file-type");
+
+    if (uploadedFiles.length >= 5) {
+      return getNotification("Нельзя загрузить больше 5 файлов!", "error");
+    }
 
     if (files) {
-      const validImageFiles: IUploadedFile[] = [];
+      const validUploadFiles: IUploadedFile[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        const fileType = file.type.split("/")[0];
 
-        console.log(file);
-
-        if (file.type.match(getPatterns().image)) {
-          if (file.size <= 5000000) {
-            validImageFiles.push({
-              _id: uuidv4(),
-              type: "image",
-              file,
-            });
-          } else {
-            return getNotification(
-              "Размер картинки не должен превышать 5 мегабайт!",
-              "error"
-            );
-          }
-        } else {
-          return getNotification(
-            "Выбранный вами файл, не является картинкой!",
-            "error"
-          );
+        switch (type) {
+          case "image":
+            if (file.type.match(getPatterns().image)) {
+              if (file.size <= 5000000) {
+                validUploadFiles.push({
+                  _id: uuidv4(),
+                  type: fileType,
+                  file,
+                } as IUploadedFile);
+              } else {
+                return getNotification(
+                  "Размер картинки не должен превышать 5 мегабайт!",
+                  "error"
+                );
+              }
+            } else {
+              return getNotification(
+                "Выбранный вами файл, не является картинкой!",
+                "error"
+              );
+            }
+            break;
+          case "audio":
+            if (file.type.match(getPatterns().audio)) {
+              if (file.size <= 10000000) {
+                validUploadFiles.push({
+                  _id: uuidv4(),
+                  type: fileType,
+                  file,
+                } as IUploadedFile);
+              } else {
+                return getNotification(
+                  "Размер аудиозаписи не должен превышать 10 мегабайт!",
+                  "error"
+                );
+              }
+            } else {
+              return getNotification(
+                "Выбранный вами файл, не является аудиозаписью!",
+                "error"
+              );
+            }
+            break;
         }
       }
 
-      if (uploadedFiles.length >= 5) {
-        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
-      }
-
-      if (validImageFiles.length <= 5) {
-        setFiles((prevState) => [...prevState, ...validImageFiles]);
+      if (validUploadFiles.length <= 5) {
+        setFiles((prevState) => [...prevState, ...validUploadFiles]);
         setUploadedFiles((prevState) => [
           ...prevState,
-          ...validImageFiles.map(({ _id, file, type }) => {
+          ...validUploadFiles.map(({ _id, file, type }) => {
             return {
               _id,
               type,
@@ -331,6 +386,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
             };
           }),
         ]);
+
         inputRef.current && inputRef.current.focus();
         return;
       } else {
@@ -384,24 +440,26 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
   };
 
   return (
-    <BaseChatInput
-      messageValue={messageValue}
-      triggerRef={triggerRef}
-      imageInputRef={imageInputRef}
-      audioInputRef={audioInputRef}
-      inputRef={inputRef}
-      chatInputRef={chatInputRef}
-      uploadedFiles={uploadedFiles}
-      handleChangeImage={handleChangeImage}
-      handleFilePick={handleFilePick}
-      handleRemoveFile={handleRemoveFile}
-      handleChangeSearchValue={handleChangeSearchValue}
-      handleKeyDown={handleKeyDown}
-      handleOnPaste={handleOnPaste}
-      sendMessage={sendMessage}
-      editMessage={editMessage}
-      removeMessage={removeMessage}
-    />
+    <AudioProvider>
+      <BaseChatInput
+        messageValue={messageValue}
+        triggerRef={triggerRef}
+        imageInputRef={imageInputRef}
+        audioInputRef={audioInputRef}
+        inputRef={inputRef}
+        chatInputRef={chatInputRef}
+        uploadedFiles={uploadedFiles}
+        handleChangeFile={handleChangeFile}
+        handleFilePick={handleFilePick}
+        handleRemoveFile={handleRemoveFile}
+        handleChangeSearchValue={handleChangeSearchValue}
+        handleKeyDown={handleKeyDown}
+        handleOnPaste={handleOnPaste}
+        sendMessage={sendMessage}
+        editMessage={editMessage}
+        removeMessage={removeMessage}
+      />
+    </AudioProvider>
   );
 };
 

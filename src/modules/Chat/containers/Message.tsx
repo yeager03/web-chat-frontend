@@ -13,6 +13,7 @@ import BaseMessage from "../components/Message";
 // types
 import IMessage, { IFile } from "../../../models/IMessage";
 import { IMessageValue } from ".";
+import AudioProvider from "../../../context/AudioProvider";
 
 type MessageProps = IMessage & {
   isRead?: boolean;
@@ -36,16 +37,18 @@ const Message: FC<MessageProps> = (props): ReactElement => {
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <BaseMessage
-      {...props}
-      anchorEl={anchorEl}
-      open={open}
-      handleOpen={handleOpen}
-      handleClose={handleClose}
-      setMessageValue={setMessageValue}
-      handleRemoveMessage={handleRemoveMessage}
-      handleEditFiles={handleEditFiles}
-    />
+    <AudioProvider>
+      <BaseMessage
+        {...props}
+        anchorEl={anchorEl}
+        open={open}
+        handleOpen={handleOpen}
+        handleClose={handleClose}
+        setMessageValue={setMessageValue}
+        handleRemoveMessage={handleRemoveMessage}
+        handleEditFiles={handleEditFiles}
+      />
+    </AudioProvider>
   );
 };
 

@@ -10,7 +10,7 @@
 		left: 0;
 		height: 100%;
 
-		background: #418fff;
+		background: #0f6bef;
 
 		transition: width 0.75s ease-out;
 	}
@@ -40,11 +40,27 @@
 			}
 		}
 
-		.duration {
+		.information {
+			width: 110px;
+
 			color: $white;
 			font-weight: 400;
 			opacity: 0.5;
 			font-size: 12px;
+
+			display: flex;
+			flex-direction: column;
+
+			& span {
+				display: block;
+			}
+
+			&__title {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				margin-bottom: 2px;
+			}
 		}
 
 		.audio {

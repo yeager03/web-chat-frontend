@@ -21,7 +21,7 @@ import BaseMessages from "../components/Messages";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 import { messageSelector } from "../../../store/slices/message/messageSlice";
 
-// actins
+// actions
 import { getMessages } from "../../../store/slices/message/messageActions";
 import { setTyping } from "../../../store/slices/message/messageSlice";
 

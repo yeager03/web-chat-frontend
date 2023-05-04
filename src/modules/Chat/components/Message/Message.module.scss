@@ -29,6 +29,12 @@
 			border-radius: 15px 15px 0 15px;
 		}
 
+		#{$self}__audio {
+			align-self: flex-end;
+
+			border-radius: 15px 15px 0 15px;
+		}
+
 		#{$self}__text {
 			color: $black;
 		}
@@ -69,12 +75,17 @@
 		}
 	}
 
-	&_audio {
-		#{$self}__bubble {
-			position: relative;
-			width: 280px;
-			overflow: hidden;
-		}
+	&__audio {
+		background: $blue;
+		box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
+		border-radius: 15px 15px 15px 0;
+		padding: 15px;
+
+		margin-bottom: 7px;
+
+		position: relative;
+		width: 320px;
+		overflow: hidden;
 	}
 
 	&__popover {

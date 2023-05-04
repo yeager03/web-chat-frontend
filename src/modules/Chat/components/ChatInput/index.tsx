@@ -34,6 +34,7 @@ import {
 // types
 import { IMessageValue } from "../../containers";
 import { IFile } from "../../../../models/IMessage";
+import AudioMessage from "../AudioMessage";
 
 type ChatInputProps = {
   messageValue: IMessageValue;
@@ -44,7 +45,7 @@ type ChatInputProps = {
   chatInputRef: RefObject<HTMLDivElement>;
   uploadedFiles: IFile[];
   handleFilePick: (e: MouseEvent<SVGSVGElement>) => void;
-  handleChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleChangeFile: (e: ChangeEvent<HTMLInputElement>) => void;
   handleRemoveFile: (id: string) => void;
   handleChangeSearchValue: (e: ChangeEvent<HTMLDivElement>) => void;
   handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
@@ -63,7 +64,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     inputRef,
     chatInputRef,
     uploadedFiles,
-    handleChangeImage,
+    handleChangeFile,
     handleFilePick,
     handleRemoveFile,
     handleChangeSearchValue,
@@ -111,8 +112,9 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
             multiple
             className="input_hidden"
             hidden
+            file-type="image"
             ref={imageInputRef}
-            onChange={handleChangeImage}
+            onChange={handleChangeFile}
             onClick={(event) => ((event.target as HTMLInputElement).value = "")}
           />
           <input
@@ -121,8 +123,9 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
             multiple
             className="input_hidden"
             hidden
+            file-type="audio"
             ref={audioInputRef}
-            onChange={handleChangeImage}
+            onChange={handleChangeFile}
             onClick={(event) => ((event.target as HTMLInputElement).value = "")}
           />
           <AttachFileRounded
@@ -212,16 +215,30 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
       </Box>
 
       {uploadedFiles.length > 0 && (
-        <ul className={styles["input-images"]}>
+        <ul className={styles["input-files"]}>
           {uploadedFiles.map((file, index) => {
-            return (
-              <li key={file.url}>
-                <span onClick={() => handleRemoveFile(file._id)}>
-                  <CloseRounded sx={{ color: "#fff", fontSize: 20 }} />
-                </span>
-                <img src={file.url} alt={`Uploaded ${index + 1} file`} />
-              </li>
-            );
+            switch (file.type) {
+              case "image":
+                return (
+                  <li key={file._id}>
+                    <span onClick={() => handleRemoveFile(file._id)}>
+                      <CloseRounded sx={{ color: "#fff", fontSize: 20 }} />
+                    </span>
+                    <img src={file.url} alt={`Uploaded ${index + 1} file`} />
+                  </li>
+                );
+              case "audio":
+                return (
+                  <Box key={file._id} className={styles["input-files__audio"]}>
+                    <AudioMessage
+                      _id={file._id}
+                      src={file.url}
+                      title={file.fileName}
+                      uploadedFiles={uploadedFiles}
+                    />
+                  </Box>
+                );
+            }
           })}
         </ul>
       )}

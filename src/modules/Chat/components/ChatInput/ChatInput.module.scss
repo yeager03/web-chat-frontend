@@ -63,10 +63,12 @@
 
 
 
-	.input-images {
+	.input-files {
 		margin-top: 10px;
 		display: flex;
 		align-items: center;
+
+		flex-wrap: wrap;
 
 		& li {
 			position: relative;
@@ -95,6 +97,23 @@
 				border-radius: 5px;
 
 				object-fit: cover;
+			}
+		}
+
+		&__audio {
+			background: $blue;
+			box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
+			border-radius: 10px;
+			padding: 15px;
+
+			margin-bottom: 7px;
+
+			position: relative;
+			width: 320px;
+			overflow: hidden;
+
+			&:not(:last-child) {
+				margin-right: 15px;
 			}
 		}
 	}

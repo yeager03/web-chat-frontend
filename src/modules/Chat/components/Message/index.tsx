@@ -1,11 +1,4 @@
-import {
-  FC,
-  ReactElement,
-  MouseEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-} from "react";
+import { FC, ReactElement, MouseEvent, Dispatch, SetStateAction } from "react";
 
 // mui components
 import { Popover, Box } from "@mui/material";
@@ -51,6 +44,19 @@ type MessageProps = IMessage & {
   handleRemoveMessage: (id: string) => void;
   handleEditFiles: (files: IFile[]) => void;
 };
+// const testMusics = [
+//   {
+//     _id: 1,
+//     title: "DVRST Close Eyes",
+//     src: "https://dl2.mp3party.net/online/10072933.mp3",
+//   },
+//
+//   {
+//     _id: 2,
+//     title: "INTERWORLD – METAMORPHOSIS",
+//     src: "https://dl2.mp3party.net/online/10375130.mp3",
+//   },
+// ];
 
 const Message: FC<MessageProps> = (props): ReactElement => {
   const {
@@ -62,7 +68,6 @@ const Message: FC<MessageProps> = (props): ReactElement => {
     isEdited,
     isReference,
     files,
-    audio,
     anchorEl,
     open,
     handleOpen,
@@ -75,12 +80,13 @@ const Message: FC<MessageProps> = (props): ReactElement => {
   const { user } = useAuth();
   const isMyMessage = user?._id === author._id;
 
+  const audio = true;
+
   return (
     <Box
       className={cn(styles["message"], {
         [styles["message_my-message"]]: isMyMessage,
         [styles["message_image"]]: files.length <= 5 && !message,
-        [styles["message_audio"]]: audio,
       })}
     >
       <Box className={styles["message__avatar"]}>
@@ -131,7 +137,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
           handleOpen(e);
         }}
       >
-        {(audio || message) && (
+        {message && (
           <Box className={styles["message__bubble"]}>
             {message && !isReference ? (
               <p className={styles["message__text"]}>
@@ -165,9 +171,14 @@ const Message: FC<MessageProps> = (props): ReactElement => {
                 )}
               </a>
             )}
-            {audio && <AudioMessage audio={audio} />}
           </Box>
         )}
+
+        {/*{audio && (*/}
+        {/*  <Box className={styles["message__audio"]}>*/}
+        {/*    <AudioMessage {...audio} />*/}
+        {/*  </Box>*/}
+        {/*)}*/}
 
         {files && (
           <Box className={styles["message__attachments"]}>
