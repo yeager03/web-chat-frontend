@@ -9,6 +9,9 @@ import {
   useState,
 } from "react";
 
+// components
+import AudioMessage from "../AudioMessage";
+
 // mui components
 import { Box, Popover } from "@mui/material";
 
@@ -34,7 +37,6 @@ import {
 // types
 import { IMessageValue } from "../../containers";
 import { IFile } from "../../../../models/IMessage";
-import AudioMessage from "../AudioMessage";
 
 type ChatInputProps = {
   messageValue: IMessageValue;
@@ -220,23 +222,33 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
             switch (file.type) {
               case "image":
                 return (
-                  <li key={file._id}>
-                    <span onClick={() => handleRemoveFile(file._id)}>
-                      <CloseRounded sx={{ color: "#fff", fontSize: 20 }} />
+                  <li key={file._id} className={styles["input-files__image"]}>
+                    <span
+                      onClick={() => handleRemoveFile(file._id)}
+                      className={styles["input-del"]}
+                    >
+                      <CloseRounded sx={{ color: "#fff", fontSize: 16 }} />
                     </span>
                     <img src={file.url} alt={`Uploaded ${index + 1} file`} />
                   </li>
                 );
               case "audio":
                 return (
-                  <Box key={file._id} className={styles["input-files__audio"]}>
+                  <li key={file._id} className={styles["input-files__audio"]}>
+                    <span
+                      onClick={() => handleRemoveFile(file._id)}
+                      className={styles["input-del"]}
+                    >
+                      <CloseRounded sx={{ color: "#fff", fontSize: 16 }} />
+                    </span>
+
                     <AudioMessage
                       _id={file._id}
                       src={file.url}
                       title={file.fileName}
                       uploadedFiles={uploadedFiles}
                     />
-                  </Box>
+                  </li>
                 );
             }
           })}

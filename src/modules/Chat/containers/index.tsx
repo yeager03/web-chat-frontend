@@ -1,11 +1,4 @@
-import {
-  FC,
-  ReactElement,
-  useLayoutEffect,
-  useState,
-  useRef,
-  useEffect,
-} from "react";
+import { FC, ReactElement, useLayoutEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 
 // dispatch
@@ -29,6 +22,8 @@ import usePrevious from "../../../hooks/usePrevious";
 // selectors
 import { messageSelector } from "../../../store/slices/message/messageSlice";
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
+
+// types
 import { IFile } from "../../../models/IMessage";
 
 export interface IUploadedFile {

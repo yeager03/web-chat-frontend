@@ -1,28 +1,29 @@
 import { createContext, useContext } from "react";
-import { IAudioProgress } from "./AudioProvider";
+
+// types
+import { AudioFileStatus, IAudioFile } from "./AudioProvider";
 
 interface IContext {
-  isAudioPlaying: boolean;
-  audioDuration: number;
-  audioProgress: IAudioProgress;
-  handlePlayClick: (id: string, source: string) => void;
-  initAudio: (source: string) => void;
+  audioFiles: IAudioFile[];
+  addAudioFile: (audioFile: IAudioFile) => void;
+  removeAudioFile: (id: string) => void;
+  setAudioFileDuration: (id: string, duration: number) => void;
+  setAudioFileStatus: (id: string, status: AudioFileStatus) => void;
 }
 export const AudioContext = createContext<IContext>({
-  isAudioPlaying: false,
-  audioDuration: 0,
-  audioProgress: {
-    currentTime: 0,
-    progressBar: 0,
-  },
-  handlePlayClick: (id, source) => {},
-  initAudio: (source) => {},
+  audioFiles: [],
+  addAudioFile: (audioFile) => {},
+  removeAudioFile: (id) => {},
+  setAudioFileDuration: (id, duration) => {},
+  setAudioFileStatus: (id, status) => {},
 });
 
-export const useAudio = () => {
+const useAudio = () => {
   const context = useContext(AudioContext);
   if (!context && typeof window !== "undefined") {
     throw new Error(`useAudio must be used within a AudioContext `);
   }
   return context;
 };
+
+export default useAudio;

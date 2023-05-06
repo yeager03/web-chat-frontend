@@ -1,136 +1,141 @@
 @import "../../../../assets/scss/components/variables";
 
 @keyframes animation {
-	from {
-		opacity: 0;
-		scale: 0;
-	}
-	to {
-		opacity: 0.5;
-		scale: 1;
-	}
+  from {
+    opacity: 0;
+    scale: 0;
+  }
+  to {
+    opacity: 0.5;
+    scale: 1;
+  }
 }
 
 .input-wrapper {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 
-	border: 1px solid #e4e7ec;
-	border-radius: 10px;
-	padding: 15px;
-	max-height: 145px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  padding: 15px;
+  max-height: 145px;
 
-	&__icon {
-		cursor: pointer;
+  &__icon {
+    cursor: pointer;
 
-		opacity: 0.5;
-		transition: opacity 0.25s ease-out;
+    opacity: 0.5;
+    transition: opacity 0.25s ease-out;
 
-		&:hover {
-			opacity: 1;
-		}
+    &:hover {
+      opacity: 1;
+    }
 
-		animation: animation 0.25s ease-out;
-	}
+    animation: animation 0.25s ease-out;
+  }
 
-	&__smile {
-		margin-right: 10px;
-	}
+  &__smile {
+    margin-right: 10px;
+  }
 
-	&__actions {
-		display: flex;
-		align-items: center;
-	}
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
 
-	&__attach {
-		margin-right: 10px;
-	}
+  &__attach {
+    margin-right: 10px;
+  }
 
-	&:focus-within {
-		outline: 1px solid $blue;
-	}
+  &:focus-within {
+    outline: 1px solid $blue;
+  }
 }
 
 
 .chat-input {
-	background-color: $white;
+  background-color: $white;
 
-	width: 100%;
-	padding: 10px;
+  width: 100%;
+  padding: 10px;
 
-	position: absolute;
-	bottom: 0;
+  position: absolute;
+  bottom: 0;
+
+  .input-files {
+    margin-top: 10px;
+
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    & li {
+      position: relative;
+      list-style-type: none;
+
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+
+      .input-del {
+        cursor: pointer;
+        position: absolute;
+        svg {
+          float: right;
+        }
+      }
+    }
+
+    &__image {
+      .input-del {
+        top: 0;
+        right: 0;
+
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      img {
+        width: 90px;
+        height: 100px;
+
+        border-radius: 5px;
+
+        object-fit: cover;
+      }
+    }
+
+    &__audio {
+      background: $blue;
+      box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
+      border-radius: 10px;
+      padding: 15px;
+
+      margin-bottom: 7px;
+
+      width: 320px;
+      overflow: hidden;
+
+      .input-del {
+        top: 3px;
+        right: 3px;
+      }
+    }
+  }
 
 
+  .input {
+    margin-right: 10px;
 
-	.input-files {
-		margin-top: 10px;
-		display: flex;
-		align-items: center;
+    min-height: 1em;
+    max-height: 97px;
+    width: 100%;
+    align-content: center;
+    outline: none;
+    overflow-x: hidden;
+    overflow-y: auto;
 
-		flex-wrap: wrap;
+    font-size: 15px;
 
-		& li {
-			position: relative;
-			list-style-type: none;
-
-			&:not(:last-child) {
-				margin-right: 15px;
-			}
-
-			span {
-				cursor: pointer;
-				background-color: rgba(0, 0, 0, 0.5);
-				position: absolute;
-				top: 0;
-				right: 0;
-
-				svg {
-					float: right;
-				}
-			}
-
-			img {
-				width: 90px;
-				height: 100px;
-
-				border-radius: 5px;
-
-				object-fit: cover;
-			}
-		}
-
-		&__audio {
-			background: $blue;
-			box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
-			border-radius: 10px;
-			padding: 15px;
-
-			margin-bottom: 7px;
-
-			position: relative;
-			width: 320px;
-			overflow: hidden;
-
-			&:not(:last-child) {
-				margin-right: 15px;
-			}
-		}
-	}
-
-	.input {
-		margin-right: 10px;
-
-		min-height: 1em;
-		max-height: 97px;
-		width: 100%;
-		align-content: center;
-		outline: none;
-		overflow-x: hidden;
-		overflow-y: auto;
-
-		font-size: 15px;
-
-		padding: 3px;
-	}
+    padding: 3px;
+  }
 }

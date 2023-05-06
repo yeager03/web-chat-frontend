@@ -1,7 +1,7 @@
 import { FC, ReactElement, useEffect, useRef, useState } from "react";
 
-// redux
-import { useDispatch, useSelector } from "react-redux";
+// hooks
+import useAudio from "../../../../context/context";
 
 // style
 import styles from "./AudioMessage.module.scss";
@@ -14,14 +14,9 @@ import AudioPauseIcon from "../../../../assets/images/audio-pause.svg";
 // convert time
 import getConvertedTime from "../../../../utils/convertTime";
 
-// actions
-import {
-  audioSelector,
-  MediaFileStatus,
-  setMediaFileDuration,
-  setMediaFileStatus,
-} from "../../../../store/slices/audio/audioSlice";
+// types
 import { IFile } from "../../../../models/IMessage";
+import { AudioFileStatus } from "../../../../context/AudioProvider";
 
 interface IAudioProgress {
   currentTime: number;
@@ -38,11 +33,11 @@ type AudioMessageProps = {
 const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
   const { _id, src, title, uploadedFiles } = props;
 
-  const { mediaFiles } = useSelector(audioSelector);
-  const currentAudio = mediaFiles.find((file) => file._id === _id);
+  const { audioFiles, setAudioFileDuration, setAudioFileStatus } = useAudio();
+  const currentAudio = audioFiles.find((file) => file._id === _id);
 
-  const [isAudioPlaying, setAudioPlaying] = useState<MediaFileStatus>(
-    MediaFileStatus.IDLE
+  const [isAudioPlaying, setAudioPlaying] = useState<AudioFileStatus>(
+    AudioFileStatus.IDLE
   );
   const [audioDuration, setAudioDuration] = useState<number>(0);
   const [audioProgress, setAudioProgress] = useState<IAudioProgress>({
@@ -50,15 +45,12 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
     progressBar: 0,
   });
 
-  const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (currentAudio) {
       setAudioPlaying(currentAudio.status);
       setAudioDuration(currentAudio.duration);
-
-      console.log("duration status changed init");
     }
   }, [currentAudio?.status]);
 
@@ -68,12 +60,7 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
     function audioMetaData() {
       if (element) {
         setAudioDuration(Math.floor(element.duration));
-        dispatch(
-          setMediaFileDuration({
-            id: _id,
-            duration: Math.floor(element.duration),
-          })
-        );
+        setAudioFileDuration(_id, Math.floor(element.duration));
       }
     }
 
@@ -88,22 +75,17 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
             const id = elem.dataset.id || "";
 
             elem.volume = 0;
-            elem.pause();
             elem.currentTime = 0;
+            elem.pause();
 
-            dispatch(
-              setMediaFileStatus({
-                id,
-                status: MediaFileStatus.IDLE,
-              })
-            );
+            setAudioFileStatus(id, AudioFileStatus.IDLE);
           }
         });
       }
     }
 
     function audioPlaying() {
-      setAudioPlaying(MediaFileStatus.PLAYING);
+      setAudioPlaying(AudioFileStatus.PLAYING);
     }
 
     function audioTimeUpdate() {
@@ -121,7 +103,7 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
 
     function audioEnded() {
       if (element) {
-        setAudioPlaying(MediaFileStatus.IDLE);
+        setAudioPlaying(AudioFileStatus.IDLE);
         setAudioDuration(Math.floor(element.duration));
         setAudioProgress({
           ...audioProgress,
@@ -151,26 +133,17 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
 
     audioPlayers.forEach((audio) => {
       const id = audio.dataset.id || "";
-
-      dispatch(
-        setMediaFileDuration({
-          id,
-          duration: Math.floor(audio.duration),
-        })
-      );
+      setAudioFileDuration(id, Math.floor(audio.duration));
     });
   }, [uploadedFiles.length]);
 
   const handleClick = (id: string) => {
     if (audioRef.current) {
-      dispatch(
-        setMediaFileStatus({
-          id,
-          status:
-            isAudioPlaying !== "playing"
-              ? MediaFileStatus.PLAYING
-              : MediaFileStatus.PAUSE,
-        })
+      setAudioFileStatus(
+        id,
+        isAudioPlaying !== "playing"
+          ? AudioFileStatus.PLAYING
+          : AudioFileStatus.PAUSE
       );
       isAudioPlaying === "playing"
         ? audioRef.current.pause()

@@ -6,9 +6,8 @@ import dialogue from "./slices/dialogue/dialogueSlice";
 import message from "./slices/message/messageSlice";
 import user from "./slices/user/userSlice";
 import friend from "./slices/friend/friendSlice";
-import audio from "./slices/audio/audioSlice";
 
-const appReducer = combineReducers({ dialogue, message, user, friend, audio });
+const appReducer = combineReducers({ dialogue, message, user, friend });
 
 const rootReducer = (state: any, action: AnyAction) => {
   if (action.type === "user/logOut/pending") {

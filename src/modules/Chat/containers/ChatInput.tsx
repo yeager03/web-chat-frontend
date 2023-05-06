@@ -13,14 +13,12 @@ import {
 } from "react";
 import { useSelector } from "react-redux";
 
-// dispatch
-import { useAppDispatch } from "../../../store";
-
 // uuid
 import { v4 as uuidv4 } from "uuid";
 
 // hooks
 import useDebounce from "../../../hooks/useDebounce";
+import useAudio from "../../../context/context";
 
 // socket
 import { socket } from "../../../core/socket";
@@ -30,13 +28,6 @@ import BaseChatInput from "../components/ChatInput";
 
 // selector
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
-
-// actions
-import {
-  IMediaFile,
-  MediaFileStatus,
-  setMediaFiles,
-} from "../../../store/slices/audio/audioSlice";
 
 // types
 import { IMessageValue, IUploadedFile } from ".";
@@ -51,7 +42,7 @@ import getPatterns from "../../../utils/validationPatterns";
 
 // is valid url
 import isValidUrl from "../../../utils/validUrl";
-import AudioProvider from "../../../context/AudioProvider";
+import { AudioFileStatus } from "../../../context/AudioProvider";
 
 const isUrlHasImage = (url: string) => {
   const img = new Image();
@@ -103,14 +94,14 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     handleEditMessage,
     handleRemoveMessage,
   } = props;
+
   const { currentDialogueId } = useSelector(dialogueSelector);
+  const { addAudioFile } = useAudio();
 
   const debounceMessage = useDebounce(messageValue.value, 2000);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
-
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -171,23 +162,6 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
       };
     }
   }, [debounceMessage]);
-
-  useEffect(() => {
-    if (uploadedFiles.length) {
-      uploadedFiles.forEach((file) => {
-        if (file.type === "audio") {
-          dispatch(
-            setMediaFiles({
-              _id: file._id,
-              title: file.fileName,
-              status: MediaFileStatus.IDLE,
-              duration: 0,
-            })
-          );
-        }
-      });
-    }
-  }, [uploadedFiles]);
 
   const handleChangeSearchValue = (e: ChangeEvent<HTMLDivElement>) => {
     setMessageValue((prevState) => ({
@@ -314,10 +288,6 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     const files = e.target.files;
     const type = e.target.getAttribute("file-type");
 
-    if (uploadedFiles.length >= 5) {
-      return getNotification("Нельзя загрузить больше 5 файлов!", "error");
-    }
-
     if (files) {
       const validUploadFiles: IUploadedFile[] = [];
 
@@ -371,6 +341,10 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
         }
       }
 
+      if (validUploadFiles.length + uploadedFiles.length > 5) {
+        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
+      }
+
       if (validUploadFiles.length <= 5) {
         setFiles((prevState) => [...prevState, ...validUploadFiles]);
         setUploadedFiles((prevState) => [
@@ -386,6 +360,17 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
             };
           }),
         ]);
+
+        validUploadFiles.forEach(({ _id, type, file }) => {
+          if (type === "audio") {
+            addAudioFile({
+              _id,
+              title: file.name,
+              status: AudioFileStatus.IDLE,
+              duration: 0,
+            });
+          }
+        });
 
         inputRef.current && inputRef.current.focus();
         return;
@@ -440,26 +425,24 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
   };
 
   return (
-    <AudioProvider>
-      <BaseChatInput
-        messageValue={messageValue}
-        triggerRef={triggerRef}
-        imageInputRef={imageInputRef}
-        audioInputRef={audioInputRef}
-        inputRef={inputRef}
-        chatInputRef={chatInputRef}
-        uploadedFiles={uploadedFiles}
-        handleChangeFile={handleChangeFile}
-        handleFilePick={handleFilePick}
-        handleRemoveFile={handleRemoveFile}
-        handleChangeSearchValue={handleChangeSearchValue}
-        handleKeyDown={handleKeyDown}
-        handleOnPaste={handleOnPaste}
-        sendMessage={sendMessage}
-        editMessage={editMessage}
-        removeMessage={removeMessage}
-      />
-    </AudioProvider>
+    <BaseChatInput
+      messageValue={messageValue}
+      triggerRef={triggerRef}
+      imageInputRef={imageInputRef}
+      audioInputRef={audioInputRef}
+      inputRef={inputRef}
+      chatInputRef={chatInputRef}
+      uploadedFiles={uploadedFiles}
+      handleChangeFile={handleChangeFile}
+      handleFilePick={handleFilePick}
+      handleRemoveFile={handleRemoveFile}
+      handleChangeSearchValue={handleChangeSearchValue}
+      handleKeyDown={handleKeyDown}
+      handleOnPaste={handleOnPaste}
+      sendMessage={sendMessage}
+      editMessage={editMessage}
+      removeMessage={removeMessage}
+    />
   );
 };
 
