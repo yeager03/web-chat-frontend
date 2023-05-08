@@ -29,10 +29,11 @@
 			border-radius: 15px 15px 0 15px;
 		}
 
-		#{$self}__audio {
-			align-self: flex-end;
-
-			border-radius: 15px 15px 0 15px;
+		#{$self}-audio-files {
+			.message__audio {
+				align-self: flex-end;
+				border-radius: 15px 15px 0 15px;
+			}
 		}
 
 		#{$self}__text {
@@ -64,6 +65,27 @@
 		}
 	}
 
+	&-audio-files {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 10px;
+
+		.message__audio {
+			background: $blue;
+			box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
+			border-radius: 15px 15px 15px 0;
+			padding: 15px;
+
+			position: relative;
+			width: 320px;
+			overflow: hidden;
+
+			&:not(:last-child) {
+				margin-bottom: 7px;
+			}
+		}
+	}
+
 	&_image {
 		#{$self}__attachments {
 			.attachment-item {
@@ -75,18 +97,7 @@
 		}
 	}
 
-	&__audio {
-		background: $blue;
-		box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
-		border-radius: 15px 15px 15px 0;
-		padding: 15px;
 
-		margin-bottom: 7px;
-
-		position: relative;
-		width: 320px;
-		overflow: hidden;
-	}
 
 	&__popover {
 		padding: 12px;

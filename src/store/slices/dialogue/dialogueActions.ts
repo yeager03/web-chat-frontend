@@ -23,7 +23,20 @@ export const getDialogues = createAsyncThunk<IDialogue[]>(
       } else if (item.lastMessage.message && item.lastMessage.isReference) {
         lastMessageInfo = "Ссылка";
       } else {
-        lastMessageInfo = "Изображения";
+        const audioFiles = item.lastMessage.files.filter(
+          (file) => file.type === "audio"
+        );
+        const imageFiles = item.lastMessage.files.filter(
+          (file) => file.type === "image"
+        );
+
+        if (audioFiles.length && !imageFiles.length) {
+          lastMessageInfo = "Аудио";
+        } else if (imageFiles.length && !audioFiles.length) {
+          lastMessageInfo = "Изображения";
+        } else {
+          lastMessageInfo = "Файлы";
+        }
       }
 
       return {

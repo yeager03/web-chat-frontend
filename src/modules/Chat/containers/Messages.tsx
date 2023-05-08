@@ -1,12 +1,15 @@
 import {
+  Dispatch,
   FC,
   ReactElement,
+  SetStateAction,
   useEffect,
   useRef,
-  Dispatch,
-  SetStateAction,
 } from "react";
 import { useSelector } from "react-redux";
+
+// hooks
+import useAudio from "../../../context/context";
 
 // dispatch
 import { useAppDispatch } from "../../../store";
@@ -19,17 +22,20 @@ import BaseMessages from "../components/Messages";
 
 // selectors
 import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
-import { messageSelector } from "../../../store/slices/message/messageSlice";
+import {
+  messageSelector,
+  setTyping,
+} from "../../../store/slices/message/messageSlice";
 
 // actions
 import { getMessages } from "../../../store/slices/message/messageActions";
-import { setTyping } from "../../../store/slices/message/messageSlice";
 
 // types
 import { Status } from "../../../models/Status";
 import { IMessageValue } from ".";
 import IUser from "../../../models/IUser";
 import { IFile } from "../../../models/IMessage";
+import { AudioFileStatus } from "../../../context/AudioProvider";
 
 type MessagesProps = {
   status: Status;
@@ -60,6 +66,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 
   const { currentDialogueId } = useSelector(dialogueSelector);
   const { messages, isTyping } = useSelector(messageSelector);
+  const { addAudioFile } = useAudio();
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -79,8 +86,6 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
             dispatch(setTyping(false));
           }, 3000);
         }
-
-        console.log(data);
       });
 
       return () => {
@@ -104,6 +109,26 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
       clearTimeout(timeout);
     };
   }, [messages, chatInputHeight]);
+
+  useEffect(() => {
+    messages.forEach((message) => {
+      message.files.forEach((file) => {
+        if (file.type === "audio") {
+          const audio = new Audio(file.url);
+          audio.preload = "metadata";
+
+          audio.onloadedmetadata = function () {
+            addAudioFile({
+              _id: file._id,
+              title: file.fileName,
+              status: AudioFileStatus.IDLE,
+              duration: Math.floor(audio.duration),
+            });
+          };
+        }
+      });
+    });
+  }, [messages]);
 
   return (
     <BaseMessages

@@ -18,7 +18,7 @@ import decryptionText from "../../utils/decryptionText";
 import useAuth from "../../hooks/useAuth";
 
 // socket
-import { socket, connectSocket } from "../../core/socket";
+import { connectSocket, socket } from "../../core/socket";
 
 // sounds
 import NotificationSound from "../../assets/sounds/requests_sound.mp3";
@@ -34,20 +34,20 @@ import {
 
 // actions
 import {
-  getRequests,
   getFriends,
+  getRequests,
 } from "../../store/slices/friend/friendActions";
 import {
-  socketAddRequest,
   socketAddFriend,
+  socketAddRequest,
 } from "../../store/slices/friend/friendSlice";
 import { getDialogues } from "../../store/slices/dialogue/dialogueActions";
 import {
-  socketAddMessage,
-  socketEditMessage,
-  socketDeleteMessage,
-  socketClearMessages,
   setTyping,
+  socketAddMessage,
+  socketClearMessages,
+  socketDeleteMessage,
+  socketEditMessage,
 } from "../../store/slices/message/messageSlice";
 
 // types
@@ -119,8 +119,6 @@ const Home: FC = (): ReactElement => {
     );
 
     socket.on("SERVER:DIALOGUE_CREATED", (dialogue: IDialogue) => {
-      console.log(dialogue);
-      console.log("new dialogue created");
       if (user && dialogue.members.find((member) => member._id === user._id)) {
         dispatch(getDialogues());
 
@@ -139,7 +137,6 @@ const Home: FC = (): ReactElement => {
         if (dialogues.find((dl) => dl._id === dialogueId)) {
           console.log("dialogue message changed");
           if (!message) {
-            console.log(message);
             dispatch(getDialogues());
             dispatch(setCurrentDialogueId(""));
             dispatch(setCurrentDialogue(null));
@@ -153,7 +150,20 @@ const Home: FC = (): ReactElement => {
             } else if (message.message && message.isReference) {
               lastMessageInfo = "Ссылка";
             } else {
-              lastMessageInfo = "Изображения";
+              const audioFiles = message.files.filter(
+                (file) => file.type === "audio"
+              );
+              const imageFiles = message.files.filter(
+                (file) => file.type === "image"
+              );
+
+              if (audioFiles.length && !imageFiles.length) {
+                lastMessageInfo = "Аудио";
+              } else if (imageFiles.length && !audioFiles.length) {
+                lastMessageInfo = "Изображения";
+              } else {
+                lastMessageInfo = "Файлы";
+              }
             }
 
             dispatch(
@@ -171,7 +181,6 @@ const Home: FC = (): ReactElement => {
     );
 
     socket.on("SERVER:MESSAGE_CREATED", (message: IMessage) => {
-      console.log(message);
       if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
         if (currentDialogueId === String(message.dialogue)) {
           dispatch(setTyping(false));

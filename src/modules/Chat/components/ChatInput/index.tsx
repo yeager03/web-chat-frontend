@@ -48,7 +48,7 @@ type ChatInputProps = {
   uploadedFiles: IFile[];
   handleFilePick: (e: MouseEvent<SVGSVGElement>) => void;
   handleChangeFile: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleRemoveFile: (id: string) => void;
+  handleRemoveFile: (id: string, type?: "image" | "audio") => void;
   handleChangeSearchValue: (e: ChangeEvent<HTMLDivElement>) => void;
   handleKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
   handleOnPaste: (e: ClipboardEvent<HTMLDivElement>) => void;
@@ -236,7 +236,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
                 return (
                   <li key={file._id} className={styles["input-files__audio"]}>
                     <span
-                      onClick={() => handleRemoveFile(file._id)}
+                      onClick={() => handleRemoveFile(file._id, "audio")}
                       className={styles["input-del"]}
                     >
                       <CloseRounded sx={{ color: "#fff", fontSize: 16 }} />
@@ -246,7 +246,6 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
                       _id={file._id}
                       src={file.url}
                       title={file.fileName}
-                      uploadedFiles={uploadedFiles}
                     />
                   </li>
                 );

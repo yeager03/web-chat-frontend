@@ -28,8 +28,7 @@ type DialogueItemProps = IDialogueItem & {
 };
 
 const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
-  const { _id, interlocutor, lastMessage, updatedAt, currentDialogueId } =
-    props;
+  const { _id, interlocutor, lastMessage, currentDialogueId } = props;
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -59,7 +58,7 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
                 {interlocutor.fullName}
               </Typography>
               <Typography component={"span"} className={styles["date"]}>
-                {getDialogueDate(updatedAt)}
+                {getDialogueDate(lastMessage.updatedAt)}
               </Typography>
             </Box>
             <Box className={styles["dialogue__item-subtitle"]}>

@@ -15,7 +15,6 @@ import AudioPauseIcon from "../../../../assets/images/audio-pause.svg";
 import getConvertedTime from "../../../../utils/convertTime";
 
 // types
-import { IFile } from "../../../../models/IMessage";
 import { AudioFileStatus } from "../../../../context/AudioProvider";
 
 interface IAudioProgress {
@@ -27,11 +26,10 @@ type AudioMessageProps = {
   _id: string;
   src: string;
   title: string;
-  uploadedFiles: IFile[];
 };
 
 const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
-  const { _id, src, title, uploadedFiles } = props;
+  const { _id, src, title } = props;
 
   const { audioFiles, setAudioFileDuration, setAudioFileStatus } = useAudio();
   const currentAudio = audioFiles.find((file) => file._id === _id);
@@ -110,6 +108,7 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
           currentTime: 0,
           progressBar: 0,
         });
+        setAudioFileStatus(_id, AudioFileStatus.IDLE);
       }
     }
 
@@ -127,15 +126,6 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
       element?.removeEventListener("ended", audioEnded);
     };
   }, []);
-
-  useEffect(() => {
-    const audioPlayers = document.querySelectorAll("audio");
-
-    audioPlayers.forEach((audio) => {
-      const id = audio.dataset.id || "";
-      setAudioFileDuration(id, Math.floor(audio.duration));
-    });
-  }, [uploadedFiles.length]);
 
   const handleClick = (id: string) => {
     if (audioRef.current) {

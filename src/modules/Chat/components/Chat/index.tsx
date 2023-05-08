@@ -17,9 +17,6 @@ import { Box, Typography } from "@mui/material";
 import { Status } from "../../../../models/Status";
 import { IFile } from "../../../../models/IMessage";
 
-// provider
-import AudioProvider from "../../../../context/AudioProvider";
-
 // models
 import IUser from "../../../../models/IUser";
 import { Emoji, IMessageValue, IUploadedFile } from "../../containers";
@@ -107,7 +104,7 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
       />
 
       {status === "success" && (
-        <AudioProvider>
+        <>
           <ChatInput
             interlocutor={interlocutor}
             inputRef={inputRef}
@@ -142,7 +139,7 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
               />
             </Box>
           )}
-        </AudioProvider>
+        </>
       )}
     </Box>
   );

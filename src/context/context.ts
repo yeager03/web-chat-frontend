@@ -9,6 +9,7 @@ interface IContext {
   removeAudioFile: (id: string) => void;
   setAudioFileDuration: (id: string, duration: number) => void;
   setAudioFileStatus: (id: string, status: AudioFileStatus) => void;
+  clearAudioFiles: () => void;
 }
 export const AudioContext = createContext<IContext>({
   audioFiles: [],
@@ -16,6 +17,7 @@ export const AudioContext = createContext<IContext>({
   removeAudioFile: (id) => {},
   setAudioFileDuration: (id, duration) => {},
   setAudioFileStatus: (id, status) => {},
+  clearAudioFiles: () => {},
 });
 
 const useAudio = () => {

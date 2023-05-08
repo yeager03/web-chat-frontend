@@ -57,6 +57,8 @@ const AudioProvider: FC<AudioProvider> = ({ children }): ReactElement => {
     );
   };
 
+  const clearAudioFiles = () => setAudioFiles([]);
+
   console.log(audioFiles);
 
   return (
@@ -67,6 +69,7 @@ const AudioProvider: FC<AudioProvider> = ({ children }): ReactElement => {
         removeAudioFile,
         setAudioFileDuration,
         setAudioFileStatus,
+        clearAudioFiles,
       }}
     >
       {children}

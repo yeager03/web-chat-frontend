@@ -80,7 +80,8 @@ const Message: FC<MessageProps> = (props): ReactElement => {
   const { user } = useAuth();
   const isMyMessage = user?._id === author._id;
 
-  const audio = true;
+  const audioFiles = files.filter((file) => file.type === "audio");
+  const imageFiles = files.filter((file) => file.type === "image");
 
   return (
     <Box
@@ -174,16 +175,26 @@ const Message: FC<MessageProps> = (props): ReactElement => {
           </Box>
         )}
 
-        {/*{audio && (*/}
-        {/*  <Box className={styles["message__audio"]}>*/}
-        {/*    <AudioMessage {...audio} />*/}
-        {/*  </Box>*/}
-        {/*)}*/}
+        {audioFiles.length ? (
+          <Box className={styles["message-audio-files"]}>
+            {audioFiles.map((file) => {
+              return (
+                <Box className={styles["message__audio"]} key={file._id}>
+                  <AudioMessage
+                    _id={file._id}
+                    title={file.fileName}
+                    src={file.url}
+                  />
+                </Box>
+              );
+            })}
+          </Box>
+        ) : null}
 
-        {files && (
+        {imageFiles.length ? (
           <Box className={styles["message__attachments"]}>
             <ul className={styles["attachments-items"]}>
-              {files.map((file) => {
+              {imageFiles.map((file) => {
                 return (
                   <li className={styles["attachment-item"]} key={file["_id"]}>
                     <SlideshowLightbox>
@@ -199,7 +210,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
             </ul>
             {isEdited && !message && <b>(ред.)</b>}
           </Box>
-        )}
+        ) : null}
 
         {createdAt && (
           <span className={styles["message__date"]}>

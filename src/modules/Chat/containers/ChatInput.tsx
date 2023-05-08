@@ -96,7 +96,12 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
   } = props;
 
   const { currentDialogueId } = useSelector(dialogueSelector);
-  const { addAudioFile } = useAudio();
+  const {
+    addAudioFile,
+    removeAudioFile,
+    clearAudioFiles,
+    setAudioFileDuration,
+  } = useAudio();
 
   const debounceMessage = useDebounce(messageValue.value, 2000);
 
@@ -162,6 +167,15 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
       };
     }
   }, [debounceMessage]);
+
+  useEffect(() => {
+    const audioPlayers = document.querySelectorAll("audio");
+
+    audioPlayers.forEach((audio) => {
+      const id = audio.dataset.id || "";
+      setAudioFileDuration(id, Math.floor(audio.duration));
+    });
+  }, [uploadedFiles.length]);
 
   const handleChangeSearchValue = (e: ChangeEvent<HTMLDivElement>) => {
     setMessageValue((prevState) => ({
@@ -291,6 +305,10 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     if (files) {
       const validUploadFiles: IUploadedFile[] = [];
 
+      if (files.length + uploadedFiles.length > 5) {
+        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
+      }
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const fileType = file.type.split("/")[0];
@@ -341,10 +359,6 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
         }
       }
 
-      if (validUploadFiles.length + uploadedFiles.length > 5) {
-        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
-      }
-
       if (validUploadFiles.length <= 5) {
         setFiles((prevState) => [...prevState, ...validUploadFiles]);
         setUploadedFiles((prevState) => [
@@ -380,17 +394,19 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
-  const handleRemoveFile = (id: string) => {
+  const handleRemoveFile = (id: string, type: "audio" | "image" = "image") => {
     setFiles((prevState) => prevState.filter(({ _id }) => _id !== id));
     setUploadedFiles((prevState) =>
       prevState.filter((file) => file._id !== id)
     );
+    type === "audio" && removeAudioFile(id);
   };
 
   const sendMessage = () => {
     if (uploadedFiles.length <= 5) {
       handleSendMessage();
       clearInput();
+      clearAudioFiles();
       setFiles([]);
       setUploadedFiles([]);
       return;
@@ -404,6 +420,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
       if (uploadedFiles.length <= 5) {
         handleEditMessage();
         clearInput();
+        clearAudioFiles();
         setFiles([]);
         setUploadedFiles([]);
         return;

@@ -80,6 +80,8 @@
       .input-del {
         cursor: pointer;
         position: absolute;
+
+        z-index: 10;
         svg {
           float: right;
         }
