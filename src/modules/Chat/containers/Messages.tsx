@@ -102,7 +102,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
     if (element) {
       timeout = setTimeout(function () {
         element.scrollTo(0, element.scrollHeight);
-      }, 0);
+      }, 120);
     }
 
     return () => {
@@ -122,7 +122,10 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
               _id: file._id,
               title: file.fileName,
               status: AudioFileStatus.IDLE,
-              duration: Math.floor(audio.duration),
+              duration:
+                audio.duration < 1
+                  ? Math.floor(audio.duration * 1000)
+                  : Math.floor(audio.duration),
             });
           };
         }

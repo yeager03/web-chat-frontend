@@ -47,6 +47,8 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
 
   useEffect(() => {
     if (currentAudio) {
+      // console.log(currentAudio.duration);
+
       setAudioPlaying(currentAudio.status);
       setAudioDuration(currentAudio.duration);
     }
@@ -57,8 +59,17 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
 
     function audioMetaData() {
       if (element) {
-        setAudioDuration(Math.floor(element.duration));
-        setAudioFileDuration(_id, Math.floor(element.duration));
+        setAudioDuration(
+          element.duration < 1
+            ? Math.floor(element.duration * 1000)
+            : Math.floor(element.duration)
+        );
+        setAudioFileDuration(
+          _id,
+          element.duration < 1
+            ? Math.floor(element.duration * 1000)
+            : Math.floor(element.duration)
+        );
       }
     }
 
@@ -102,7 +113,11 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
     function audioEnded() {
       if (element) {
         setAudioPlaying(AudioFileStatus.IDLE);
-        setAudioDuration(Math.floor(element.duration));
+        setAudioDuration(
+          element.duration < 1
+            ? Math.floor(element.duration * 1000)
+            : Math.floor(element.duration)
+        );
         setAudioProgress({
           ...audioProgress,
           currentTime: 0,
@@ -181,7 +196,9 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
           <img src={AudioWaveIcon} alt="Audio Wave img" />
         </div>
         <div className={styles["information"]}>
-          <span className={styles["information__title"]}>{title}</span>
+          <span className={styles["information__title"]}>
+            {title.includes("audio-message") ? "Аудиосообщение" : title}
+          </span>
           <span className={styles["information__duration"]}>
             {idle}
             {playing}

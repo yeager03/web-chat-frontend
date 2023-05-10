@@ -40,6 +40,9 @@ import getNotification from "../../../utils/notification";
 // patterns
 import getPatterns from "../../../utils/validationPatterns";
 
+// utils
+import fixWebmDuration from "fix-webm-duration";
+
 // is valid url
 import isValidUrl from "../../../utils/validUrl";
 import { AudioFileStatus } from "../../../context/AudioProvider";
@@ -200,12 +203,15 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
-  // TODO:
   const handleOnPaste = async (e: ClipboardEvent<HTMLDivElement>) => {
     if (e.clipboardData.files.length) {
       e.preventDefault();
 
       const file = e.clipboardData.files[0];
+
+      if (uploadedFiles.length + 1 > 5) {
+        return getNotification("Нельзя загрузить больше 5 файлов!", "error");
+      }
 
       if (file.type.match(getPatterns().image)) {
         if (file.size <= 5000000) {
@@ -284,7 +290,6 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
-  // TODO:
   const handleFilePick = (e: ReactMouseEvent<SVGSVGElement>) => {
     const type = e.currentTarget.getAttribute("file-type");
 
@@ -441,6 +446,60 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
     }
   };
 
+  const handleRecordAudio = (blob: Blob | null, duration: number) => {
+    if (!blob) return;
+
+    if (uploadedFiles.length + 1 > 5) {
+      return getNotification("Нельзя загрузить больше 5 файлов!", "error");
+    }
+
+    if (blob.size <= 10000000) {
+      fixWebmDuration(blob, duration, function (fixedBlob) {
+        const _id = uuidv4();
+        const file: IUploadedFile = {
+          _id,
+          type: "audio",
+          file: new File([fixedBlob], `audio-message-${_id}`, {
+            type: fixedBlob.type,
+            lastModified: new Date().getTime(),
+          }),
+        };
+
+        const url = URL.createObjectURL(file.file);
+
+        setFiles((prevState) => [...prevState, file]);
+        setUploadedFiles((prevState) => [
+          ...prevState,
+          {
+            _id: file._id,
+            type: file.type,
+            fileName: file.file.name,
+            url,
+            size: file.file.size,
+            extension: file.type.split("/")[1],
+          },
+        ]);
+
+        console.log(file);
+
+        addAudioFile({
+          _id: file._id,
+          title: file.file.name,
+          status: AudioFileStatus.IDLE,
+          duration,
+        });
+
+        inputRef.current && inputRef.current.focus();
+        return;
+      });
+    } else {
+      return getNotification(
+        "Размер аудиозаписи не должен превышать 10 мегабайт!",
+        "error"
+      );
+    }
+  };
+
   return (
     <BaseChatInput
       messageValue={messageValue}
@@ -459,6 +518,7 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
       sendMessage={sendMessage}
       editMessage={editMessage}
       removeMessage={removeMessage}
+      handleRecordAudio={handleRecordAudio}
     />
   );
 };
