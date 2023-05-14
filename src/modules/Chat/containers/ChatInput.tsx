@@ -480,8 +480,6 @@ const ChatInput: FC<ChatInputProps> = (props): ReactElement => {
           },
         ]);
 
-        console.log(file);
-
         addAudioFile({
           _id: file._id,
           title: file.file.name,

@@ -189,13 +189,15 @@ const Chat: FC = (): ReactElement => {
 
         return {
           _id: file._id,
-          type: "image",
+          type: file.type,
           file: new File([blob], file.fileName, {
-            type: blob.type,
+            type: `${file.type}/${blob.type.split("/")[1]}`,
           }),
         };
       })
     );
+
+    console.log(editedFiles);
 
     setFiles(editedFiles);
     setUploadedFiles(files);

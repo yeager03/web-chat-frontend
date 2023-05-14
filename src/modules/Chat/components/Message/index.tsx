@@ -35,28 +35,15 @@ type MessageProps = IMessage & {
   isRead?: boolean;
   attachments?: any[];
   audio?: string;
-  anchorEl: HTMLDivElement | null;
+  anchorEl: HTMLSpanElement | null;
   open: boolean;
-  handleOpen: (e: MouseEvent<HTMLDivElement>) => void;
+  handleOpen: (e: MouseEvent<HTMLSpanElement>) => void;
   handleClose: () => void;
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
   setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
   handleRemoveMessage: (id: string) => void;
   handleEditFiles: (files: IFile[]) => void;
 };
-// const testMusics = [
-//   {
-//     _id: 1,
-//     title: "DVRST Close Eyes",
-//     src: "https://dl2.mp3party.net/online/10072933.mp3",
-//   },
-//
-//   {
-//     _id: 2,
-//     title: "INTERWORLD – METAMORPHOSIS",
-//     src: "https://dl2.mp3party.net/online/10375130.mp3",
-//   },
-// ];
 
 const Message: FC<MessageProps> = (props): ReactElement => {
   const {
@@ -94,50 +81,42 @@ const Message: FC<MessageProps> = (props): ReactElement => {
         <UserAvatar user={author} />
       </Box>
 
-      {/* <Popover
-				open={open}
-				anchorEl={anchorEl}
-				onClose={handleClose}
-				anchorOrigin={{
-					vertical: "top",
-					horizontal: "center",
-				}}
-				transformOrigin={{
-					vertical: "bottom",
-					horizontal: "center",
-				}}
-			>
-				<Box className={styles["message__popover"]}>
-					<EditRounded
-						className={styles["popover__icon"]}
-						onClick={() => {
-							setMessageValue({ value: message, type: "edit", id: _id });
-							if (files.length) {
-								handleEditFiles(files);
-								setUploadedFiles(files);
-							}
-							handleClose();
-						}}
-					/>
-					<DeleteRounded
-						className={styles["popover__icon"]}
-						onClick={() => {
-							handleRemoveMessage(_id);
-							handleClose();
-						}}
-					/>
-				</Box>
-			</Popover> */}
-
-      <Box
-        className={styles["message__content"]}
-        onClick={(e) => {
-          if (!isMyMessage) {
-            return;
-          }
-          handleOpen(e);
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
         }}
       >
+        <Box className={styles["message__popover"]}>
+          <EditRounded
+            className={styles["popover__icon"]}
+            onClick={() => {
+              setMessageValue({ value: message, type: "edit", id: _id });
+              if (files.length) {
+                handleEditFiles(files);
+                setUploadedFiles(files);
+              }
+              handleClose();
+            }}
+          />
+          <DeleteRounded
+            className={styles["popover__icon"]}
+            onClick={() => {
+              handleRemoveMessage(_id);
+              handleClose();
+            }}
+          />
+        </Box>
+      </Popover>
+
+      <Box className={styles["message__content"]}>
         {message && (
           <Box className={styles["message__bubble"]}>
             {message && !isReference ? (
@@ -175,22 +154,6 @@ const Message: FC<MessageProps> = (props): ReactElement => {
           </Box>
         )}
 
-        {audioFiles.length ? (
-          <Box className={styles["message-audio-files"]}>
-            {audioFiles.map((file) => {
-              return (
-                <Box className={styles["message__audio"]} key={file._id}>
-                  <AudioMessage
-                    _id={file._id}
-                    title={file.fileName}
-                    src={file.url}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-        ) : null}
-
         {imageFiles.length ? (
           <Box className={styles["message__attachments"]}>
             <ul className={styles["attachments-items"]}>
@@ -208,14 +171,38 @@ const Message: FC<MessageProps> = (props): ReactElement => {
                 );
               })}
             </ul>
-            {isEdited && !message && <b>(ред.)</b>}
+          </Box>
+        ) : null}
+
+        {audioFiles.length ? (
+          <Box className={styles["message-audio-files"]}>
+            {audioFiles.map((file) => {
+              return (
+                <Box className={styles["message__audio"]} key={file._id}>
+                  <AudioMessage
+                    _id={file._id}
+                    title={file.fileName}
+                    src={file.url}
+                  />
+                </Box>
+              );
+            })}
           </Box>
         ) : null}
 
         {createdAt && (
-          <span className={styles["message__date"]}>
-            {getMessageDate(createdAt)}
-          </span>
+          <div
+            className={styles["message__date"]}
+            onClick={(e) => {
+              if (!isMyMessage) {
+                return;
+              }
+              handleOpen(e);
+            }}
+          >
+            <span>{getMessageDate(createdAt)}</span>
+            {isEdited && !message && <b>(ред.)</b>}
+          </div>
         )}
 
         <IconRead

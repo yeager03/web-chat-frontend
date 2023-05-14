@@ -59,8 +59,6 @@ const AudioProvider: FC<AudioProvider> = ({ children }): ReactElement => {
 
   const clearAudioFiles = () => setAudioFiles([]);
 
-  console.log(audioFiles);
-
   return (
     <AudioContext.Provider
       value={{

@@ -1,263 +1,262 @@
 @import "../../../../assets/scss/components/variables";
 
 .message {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 
-	&:not(:last-child) {
-		margin-bottom: 20px;
-	}
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
 
-	$self: &;
+  $self: &;
 
-	&_my-message {
-		flex-direction: row-reverse;
+  &_my-message {
+    flex-direction: row-reverse;
 
-		#{$self}__avatar {
-			margin-left: 15px;
-		}
+    #{$self}__avatar {
+      margin-left: 15px;
+    }
 
-		#{$self}__content {
-			cursor: pointer;
-		}
+    #{$self}__bubble {
+      align-self: flex-end;
 
-		#{$self}__bubble {
-			align-self: flex-end;
+      background: $white;
+      box-shadow: 0 5px 5px rgba(0, 0, 0, 0.07);
+      border-radius: 15px 15px 0 15px;
+    }
 
-			background: $white;
-			box-shadow: 0 5px 5px rgba(0, 0, 0, 0.07);
-			border-radius: 15px 15px 0 15px;
-		}
+    #{$self}-audio-files {
+      .message__audio {
+        align-self: flex-end;
+        border-radius: 15px 15px 0 15px;
+      }
+    }
 
-		#{$self}-audio-files {
-			.message__audio {
-				align-self: flex-end;
-				border-radius: 15px 15px 0 15px;
-			}
-		}
+    #{$self}__text {
+      color: $black;
+    }
 
-		#{$self}__text {
-			color: $black;
-		}
+    #{$self}__link {
+      color: $blue;
+    }
 
-        #{$self}__link {
-            color: $blue;
-	    }
+    #{$self}__date {
+      text-align: right;
+      cursor: pointer;
 
-		#{$self}__date {
-			text-align: right;
-		}
+    }
 
-		#{$self}__checked-icon {
-			position: absolute;
-			bottom: 7px;
-			left: -20px;
-		}
+    #{$self}__checked-icon {
+      position: absolute;
+      bottom: 7px;
+      left: -20px;
+    }
 
-		#{$self}__attachments {
-			align-self: flex-end;
-		}
-	}
+    #{$self}__attachments {
+      align-self: flex-end;
+    }
+  }
 
-	&_typing {
-		#{$self}__bubble {
-			background: $message-typing;
-		}
-	}
+  &_image {
+    #{$self}__attachments {
+      .attachment-item {
+        img {
+          width: 100px;
+          height: 100px;
+        }
+      }
+    }
+  }
 
-	&-audio-files {
-		display: flex;
-		flex-direction: column;
-		margin-bottom: 10px;
+  &_typing {
+    #{$self}__bubble {
+      background: $message-typing;
+    }
+  }
 
-		.message__audio {
-			background: $blue;
-			box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
-			border-radius: 15px 15px 15px 0;
-			padding: 15px;
+  &-audio-files {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 7px;
 
-			position: relative;
-			width: 320px;
-			overflow: hidden;
+    .message__audio {
+      background: $blue;
+      box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
+      border-radius: 15px 15px 15px 0;
+      padding: 15px;
 
-			&:not(:last-child) {
-				margin-bottom: 7px;
-			}
-		}
-	}
+      position: relative;
+      width: 320px;
+      overflow: hidden;
 
-	&_image {
-		#{$self}__attachments {
-			.attachment-item {
-				img {
-					width: 120px !important;
-					height: 120px !important;
-				}
-			}
-		}
-	}
+      &:not(:last-child) {
+        margin-bottom: 7px;
+      }
+    }
+  }
 
+  &__popover {
+    padding: 12px;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-	&__popover {
-		padding: 12px;
+    .popover__icon {
+      cursor: pointer;
+      font-size: 18px;
 
-		display: flex;
-		justify-content: center;
-		align-items: center;
+      &:not(:last-child) {
+        margin-right: 10px;
+      }
+    }
+  }
 
-		.popover__icon {
-			cursor: pointer;
-			font-size: 18px;
+  &__avatar {
+    flex-shrink: 0;
+    align-self: flex-end;
+    margin-right: 15px;
+    margin-bottom: 7px;
 
-			&:not(:last-child) {
-				margin-right: 10px;
-			}
-		}
-	}
+    width: 35px;
+    height: 35px;
 
-	&__avatar {
-		flex-shrink: 0;
-		align-self: flex-end;
-		margin-right: 15px;
-		margin-bottom: 7px;
+    img {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+    }
+  }
 
-		width: 35px;
-		height: 35px;
+  &__content {
+    max-width: 560px;
+    position: relative;
 
-		img {
-			border-radius: 50%;
-			width: 100%;
-			height: 100%;
-		}
-	}
+    display: flex;
+    flex-direction: column;
+  }
 
-	&__content {
-		max-width: 540px;
-		position: relative;
+  &__bubble {
+    max-width: 100%;
 
-		display: flex;
-		flex-direction: column;
-	}
+    align-self: flex-start;
 
-	&__bubble {
-		max-width: 100%;
+    background: $blue;
+    box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
+    border-radius: 15px 15px 15px 0;
+    padding: 15px;
 
-		align-self: flex-start;
+    margin-bottom: 7px;
+  }
 
-		background: $blue;
-		box-shadow: 0 5px 5px rgba(54, 116, 255, 0.197);
-		border-radius: 15px 15px 15px 0;
-		padding: 15px;
+  &__text {
+    font-weight: 500;
+    color: $white;
+    line-height: 20px;
+    word-wrap: break-word;
 
-		margin-bottom: 7px;
-	}
+    b {
+      font-size: 12px;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+  }
 
-	&__text {
-		font-weight: 500;
-		color: $white;
-		line-height: 20px;
-		word-wrap: break-word;
+  &__link {
+    font-weight: 600;
+    line-height: 20px;
+    color: $white;
+    text-decoration: underline;
+    word-wrap: break-word;
 
-		b {
-			font-size: 12px;
-			opacity: 0.7;
-			font-weight: 500;
-		}
-	}
+    b {
+      font-size: 12px;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+  }
 
-	&__link {
-		font-weight: 600;
-		line-height: 20px;
-		color: $white;
-		text-decoration: underline;
-		word-wrap: break-word;
+  &__attachments {
+    align-self: flex-start;
+    margin-bottom: 7px;
 
-		b {
-			font-size: 12px;
-			opacity: 0.7;
-			font-weight: 500;
-		}
-	}
+    display: flex;
+    align-items: center;
 
-	&__attachments {
-		align-self: flex-start;
-		margin-bottom: 7px;
+    .attachments-items {
+      display: flex;
+      align-items: center;
+    }
 
-		display: flex;
-		align-items: center;
-
-		.attachments-items {
-			display: flex;
-			align-items: center;
-		}
-
-		.attachment-item {
-			list-style-type: none;
-			cursor: pointer;
+    .attachment-item {
+      list-style-type: none;
+      cursor: pointer;
 
 
-			&:not(:last-child) {
-				margin-right: 5px;
-			}
+      &:not(:last-child) {
+        margin-right: 5px;
+      }
 
-			img {
-				width: 80px;
-				height: 80px;
-				border-radius: 5px;
+      img {
+        width: 80px;
+        height: 80px;
+        border-radius: 5px;
 
-				object-fit: cover;
-			}
-		}
+        object-fit: cover;
+      }
+    }
 
-		b {
-			align-self: flex-end;
 
-			font-size: 12px;
-			opacity: 0.7;
-			font-weight: 500;
-		}
-	}
+  }
 
-	&__date {
-		display: inline-block;
-		font-size: 12px;
-		opacity: 0.5;
-		text-align: left;
-	}
+  &__date {
+    font-size: 12px;
+    text-align: left;
 
-	&__typing {
-		span {
-			height: 8px;
-			width: 8px;
-			border-radius: 50%;
-			background: $message-typing-circle;
-			display: inline-block;
-			margin-right: 8px;
-			animation: 0.8s typingAnimation infinite ease-out 0.1s;
+    span {
+      display: inline-block;
+      opacity: 0.5;
+      margin-right: 5px;
+    }
+    b {
+      opacity: 0.7;
+      font-weight: 500;
+    }
+  }
 
-			&:nth-of-type(2) {
-				animation: 0.8s typingAnimation infinite ease-out 0.2s;
-			}
-			&:nth-of-type(3) {
-				animation: 0.8s typingAnimation infinite ease-out 0.3s;
-				margin-right: 0;
-			}
-		}
-	}
+  &__typing {
+    span {
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background: $message-typing-circle;
+      display: inline-block;
+      margin-right: 8px;
+      animation: 0.8s typingAnimation infinite ease-out 0.1s;
+
+      &:nth-of-type(2) {
+        animation: 0.8s typingAnimation infinite ease-out 0.2s;
+      }
+
+      &:nth-of-type(3) {
+        animation: 0.8s typingAnimation infinite ease-out 0.3s;
+        margin-right: 0;
+      }
+    }
+  }
 }
 
 @keyframes typingAnimation {
-	from {
-		opacity: 0.2;
-		transform: translateY(0px);
-	}
-	50% {
-		opacity: 0.5;
-		transform: translateY(-1.5px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(-1px);
-	}
+  from {
+    opacity: 0.2;
+    transform: translateY(0px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-1.5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
 }

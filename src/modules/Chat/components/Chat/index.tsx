@@ -129,7 +129,7 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
             <Box
               ref={nodeRef}
               className={styles["emoji"]}
-              sx={{ bottom: `${chatInputHeight}px` }}
+              sx={{ bottom: `${chatInputHeight}px`, zIndex: 1000 }}
             >
               <Picker
                 data={data}

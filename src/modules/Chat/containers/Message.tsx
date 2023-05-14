@@ -27,11 +27,11 @@ type MessageProps = IMessage & {
 const Message: FC<MessageProps> = (props): ReactElement => {
   const { setMessageValue, handleRemoveMessage, handleEditFiles } = props;
 
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null);
 
   const open = Boolean(anchorEl);
 
-  const handleOpen = (event: MouseEvent<HTMLDivElement>) =>
+  const handleOpen = (event: MouseEvent<HTMLSpanElement>) =>
     setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
