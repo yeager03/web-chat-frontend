@@ -14,6 +14,7 @@ interface IDialogueState {
   dialogues: IDialogue[];
   currentDialogueId: string;
   currentDialogue: IDialogue | null;
+  unreadMessagesCount: number;
 }
 
 const initialState: IDialogueState = {
@@ -21,6 +22,7 @@ const initialState: IDialogueState = {
   dialogues: [],
   currentDialogueId: "",
   currentDialogue: null,
+  unreadMessagesCount: 0,
 };
 
 export const dialogueSlice = createSlice({
@@ -45,8 +47,6 @@ export const dialogueSlice = createSlice({
         state.dialogues = state.dialogues.map((dialogue) => {
           if (dialogue._id === action.payload.dialogueId) {
             dialogue.lastMessage = action.payload.message;
-
-            console.log(dialogue.lastMessage);
           }
           return dialogue;
         });
@@ -54,6 +54,25 @@ export const dialogueSlice = createSlice({
       state.dialogues = state.dialogues.map((dialogue) => {
         if (dialogue._id === action.payload.dialogueId) {
           dialogue.lastMessage = action.payload.message;
+        }
+        return dialogue;
+      });
+    },
+    increaseUnreadMessageCount: (state) => {
+      state.unreadMessagesCount = state.unreadMessagesCount + 1;
+    },
+    decreaseUnreadMessageCount: (state, action: PayloadAction<number>) => {
+      if (state.unreadMessagesCount > 0) {
+        state.unreadMessagesCount = state.unreadMessagesCount - action.payload;
+      }
+    },
+    readDialogueLastMessage: (state, action: PayloadAction<string>) => {
+      if (state.currentDialogue?._id === action.payload) {
+        state.currentDialogue.lastMessage.isRead = true;
+      }
+      state.dialogues = state.dialogues.map((dialogue) => {
+        if (dialogue._id === action.payload) {
+          dialogue.lastMessage.isRead = true;
         }
         return dialogue;
       });
@@ -67,7 +86,8 @@ export const dialogueSlice = createSlice({
       .addCase(getDialogues.fulfilled, (state, action) => {
         if (action.payload) {
           state.status = Status["SUCCESS"];
-          state.dialogues = action.payload;
+          state.dialogues = action.payload.dialogues;
+          state.unreadMessagesCount = action.payload.unreadMessagesCount;
         }
       })
       .addCase(getDialogues.rejected, (state) => {
@@ -81,5 +101,8 @@ export const {
   setCurrentDialogueId,
   setCurrentDialogue,
   changeDialogueMessage,
+  increaseUnreadMessageCount,
+  decreaseUnreadMessageCount,
+  readDialogueLastMessage,
 } = dialogueSlice.actions;
 export default dialogueSlice.reducer;

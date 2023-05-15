@@ -27,7 +27,10 @@ import MessageSound from "../../assets/sounds/message_sound.mp3";
 // selectors
 import {
   changeDialogueMessage,
+  decreaseUnreadMessageCount,
   dialogueSelector,
+  increaseUnreadMessageCount,
+  readDialogueLastMessage,
   setCurrentDialogue,
   setCurrentDialogueId,
 } from "../../store/slices/dialogue/dialogueSlice";
@@ -48,6 +51,7 @@ import {
   socketClearMessages,
   socketDeleteMessage,
   socketEditMessage,
+  socketMessageRead,
 } from "../../store/slices/message/messageSlice";
 
 // types
@@ -133,7 +137,7 @@ const Home: FC = (): ReactElement => {
 
     socket.on(
       "SERVER:DIALOGUE_MESSAGE_UPDATE",
-      (dialogueId: string, message: IMessage) => {
+      (dialogueId: string, message: IMessage, clientRoomSize: number = 1) => {
         if (dialogues.find((dl) => dl._id === dialogueId)) {
           console.log("dialogue message changed");
           if (!message) {
@@ -175,31 +179,44 @@ const Home: FC = (): ReactElement => {
                 },
               })
             );
+
+            if (clientRoomSize > 1) {
+              dispatch(readDialogueLastMessage(dialogueId));
+            }
           }
         }
       }
     );
 
-    socket.on("SERVER:MESSAGE_CREATED", (message: IMessage) => {
-      if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
-        if (currentDialogueId === String(message.dialogue)) {
-          dispatch(setTyping(false));
-          dispatch(
-            socketAddMessage({
-              ...message,
-              message: message.message ? decryptionText(message.message) : "",
-            })
-          );
-        } else {
-          if (user && message.author._id !== user._id) {
-            const audio = new Audio(MessageSound);
-            audio.autoplay = true;
-            audio.volume = 0.25;
-            audio.play().catch((error) => console.log(error));
+    socket.on(
+      "SERVER:MESSAGE_CREATED",
+      (message: IMessage, clientRoomSize: number = 1) => {
+        if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
+          if (currentDialogueId === String(message.dialogue)) {
+            dispatch(setTyping(false));
+            dispatch(
+              socketAddMessage({
+                ...message,
+                message: message.message ? decryptionText(message.message) : "",
+              })
+            );
+
+            if (clientRoomSize > 1) {
+              dispatch(socketMessageRead(message._id));
+            }
+          } else {
+            if (user && message.author._id !== user._id) {
+              const audio = new Audio(MessageSound);
+              audio.autoplay = true;
+              audio.volume = 0.25;
+              audio.play().catch((error) => console.log(error));
+
+              dispatch(increaseUnreadMessageCount());
+            }
           }
         }
       }
-    });
+    );
 
     socket.on("SERVER:MESSAGE_DELETED", (message: IMessage) => {
       console.log("message deleted");
@@ -227,9 +244,19 @@ const Home: FC = (): ReactElement => {
       }
     });
 
-    socket.on("SERVER:MESSAGES_READ", (messagesId: string[]) => {
-      console.log(messagesId);
-    });
+    socket.on(
+      "SERVER:MESSAGES_READ",
+      (messages: IMessage[], dialogueId: string) => {
+        if (dialogues.find((dl) => dl._id === dialogueId)) {
+          if (currentDialogueId === dialogueId) {
+            messages.forEach(({ _id }) => {
+              dispatch(socketMessageRead(_id));
+            });
+          }
+          dispatch(readDialogueLastMessage(dialogueId));
+        }
+      }
+    );
 
     return () => {
       socket.off("SERVER:NEW_FRIEND_REQUEST");
@@ -243,6 +270,16 @@ const Home: FC = (): ReactElement => {
       socket.off("SERVER:MESSAGES_READ");
     };
   }, [currentDialogueId, dialogues]);
+
+  useEffect(() => {
+    socket.on("SERVER:JOIN_TO_ROOM", (dialogueId: string) => {
+      socket.emit("CLIENT:JOIN_ROOM", dialogueId);
+    });
+
+    return () => {
+      socket.off("SERVER:JOIN_TO_ROOM");
+    };
+  }, []);
 
   return (
     <main className={styles["home"]}>

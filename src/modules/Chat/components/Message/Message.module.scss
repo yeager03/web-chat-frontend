@@ -190,7 +190,6 @@
 
     .attachment-item {
       list-style-type: none;
-      cursor: pointer;
 
 
       &:not(:last-child) {
@@ -203,6 +202,8 @@
         border-radius: 5px;
 
         object-fit: cover;
+        cursor: zoom-in;
+
       }
     }
 

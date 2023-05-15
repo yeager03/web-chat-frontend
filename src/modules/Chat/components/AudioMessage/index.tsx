@@ -75,7 +75,7 @@ const AudioMessage: FC<AudioMessageProps> = (props): ReactElement => {
 
     function audioPlay() {
       if (element) {
-        element.volume = 0.05;
+        element.volume = 0.5;
 
         const audioPlayers = document.querySelectorAll("audio");
 

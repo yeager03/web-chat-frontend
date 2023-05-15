@@ -24,11 +24,13 @@ import useAudio from "../../../context/context";
 
 // selector
 import { friendSelector } from "../../../store/slices/friend/friendSlice";
+import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
 
 const SideBar: FC = (): ReactElement => {
   const { user } = useAuth();
   const { clearAudioFiles } = useAudio();
-  const { requestsLength } = useSelector(friendSelector);
+  const { requestsCount } = useSelector(friendSelector);
+  const { unreadMessagesCount } = useSelector(dialogueSelector);
 
   const dispatch = useAppDispatch();
 
@@ -48,9 +50,10 @@ const SideBar: FC = (): ReactElement => {
   return (
     <BaseSideBar
       user={user}
-      logout={logout}
-      requestsLength={requestsLength}
+      requestsCount={requestsCount}
+      unreadMessagesCount={unreadMessagesCount}
       handleChangeLink={handleChangeLink}
+      logout={logout}
     />
   );
 };

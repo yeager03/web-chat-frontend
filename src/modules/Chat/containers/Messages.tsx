@@ -21,7 +21,10 @@ import { socket } from "../../../core/socket";
 import BaseMessages from "../components/Messages";
 
 // selectors
-import { dialogueSelector } from "../../../store/slices/dialogue/dialogueSlice";
+import {
+  decreaseUnreadMessageCount,
+  dialogueSelector,
+} from "../../../store/slices/dialogue/dialogueSlice";
 import {
   messageSelector,
   setTyping,
@@ -88,8 +91,14 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
         }
       });
 
+      socket.on("SERVER:UNREADMESSAGES_DESCREASE", (count: number) => {
+        dispatch(decreaseUnreadMessageCount(count));
+      });
+
       return () => {
         clearTimeout(timer);
+        socket.off("SERVER:TYPING_RESPONSE");
+        socket.off("SERVER:UNREADMESSAGES_DESCREASE");
       };
     }
   }, [currentDialogueId]);

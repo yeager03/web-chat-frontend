@@ -1,132 +1,133 @@
 @import "../../../../assets/scss/components/variables";
 
 .dialogue__item {
-	cursor: pointer;
-	width: 100%;
-	height: 90px;
+  cursor: pointer;
+  width: 100%;
+  height: 90px;
 
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 
-	padding: 20px;
+  padding: 20px;
 
-	transition: background-color 0.25s ease-out, color 0.25s ease-out;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
 
-	&:hover {
-		background-color: $blue;
-		color: $white;
+  &:hover {
+    background-color: $blue;
+    color: $white;
 
-		.icon {
-			svg path {
-				fill: $white;
-			}
-		}
-	}
+    .icon {
+      svg path {
+        fill: $white;
+      }
+    }
+  }
 
-	$self: &;
+  $self: &;
 
-	&_online {
-		#{$self}-avatar {
-			position: relative;
+  &_online {
+    #{$self}-avatar {
+      position: relative;
 
-			&::before {
-				content: "";
-				position: absolute;
-				bottom: 0;
-				right: 0;
-				width: 10px;
-				height: 10px;
-				border-radius: 50%;
-				border: 3px solid $white;
-				background: $green;
-			}
-		}
-	}
+      &::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 3px solid $white;
+        background: $green;
+      }
+    }
+  }
 
-	&_current {
-		background-color: $blue;
-		color: $white;
-		.icon {
-			svg path {
-				fill: $white;
-			}
-		}
-	}
+  &_current {
+    background-color: $blue;
+    color: $white;
 
-	&-avatar {
-		flex-shrink: 0;
-		margin-right: 10px;
+    .icon {
+      svg path {
+        fill: $white;
+      }
+    }
+  }
 
-		width: 50px;
-		height: 50px;
+  &-avatar {
+    flex-shrink: 0;
+    margin-right: 10px;
 
-		img {
-			width: 100%;
-			height: 100%;
-			border-radius: 50%;
-		}
-	}
+    width: 50px;
+    height: 50px;
 
-	&-info {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-	}
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
 
-	&-title {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+  &-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-		.title {
-			font-size: 16px;
-			font-weight: 700;
-			line-height: 1;
-		}
+  &-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-		.date {
-			opacity: 0.5;
-			font-size: 15px;
-			line-height: 1;
-		}
-	}
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+    }
 
-	&-subtitle {
-		margin-top: 2px;
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
+    .date {
+      opacity: 0.5;
+      font-size: 15px;
+      line-height: 1;
+    }
+  }
 
-		.text {
-			font-weight: 600;
-			font-size: 15px;
-			opacity: 0.7;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			width: 270px;
-			white-space: nowrap;
-		}
+  &-subtitle {
+    margin-top: 2px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
 
-		.count {
-			display: inline-block;
-			background: #f46b6b;
-			color: #fff;
-			font-weight: 500;
-			width: 22px;
-			height: 22px;
-			border-radius: 50%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			font-size: 10px;
-			line-height: 1;
-		}
+    .text {
+      font-weight: 600;
+      font-size: 15px;
+      opacity: 0.7;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 270px;
+      white-space: nowrap;
+    }
 
-		.icon {
-			svg path {
-				transition: fill 0.25s ease-out;
-			}
-		}
-	}
+    .count {
+      display: inline-block;
+      background: #f46b6b;
+      color: #fff;
+      font-weight: 500;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .icon {
+      svg path {
+        transition: fill 0.25s ease-out;
+      }
+    }
+  }
 }

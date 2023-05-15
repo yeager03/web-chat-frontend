@@ -27,12 +27,12 @@ import IUser from "../../../models/IUser";
 type ListItemProps = {
   to: string;
   icon: SvgIconComponent;
-  length?: number;
+  count?: number;
   handleChangeLink: () => void;
 };
 
 const ListItem: FC<ListItemProps> = (props): ReactElement => {
-  const { to, icon, length, handleChangeLink } = props;
+  const { to, icon, count, handleChangeLink } = props;
 
   const match = useMatch({
     path: to,
@@ -48,12 +48,12 @@ const ListItem: FC<ListItemProps> = (props): ReactElement => {
       <Link to={to} replace onClick={handleChangeLink}>
         <SvgIcon component={icon} sx={{ fontSize: 24 }} />
       </Link>
-      {length && length > 0 ? (
+      {count && count > 0 ? (
         <Typography
           component={"span"}
           className={styles["sidebar__top-item-count"]}
         >
-          {length > 10 ? "10+" : length}
+          {count > 10 ? "10+" : count}
         </Typography>
       ) : null}
     </li>
@@ -62,13 +62,15 @@ const ListItem: FC<ListItemProps> = (props): ReactElement => {
 
 type SideBarProps = {
   user: IUser | null;
-  requestsLength: number;
+  requestsCount: number;
+  unreadMessagesCount: number;
   logout: () => void;
   handleChangeLink: () => void;
 };
 
 const SideBar: FC<SideBarProps> = (props): ReactElement => {
-  const { user, requestsLength, logout, handleChangeLink } = props;
+  const { user, requestsCount, unreadMessagesCount, logout, handleChangeLink } =
+    props;
 
   return (
     <>
@@ -83,12 +85,13 @@ const SideBar: FC<SideBarProps> = (props): ReactElement => {
               <ListItem
                 to={"/dialogues"}
                 icon={QuestionAnswerRounded}
+                count={unreadMessagesCount}
                 handleChangeLink={handleChangeLink}
               />
               <ListItem
                 to={"/friends"}
                 icon={GroupRounded}
-                length={requestsLength}
+                count={requestsCount}
                 handleChangeLink={handleChangeLink}
               />
             </ul>
