@@ -117,7 +117,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [messages, chatInputHeight]);
+  }, [messages, chatInputHeight, isTyping]);
 
   useEffect(() => {
     messages.forEach((message) => {

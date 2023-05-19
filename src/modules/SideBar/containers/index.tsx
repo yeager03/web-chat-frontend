@@ -30,7 +30,8 @@ const SideBar: FC = (): ReactElement => {
   const { user } = useAuth();
   const { clearAudioFiles } = useAudio();
   const { requestsCount } = useSelector(friendSelector);
-  const { unreadMessagesCount } = useSelector(dialogueSelector);
+  const { unreadMessagesCount, currentDialogueId } =
+    useSelector(dialogueSelector);
 
   const dispatch = useAppDispatch();
 
@@ -41,6 +42,10 @@ const SideBar: FC = (): ReactElement => {
   };
 
   const handleChangeLink = () => {
+    if (currentDialogueId) {
+      socket.emit("CLIENT:LEAVE_ROOM", currentDialogueId);
+    }
+
     dispatch(setCurrentDialogueId(""));
     dispatch(setCurrentDialogue(null));
     dispatch(socketClearMessages());

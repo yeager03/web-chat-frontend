@@ -197,8 +197,6 @@ const Chat: FC = (): ReactElement => {
       })
     );
 
-    console.log(editedFiles);
-
     setFiles(editedFiles);
     setUploadedFiles(files);
   };
