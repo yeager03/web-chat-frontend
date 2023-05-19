@@ -28,7 +28,13 @@ type DialogueItemProps = IDialogueItem & {
 };
 
 const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
-  const { _id, interlocutor, lastMessage, currentDialogueId } = props;
+  const {
+    _id,
+    interlocutor,
+    lastMessage,
+    currentDialogueId,
+    unreadMessagesCount,
+  } = props;
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -70,19 +76,17 @@ const DialogueItem: FC<DialogueItemProps> = (props): ReactElement => {
                 </Typography>
               )}
 
-              {/* {lastMessage.isRead && lastMessage.isRead > 0 ? (
-								<Typography component={"span"} className={styles["count"]}>
-									{lastMessage["isRead"] > 10 ? "10+" : lastMessage["isRead"]}
-								</Typography>
-							) : (
-								<IconRead className={styles["icon"]} isMyMessage={isMyMessage} isRead={isRead} />
-							)} */}
-
-              <IconRead
-                className={styles["icon"]}
-                isMyMessage={isMyMessage}
-                isRead={lastMessage.isRead}
-              />
+              {!lastMessage.isRead && unreadMessagesCount > 0 ? (
+                <Typography component={"span"} className={styles["count"]}>
+                  {unreadMessagesCount > 10 ? "10+" : unreadMessagesCount}
+                </Typography>
+              ) : (
+                <IconRead
+                  className={styles["icon"]}
+                  isMyMessage={isMyMessage}
+                  isRead={lastMessage.isRead}
+                />
+              )}
             </Box>
           </Box>
         </li>

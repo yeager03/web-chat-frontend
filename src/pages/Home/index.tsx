@@ -27,12 +27,12 @@ import MessageSound from "../../assets/sounds/message_sound.mp3";
 // selectors
 import {
   changeDialogueMessage,
-  decreaseUnreadMessageCount,
   dialogueSelector,
   increaseUnreadMessageCount,
   readDialogueLastMessage,
   setCurrentDialogue,
   setCurrentDialogueId,
+  socketChangeDialogueFriendStatus,
 } from "../../store/slices/dialogue/dialogueSlice";
 
 // actions
@@ -43,6 +43,7 @@ import {
 import {
   socketAddFriend,
   socketAddRequest,
+  socketChangeFriendStatus,
 } from "../../store/slices/friend/friendSlice";
 import { getDialogues } from "../../store/slices/dialogue/dialogueActions";
 import {
@@ -211,7 +212,7 @@ const Home: FC = (): ReactElement => {
               audio.volume = 0.25;
               audio.play().catch((error) => console.log(error));
 
-              dispatch(increaseUnreadMessageCount());
+              dispatch(increaseUnreadMessageCount(String(message.dialogue)));
             }
           }
         }
@@ -276,8 +277,28 @@ const Home: FC = (): ReactElement => {
       socket.emit("CLIENT:JOIN_ROOM", dialogueId);
     });
 
+    socket.on("SERVER:FRIEND_ONLINE", (friend_id: string) => {
+      // console.log(`Friend with id: ${friend_id} ONLINE!`);
+
+      dispatch(socketChangeFriendStatus({ id: friend_id, status: true }));
+      dispatch(
+        socketChangeDialogueFriendStatus({ id: friend_id, status: true })
+      );
+    });
+
+    socket.on("SERVER:FRIEND_OFFLINE", (friend_id: string) => {
+      // console.log(`Friend with id: ${friend_id} OFFLINE!`);
+
+      dispatch(socketChangeFriendStatus({ id: friend_id, status: false }));
+      dispatch(
+        socketChangeDialogueFriendStatus({ id: friend_id, status: false })
+      );
+    });
+
     return () => {
       socket.off("SERVER:JOIN_TO_ROOM");
+      socket.off("SERVER:FRIEND_ONLINE");
+      socket.off("SERVER:FRIEND_OFFLINE");
     };
   }, []);
 

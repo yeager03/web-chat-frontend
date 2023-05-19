@@ -9,51 +9,43 @@ import DialogueService from "../../../services/DialogueService";
 // types
 import IDialogue from "../../../models/IDialogue";
 
-type GetDialogues = {
-  dialogues: IDialogue[];
-  unreadMessagesCount: number;
-};
-
-export const getDialogues = createAsyncThunk<GetDialogues>(
+export const getDialogues = createAsyncThunk<IDialogue[]>(
   "dialogue/getDialogues",
   async () => {
     const response = await DialogueService.getDialogues();
-    const { dialogues, unreadMessagesCount } = response.data;
+    const { dialogues } = response.data;
 
-    return {
-      dialogues: dialogues.map((item) => {
-        let lastMessageInfo;
+    return dialogues.map((item) => {
+      let lastMessageInfo;
 
-        if (item.lastMessage.message && !item.lastMessage.isReference) {
-          lastMessageInfo = decryptionText(item.lastMessage.message);
-        } else if (item.lastMessage.message && item.lastMessage.isReference) {
-          lastMessageInfo = "Ссылка";
+      if (item.lastMessage.message && !item.lastMessage.isReference) {
+        lastMessageInfo = decryptionText(item.lastMessage.message);
+      } else if (item.lastMessage.message && item.lastMessage.isReference) {
+        lastMessageInfo = "Ссылка";
+      } else {
+        const audioFiles = item.lastMessage.files.filter(
+          (file) => file.type === "audio"
+        );
+        const imageFiles = item.lastMessage.files.filter(
+          (file) => file.type === "image"
+        );
+
+        if (audioFiles.length && !imageFiles.length) {
+          lastMessageInfo = "Аудио";
+        } else if (imageFiles.length && !audioFiles.length) {
+          lastMessageInfo = "Изображения";
         } else {
-          const audioFiles = item.lastMessage.files.filter(
-            (file) => file.type === "audio"
-          );
-          const imageFiles = item.lastMessage.files.filter(
-            (file) => file.type === "image"
-          );
-
-          if (audioFiles.length && !imageFiles.length) {
-            lastMessageInfo = "Аудио";
-          } else if (imageFiles.length && !audioFiles.length) {
-            lastMessageInfo = "Изображения";
-          } else {
-            lastMessageInfo = "Файлы";
-          }
+          lastMessageInfo = "Файлы";
         }
+      }
 
-        return {
-          ...item,
-          lastMessage: {
-            ...item.lastMessage,
-            message: lastMessageInfo,
-          },
-        };
-      }),
-      unreadMessagesCount,
-    };
+      return {
+        ...item,
+        lastMessage: {
+          ...item.lastMessage,
+          message: lastMessageInfo,
+        },
+      };
+    });
   }
 );

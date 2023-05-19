@@ -10,5 +10,4 @@ export default interface DialogueResponse {
 export interface DialoguesResponse {
   status: string;
   dialogues: IDialogue[];
-  unreadMessagesCount: number;
 }

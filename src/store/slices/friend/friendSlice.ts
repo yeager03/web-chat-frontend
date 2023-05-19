@@ -39,6 +39,18 @@ export const friendSlice = createSlice({
     socketAddFriend: (state, action: PayloadAction<IUser>) => {
       state.friends.push(action.payload);
     },
+    socketChangeFriendStatus: (
+      state,
+      action: PayloadAction<{ id: string; status: boolean }>
+    ) => {
+      state.friends = state.friends.map((friend) => {
+        if (friend._id === action.payload.id) {
+          friend.isOnline = action.payload.status;
+        }
+
+        return friend;
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -121,5 +133,6 @@ export const friendSlice = createSlice({
 });
 
 export const friendSelector = (state: RootState) => state.friend;
-export const { socketAddRequest, socketAddFriend } = friendSlice.actions;
+export const { socketAddRequest, socketAddFriend, socketChangeFriendStatus } =
+  friendSlice.actions;
 export default friendSlice.reducer;

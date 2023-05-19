@@ -92,7 +92,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
       });
 
       socket.on("SERVER:UNREADMESSAGES_DESCREASE", (count: number) => {
-        dispatch(decreaseUnreadMessageCount(count));
+        dispatch(decreaseUnreadMessageCount({ count, currentDialogueId }));
       });
 
       return () => {

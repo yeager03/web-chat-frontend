@@ -54,13 +54,23 @@ const DialoguesList: FC = (): ReactElement => {
   };
 
   const filteredDialogues = dialogues
-    .map(({ _id, lastMessage, members, updatedAt, createdAt }) => ({
-      _id,
-      lastMessage,
-      interlocutor: members.find((member) => member._id !== user?._id),
-      updatedAt,
-      createdAt,
-    }))
+    .map(
+      ({
+        _id,
+        lastMessage,
+        members,
+        updatedAt,
+        createdAt,
+        unreadMessagesCount,
+      }) => ({
+        _id,
+        lastMessage,
+        interlocutor: members.find((member) => member._id !== user?._id),
+        updatedAt,
+        createdAt,
+        unreadMessagesCount,
+      })
+    )
     .filter(
       (dialogue) =>
         String(dialogue.interlocutor?.fullName)
