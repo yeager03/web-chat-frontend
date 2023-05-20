@@ -1,4 +1,11 @@
-import { FC, ReactElement, RefObject, Dispatch, SetStateAction } from "react";
+import {
+  FC,
+  ReactElement,
+  RefObject,
+  Dispatch,
+  SetStateAction,
+  useState,
+} from "react";
 
 // containers
 import Messages from "../../containers/Messages";
@@ -11,7 +18,10 @@ import cn from "classnames";
 import styles from "./Chat.module.scss";
 
 // mui components
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Modal } from "@mui/material";
+
+// components
+import UserAvatar from "../../../../components/UserAvatar";
 
 // types
 import { Status } from "../../../../models/Status";
@@ -24,6 +34,46 @@ import { Emoji, IMessageValue, IUploadedFile } from "../../containers";
 // emoji
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+
+type InterlocutorModalProps = {
+  open: boolean;
+  interlocutor: IUser;
+  label: string;
+  description: string;
+  handleClose: () => void;
+};
+
+const InterlocutorModal: FC<InterlocutorModalProps> = (props): ReactElement => {
+  const { open, interlocutor, label, description, handleClose } = props;
+  return (
+    <Modal
+      open={open}
+      aria-labelledby={label}
+      aria-describedby={description}
+      onClose={handleClose}
+    >
+      <Box className={styles["chat__modal"]}>
+        <Box className={styles["chat__modal-avatar"]}>
+          <UserAvatar user={interlocutor} />
+        </Box>
+        <Typography className={styles["chat__modal-fullName"]} variant={"h3"}>
+          <b>имя пользователя</b>
+          {interlocutor.fullName}
+        </Typography>
+        <Typography className={styles["chat__modal-email"]} component={"span"}>
+          <b>email</b>
+          {interlocutor.email}
+        </Typography>
+        {interlocutor.about_me && (
+          <Typography className={styles["chat__modal-about-me"]}>
+            <b>о себе</b>
+            {interlocutor.about_me}
+          </Typography>
+        )}
+      </Box>
+    </Modal>
+  );
+};
 
 type ChatProps = {
   interlocutor: IUser | null;
@@ -48,7 +98,6 @@ type ChatProps = {
   handleRemoveMessage: (id: string) => void;
   handleEditFiles: (files: IFile[]) => void;
 };
-
 const Chat: FC<ChatProps> = (props): ReactElement => {
   const {
     interlocutor,
@@ -74,11 +123,19 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
     handleEditFiles,
   } = props;
 
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <Box className={styles["chat"]}>
       {interlocutor && (
         <Box className={styles["chat__header"]}>
-          <Typography className={styles["chat__header-title"]} variant="h3">
+          <Typography
+            className={styles["chat__header-title"]}
+            variant="h3"
+            onClick={handleOpen}
+          >
             {interlocutor.fullName}
           </Typography>
           <Box
@@ -90,6 +147,13 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
               {interlocutor.isOnline ? "онлайн" : "офлайн"}
             </span>
           </Box>
+          <InterlocutorModal
+            open={open}
+            interlocutor={interlocutor}
+            label={"Информация"}
+            description={"Описание"}
+            handleClose={handleClose}
+          />
         </Box>
       )}
 

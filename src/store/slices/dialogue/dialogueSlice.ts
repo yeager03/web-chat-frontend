@@ -8,7 +8,6 @@ import IMessage from "../../../models/IMessage";
 
 // actions
 import { getDialogues } from "./dialogueActions";
-import { retry } from "@reduxjs/toolkit/query";
 
 interface IDialogueState {
   status: Status;
@@ -101,7 +100,6 @@ export const dialogueSlice = createSlice({
         return dialogue;
       });
     },
-
     socketChangeDialogueFriendStatus: (
       state,
       action: PayloadAction<{ id: string; status: boolean }>
@@ -118,6 +116,22 @@ export const dialogueSlice = createSlice({
 
         return dialogue;
       });
+
+      if (
+        state.currentDialogue &&
+        state.currentDialogue.members.find(
+          (user) => user._id === action.payload.id
+        )
+      ) {
+        state.currentDialogue.members = state.currentDialogue.members.map(
+          (user) => {
+            if (user._id === action.payload.id) {
+              user.isOnline = action.payload.status;
+            }
+            return user;
+          }
+        );
+      }
     },
   },
   extraReducers: (builder) => {

@@ -1,69 +1,140 @@
 @import "../../../../assets/scss/components/variables";
 
 .chat {
-	position: relative;
-	flex: 1;
+  position: relative;
+  flex: 1;
 
-	&__header {
-		height: 85px;
-		padding: 20px;
+  &__modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 30px;
 
-		display: flex;
-		flex-direction: column;
+    border-radius: 10px;
 
-		justify-content: center;
-		align-items: center;
+    background: $white;
 
-		border-bottom: 1px solid #eeeeee;
+    display: flex;
+    flex-direction: column;
 
-		text-align: center;
+    &-avatar {
+      align-self: center;
+      width: 200px;
+      height: 200px;
 
-		&-title {
-			margin-bottom: 5px;
-			font-size: 16px;
-			font-weight: 700;
-		}
+      span {
+        font-size: 46px;
+      }
+    }
 
-		&-status {
-			display: flex;
-			align-items: center;
-			justify-content: center;
+    b {
+      opacity: .8;
+      font-size: 14px;
+      text-transform: lowercase;
+      font-weight: 600;
 
-			&::before {
-				display: block;
-				content: "";
-				width: 9px;
-				height: 9px;
-				background-color: #d3d3d3;
-				border-radius: 50%;
-				margin-right: 5px;
-				transform: translateY(1px);
-			}
+      margin-bottom: 5px;
 
-			.status {
-				color: #bfbfbf;
-				font-size: 15px;
-			}
+      display: flex;
+      align-items: center;
+    }
 
-			&_online {
-				display: flex;
-				align-items: center;
-				justify-content: center;
+    &-fullName {
+      letter-spacing: .5px;
+      margin-top: 15px;
 
-				&::before {
-					background-color: $green;
-				}
-			}
-		}
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: capitalize;
 
-		.icon {
-			cursor: pointer;
-			font-size: 18px;
-		}
-	}
+      display: flex;
+      flex-direction: column;
 
-	.emoji {
-		position: absolute;
-		left: 10px;
-	}
+      line-height: 1;
+    }
+
+    &-email {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 15px;
+
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    &-about-me {
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1;
+    }
+  }
+
+  &__header {
+    height: 85px;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    border-bottom: 1px solid #eeeeee;
+
+    text-align: center;
+
+    &-title {
+      margin-bottom: 5px;
+      font-size: 16px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    &-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::before {
+        display: block;
+        content: "";
+        width: 9px;
+        height: 9px;
+        background-color: #d3d3d3;
+        border-radius: 50%;
+        margin-right: 5px;
+        transform: translateY(1px);
+      }
+
+      .status {
+        color: #bfbfbf;
+        font-size: 15px;
+      }
+
+      &_online {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &::before {
+          background-color: $green;
+        }
+      }
+    }
+
+    .icon {
+      cursor: pointer;
+      font-size: 18px;
+    }
+  }
+
+  .emoji {
+    position: absolute;
+    left: 10px;
+  }
 }
