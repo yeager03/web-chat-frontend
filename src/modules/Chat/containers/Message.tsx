@@ -15,9 +15,7 @@ import IMessage, { IFile } from "../../../models/IMessage";
 import { IMessageValue } from ".";
 
 type MessageProps = IMessage & {
-  isRead?: boolean;
-  attachments?: any[];
-  audio?: string;
+  messageValue: IMessageValue;
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
   setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
   handleRemoveMessage: (id: string) => void;
@@ -25,7 +23,12 @@ type MessageProps = IMessage & {
 };
 
 const Message: FC<MessageProps> = (props): ReactElement => {
-  const { setMessageValue, handleRemoveMessage, handleEditFiles } = props;
+  const {
+    messageValue,
+    setMessageValue,
+    handleRemoveMessage,
+    handleEditFiles,
+  } = props;
 
   const [anchorEl, setAnchorEl] = useState<HTMLSpanElement | null>(null);
 
@@ -40,6 +43,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
       {...props}
       anchorEl={anchorEl}
       open={open}
+      messageValue={messageValue}
       handleOpen={handleOpen}
       handleClose={handleClose}
       setMessageValue={setMessageValue}

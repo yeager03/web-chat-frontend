@@ -29,6 +29,7 @@ type MessagesProps = {
   chatInputHeight: number;
   isTyping: boolean;
   interlocutor: IUser | null;
+  messageValue: IMessageValue;
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
   setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
   handleRemoveMessage: (id: string) => void;
@@ -43,6 +44,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
     chatInputHeight,
     isTyping,
     interlocutor,
+    messageValue,
     setMessageValue,
     setUploadedFiles,
     handleRemoveMessage,
@@ -79,6 +81,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
             {...message}
             setUploadedFiles={setUploadedFiles}
             setMessageValue={setMessageValue}
+            messageValue={messageValue}
             handleRemoveMessage={handleRemoveMessage}
             handleEditFiles={handleEditFiles}
           />
@@ -111,70 +114,3 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
 };
 
 export default Messages;
-
-// <Message
-// 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"
-// 	user={{}}
-// 	text="Салам, как дела? Ну что там по проекту? Закончил?"
-// />
-// <Message
-// 	avatar="https://sun2.dataix-kz-akkol.userapi.com/s/v1/if1/iwEcBMWSaj-9Hsic3PRFGDI4Rq_TsLuI521iXxhJ1RKXJpIE_2_wfAhmvxlR4vuSK-4Yxrgs.jpg?size=200x200&quality=96&crop=155,96,769,769&ava=1"
-// 	user={{}}
-// 	attachments={[
-// 		{
-// 			filename: "image",
-// 			url: "https://source.unsplash.com/100x100/?random=1",
-// 		},
-// 	]}
-// />
-// <Message
-// 	avatar="https://sun2.dataix-kz-akkol.userapi.com/s/v1/if1/iwEcBMWSaj-9Hsic3PRFGDI4Rq_TsLuI521iXxhJ1RKXJpIE_2_wfAhmvxlR4vuSK-4Yxrgs.jpg?size=200x200&quality=96&crop=155,96,769,769&ava=1"
-// 	text="Идейные соображения высшего порядка, а также дальнейшее развитие различных форм деятельности влечет за собой процесс внедрения и модернизации существенных финансовых и административных условий. Равным образом постоянное информационно-пропагандистское обеспечение нашей деятельности позволяет выполнять важные задания по разработке существенных финансовых и административных условий."
-// 	date="Wed Feb 22 2023 02:21:08 GMT+0600 (Восточный Казахстан)"
-// 	user={{}}
-// 	isMyMessage={true}
-// attachments={[
-// 	{
-// 		filename: "image",
-// 		url: "https://source.unsplash.com/100x100/?random=1",
-// 	},
-// 	{
-// 		filename: "image",
-// 		url: "https://source.unsplash.com/100x100/?random=2",
-// 	},
-// 	{
-// 		filename: "image",
-// 		url: "https://source.unsplash.com/100x100/?random=3",
-// 	},
-// ]}
-// />
-// <Message
-// 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"
-// 	user={{}}
-// 	text="Салам, как дела? Ну что там по проекту? Закончил?"
-// 	isMyMessage
-// />
-// <Message
-// 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"
-// 	user={{}}
-// 	text="Салам, как дела? Ну что там по проекту? Закончил?"
-// 	isMyMessage
-// />
-// <Message
-// 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"
-// 	user={{}}
-// 	date="Wed Feb 22 2023 02:51:08 GMT+0600 (Восточный Казахстан)"
-// 	audio="https://notificationsounds.com/storage/sounds/file-oringz-beautiful-christmas-tune.mp3"
-// />
-// <Message
-// 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"
-// 	user={{}}
-// 	text="Салам, как дела? Ну что там по проекту? Закончил?"
-// 	isMyMessage
-// />
-// <Message
-// 	avatar="https://avatars.githubusercontent.com/u/76945338?v=4"
-// 	user={{}}
-// 	text="Салам, как дела? Ну что там по проекту? Закончил?"
-// 	isMyMessage
-// />

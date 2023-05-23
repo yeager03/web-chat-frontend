@@ -27,6 +27,7 @@ import MessageSound from "../../assets/sounds/message_sound.mp3";
 // selectors
 import {
   changeDialogueMessage,
+  decreaseUnreadMessageCount,
   dialogueSelector,
   increaseUnreadMessageCount,
   readDialogueLastMessage,
@@ -221,7 +222,17 @@ const Home: FC = (): ReactElement => {
 
     socket.on("SERVER:MESSAGE_DELETED", (message: IMessage) => {
       console.log("message deleted");
+
       if (dialogues.find((dl) => dl._id === String(message.dialogue))) {
+        if (!message.isRead) {
+          dispatch(
+            decreaseUnreadMessageCount({
+              count: 1,
+              currentDialogueId: String(message.dialogue),
+            })
+          );
+        }
+
         if (currentDialogueId === String(message.dialogue)) {
           dispatch(socketDeleteMessage(message._id));
         }
@@ -278,7 +289,7 @@ const Home: FC = (): ReactElement => {
     });
 
     socket.on("SERVER:FRIEND_ONLINE", (friend_id: string) => {
-      // console.log(`Friend with id: ${friend_id} ONLINE!`);
+      console.log(`Friend with id: ${friend_id} ONLINE!`);
 
       dispatch(socketChangeFriendStatus({ id: friend_id, status: true }));
       dispatch(
@@ -287,7 +298,7 @@ const Home: FC = (): ReactElement => {
     });
 
     socket.on("SERVER:FRIEND_OFFLINE", (friend_id: string) => {
-      // console.log(`Friend with id: ${friend_id} OFFLINE!`);
+      console.log(`Friend with id: ${friend_id} OFFLINE!`);
 
       dispatch(socketChangeFriendStatus({ id: friend_id, status: false }));
       dispatch(

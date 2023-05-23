@@ -44,6 +44,7 @@ type MessagesProps = {
   status: Status;
   chatInputHeight: number;
   interlocutor: IUser | null;
+  messageValue: IMessageValue;
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
   setUploadedFiles: Dispatch<SetStateAction<IFile[]>>;
   handleRemoveMessage: (id: string) => void;
@@ -63,6 +64,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
     interlocutor,
     setMessageValue,
     setUploadedFiles,
+    messageValue,
     handleRemoveMessage,
     handleEditFiles,
   } = props;
@@ -152,6 +154,7 @@ const Messages: FC<MessagesProps> = (props): ReactElement => {
       interlocutor={interlocutor}
       setMessageValue={setMessageValue}
       setUploadedFiles={setUploadedFiles}
+      messageValue={messageValue}
       handleRemoveMessage={handleRemoveMessage}
       handleEditFiles={handleEditFiles}
     />

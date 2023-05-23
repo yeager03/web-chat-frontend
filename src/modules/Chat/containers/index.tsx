@@ -106,6 +106,7 @@ const Chat: FC = (): ReactElement => {
     if (inputRef.current) {
       inputRef.current.textContent = "";
       setMessageValue({ type: "create", value: "", id: "" });
+      console.log(1);
     }
   };
 

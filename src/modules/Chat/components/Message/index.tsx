@@ -37,6 +37,7 @@ type MessageProps = IMessage & {
   audio?: string;
   anchorEl: HTMLSpanElement | null;
   open: boolean;
+  messageValue: IMessageValue;
   handleOpen: (e: MouseEvent<HTMLSpanElement>) => void;
   handleClose: () => void;
   setMessageValue: Dispatch<SetStateAction<IMessageValue>>;
@@ -57,10 +58,11 @@ const Message: FC<MessageProps> = (props): ReactElement => {
     files,
     anchorEl,
     open,
-    handleOpen,
-    handleClose,
+    messageValue,
     setMessageValue,
     setUploadedFiles,
+    handleOpen,
+    handleClose,
     handleRemoveMessage,
     handleEditFiles,
   } = props;
@@ -194,7 +196,7 @@ const Message: FC<MessageProps> = (props): ReactElement => {
           <div
             className={styles["message__date"]}
             onClick={(e) => {
-              if (!isMyMessage) {
+              if (!isMyMessage || messageValue.type === "edit") {
                 return;
               }
               handleOpen(e);

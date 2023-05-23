@@ -162,9 +162,10 @@ const Chat: FC<ChatProps> = (props): ReactElement => {
         status={status}
         chatInputHeight={chatInputHeight}
         setMessageValue={setMessageValue}
+        setUploadedFiles={setUploadedFiles}
+        messageValue={messageValue}
         handleRemoveMessage={handleRemoveMessage}
         handleEditFiles={handleEditFiles}
-        setUploadedFiles={setUploadedFiles}
       />
 
       {status === "success" && (
