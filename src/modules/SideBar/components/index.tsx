@@ -77,7 +77,11 @@ const SideBar: FC<SideBarProps> = (props): ReactElement => {
       {user && (
         <aside className={styles["sidebar"]}>
           <Box className={styles["sidebar__top"]}>
-            <Link className={styles["sidebar__top-avatar"]} to={"/profile"}>
+            <Link
+              className={styles["sidebar__top-avatar"]}
+              to={"/profile"}
+              onClick={handleChangeLink}
+            >
               {<UserAvatar user={user} />}
             </Link>
 
